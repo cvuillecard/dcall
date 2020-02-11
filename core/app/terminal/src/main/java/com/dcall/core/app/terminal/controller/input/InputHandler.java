@@ -1,4 +1,4 @@
 package com.dcall.core.app.terminal.controller.input;
 
-public class InputHandler {
+public final class InputHandler {
 }

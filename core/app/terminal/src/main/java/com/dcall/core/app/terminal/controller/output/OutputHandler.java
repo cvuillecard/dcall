@@ -1,4 +1,4 @@
 package com.dcall.core.app.terminal.controller.output;
 
-public class OutputHandler {
+public final class OutputHandler {
 }

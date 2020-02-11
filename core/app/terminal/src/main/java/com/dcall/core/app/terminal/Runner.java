@@ -1,6 +1,6 @@
 package com.dcall.core.app.terminal;
 
-import com.dcall.core.app.terminal.gui.TerminalUI;
+import com.dcall.core.app.terminal.controller.gui.TerminalUI;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;

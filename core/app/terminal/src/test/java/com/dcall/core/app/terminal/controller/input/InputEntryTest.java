@@ -13,7 +13,7 @@ public class InputEntryTest {
     private static final char[] s3 = " Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.".toCharArray();
     private static final char[] s4 = " Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aliquam nibh. Mauris ac mauris sed pede pellentesque fermentum. Maecenas adipiscing ante non diam sodales hendrerit.".toCharArray();
 
-    private static final InputEntry entry = new InputEntry();
+    private static final InputEntry<String> entry = new InputEntry<>();
 
     @Before
     public void init() {
@@ -22,7 +22,7 @@ public class InputEntryTest {
 
     /** UTILS **/
     private static void addtoEntry(final char[] in) {
-        for (int i = 0; i < in.length; i++) entry.add(in[i]);
+        for (int i = 0; i < in.length; i++) entry.add(String.valueOf(in[i]));
     }
 
     /** InputEntry::nbLine() **/
@@ -99,7 +99,7 @@ public class InputEntryTest {
         Assert.assertEquals(finalString.substring(0, finalString.length() - 1), entry.toString());
 
         // when
-        entry.add('.');
+        entry.add(String.valueOf('.'));
 
         // then
         Assert.assertEquals(finalString.length(), entry.getBuffer().get(entry.posY()).size());
@@ -114,7 +114,10 @@ public class InputEntryTest {
         IntStream.range(0, s1.length).forEach(i -> entry.remove());
 
         // then
+        Assert.assertEquals(0, entry.posX());
+        Assert.assertEquals(0, entry.posY());
         Assert.assertEquals(0, entry.getBuffer().get(entry.posY()).size());
+        Assert.assertEquals(1, entry.nbLine());
 
         // when
         entry.remove();
@@ -171,13 +174,5 @@ public class InputEntryTest {
         Assert.assertEquals(0, entry.posY());
         Assert.assertEquals(TermAttributes.getMaxLineWidth(), entry.getBuffer().get(entry.posY()).size());
         Assert.assertEquals(1, entry.nbLine());
-//        entry.remove();
-//        entry.remove();
-//
-//        // then
-//        Assert.assertEquals(0, entry.posX());
-//        Assert.assertEquals(0, entry.posY());
-//        Assert.assertEquals(0, entry.getBuffer().get(entry.posY()).size());
-//        Assert.assertEquals(1, entry.nbLine());
     }
 }

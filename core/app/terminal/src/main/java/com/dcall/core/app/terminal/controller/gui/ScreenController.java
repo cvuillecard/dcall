@@ -1,4 +1,4 @@
-package com.dcall.core.app.terminal.gui;
+package com.dcall.core.app.terminal.controller.gui;
 
 import com.dcall.core.app.terminal.configuration.TermAttributes;
 import com.googlecode.lanterna.TerminalSize;
@@ -15,7 +15,7 @@ import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
-public final class ScreenController {
+public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawer / CursorDrawer
     private static final Logger LOG = LoggerFactory.getLogger(ScreenController.class);
     private static boolean up = true;
     private static Screen screen;
@@ -48,7 +48,7 @@ public final class ScreenController {
     }
 
     private static void addResizeListener() {
-        term.addResizeListener(new SimpleTerminalResizeListener(new TerminalSize(TermAttributes.FRAME_NB_COLS, TermAttributes.FRAME_NB_ROWS)) {
+        ScreenController.terminal.addResizeListener(new SimpleTerminalResizeListener(new TerminalSize(TermAttributes.FRAME_NB_COLS, TermAttributes.FRAME_NB_ROWS)) {
             @Override
             public synchronized void onResized(final Terminal terminal, final TerminalSize newSize) {
                 super.onResized(terminal, newSize);
@@ -57,7 +57,7 @@ public final class ScreenController {
                             + terminal.getTerminalSize().getColumns() + " x "
                             + terminal.getTerminalSize().getRows());
                     setScreenSize(terminal.getTerminalSize().getColumns(), terminal.getTerminalSize().getRows());
-                    ((SwingTerminalFrame)TerminalUI.term).setTitle(TermAttributes.FRAME_TITLE + " (" + width + 'x' + height + ')');
+                    ((SwingTerminalFrame)ScreenController.terminal).setTitle(TermAttributes.FRAME_TITLE + " (" + width + 'x' + height + ')');
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -95,4 +95,9 @@ public final class ScreenController {
         limitWidth = width - 1;
         limitHeight = height - 1;
     }
+
+    // GETTERS
+    public static final boolean isUp() { return up; }
+    public static final Screen getScreen() { return screen; }
+    public static final Terminal getTerminal() { return terminal; }
 }

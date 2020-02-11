@@ -1,4 +1,4 @@
-package com.dcall.core.app.terminal.gui;
+package com.dcall.core.app.terminal.controller.gui;
 
 import com.dcall.core.app.terminal.configuration.TermAttributes;
 import com.googlecode.lanterna.*;
