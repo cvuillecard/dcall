@@ -60,34 +60,57 @@ public class InputEntry<T> {
         return this;
     }
 
-    public void moveX(final int length) { // 2 | 1 | 5
-        final int currLineSize = buffer.get(y).size(); //  78 | 78 | 70
-        int newX = x + length; // 77 + 2 = 79 | 77 + 1 = 78 | 70 + 5 = 75
 
-        if (y >= 0) {
-            if (newX >= currLineSize) // 79 >= 78 | 78 >= 78 | 75 >= 70
-                if (newX > TermAttributes.getMaxLineWidth()) // 79 > 77 | 78 > 77 | 75 > 77
-                    newX -= (TermAttributes.getMarginWidth() + 1);  // 79 - 78 = 1 | 78 - 78 = 0 | false
-                else
-                    newX = currLineSize - 1; // false | false | 70 - 1 = 69;
-            else if (newX < 0) {
-//                newX = currLineSize - length
-            }
+    public void moveAfterX(final int length) {
+        if (length > 0) {
+            final int currLineSize = buffer.get(y).size();
+            final int newX = x + length;
+            final int moved = TermAttributes.getTotalLineWidth() - x;
+
+            if (newX > TermAttributes.getMaxLineWidth()) {
+                if (y < this.maxNbLine()) {
+                    y++;
+                    x = 0;
+                }
+                this.moveAfterX(length - moved);
+            } else
+                x = newX > currLineSize ? currLineSize : newX;
         }
     }
 
+    public void moveBeforeX(final int length) {
+        if (length < 0) {
+            final int newX = x + length;
+            final int moved = x;
+
+            if (newX < 0 && y > 0) {
+                y--;
+                x = TermAttributes.getMaxLineWidth();
+                this.moveBeforeX(length + moved);
+            } else
+                x = newX < 0 && y == 0 ? 0 : newX;
+        }
+    }
+
+    public void moveX(final int length) {
+        if (length > 0)
+            moveAfterX(length);
+        else
+            moveBeforeX(length);
+    }
+
+    // GETTERS
+    public List<InputLine<T>> getBuffer() { return this.buffer; }
+    public int posX() { return this.x; }
+    public int posY() { return this.y; }
+
+    // SETTERS
+    public void setX(final int posX) { this.x = posX; }
+    public void setY(final int posY) { this.y = posY; }
+
     // UTILS
-    public int posX() {
-        return x;
-    }
-
-    public int posY() {
-        return y;
-    }
-
-    public int nbLine() {
-        return buffer.size();
-    }
+    public int nbLine() { return this.buffer.size(); }
+    public int maxNbLine() { return this.nbLine() - 1; }
 
     public String toString() {
         final StringBuilder sb = new StringBuilder(this.buffer.size());
@@ -97,5 +120,4 @@ public class InputEntry<T> {
         return sb.toString();
     }
 
-    public List<InputLine<T>> getBuffer() { return this.buffer; }
 }
