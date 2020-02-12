@@ -17,16 +17,37 @@ import java.io.IOException;
 
 public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawer / CursorDrawer
     private static final Logger LOG = LoggerFactory.getLogger(ScreenController.class);
-    private static boolean up = true;
+
+    private static volatile boolean up = true;
+    private static volatile ScreenMetrics metrics = new ScreenMetrics();
     private static Screen screen;
     private static Terminal terminal;
-    private static int width;
-    private static int height;
-    private static int limitWidth;
-    private static int limitHeight;
 
     public static final void init() {
         initScreen();
+    }
+
+    public static final void close() {
+        try {
+            screen.stopScreen();
+            screen.close();
+        } catch (IOException e) {
+            LOG.error(TerminalUI.class.getName() + " - close() ERROR > " + e.getMessage());
+        }
+    }
+
+    private static final void resetPosition() {
+        metrics.currX = 0;
+        metrics.currY = TermAttributes.MARGIN_TOP;
+    }
+
+    public static final void refresh() {
+        try {
+            screen.doResizeIfNecessary();
+            screen.refresh();
+        } catch (IOException e) {
+            LOG.error(ScreenController.class.getName() + " - ERROR > " + e.getMessage());
+        }
     }
 
     private static void addWindowListener() {
@@ -57,7 +78,7 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
                             + terminal.getTerminalSize().getColumns() + " x "
                             + terminal.getTerminalSize().getRows());
                     setScreenSize(terminal.getTerminalSize().getColumns(), terminal.getTerminalSize().getRows());
-                    ((SwingTerminalFrame)ScreenController.terminal).setTitle(TermAttributes.FRAME_TITLE + " (" + width + 'x' + height + ')');
+                    ((SwingTerminalFrame)ScreenController.terminal).setTitle(TermAttributes.FRAME_TITLE + " (" + metrics.width + 'x' + metrics.height + ')');
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -76,28 +97,45 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
 
             screen = new TerminalScreen(terminal);
 
-            setScreenSize(TermAttributes.FRAME_NB_COLS, TermAttributes.FRAME_NB_ROWS);
+            resetScreenSize();
 
             screen.startScreen();
             screen.setCursorPosition(null);
 
             LOG.debug(ScreenController.class.getName() + " > initScreen() > done.");
-            LOG.debug(ScreenController.class.getName() + "    | width = " + width + " columns");
-            LOG.debug(ScreenController.class.getName() + "    | height = " + height + " rows");
+            LOG.debug(ScreenController.class.getName() + "    | width = " + metrics.width + " columns");
+            LOG.debug(ScreenController.class.getName() + "    | height = " + metrics.height + " rows");
         } catch (final IOException e) {
             LOG.error(e.getMessage());
         }
     }
 
     private static final void setScreenSize(final int nbCols, final int nbRows) {
-        width = nbCols;
-        height = nbRows;
-        limitWidth = width - 1;
-        limitHeight = height - 1;
+        TermAttributes.FRAME_NB_COLS = nbCols;
+        TermAttributes.FRAME_NB_ROWS = nbRows;
+        metrics.width = nbCols;
+        metrics.height = nbRows;
+        metrics.maxWidth = metrics.width - TermAttributes.MARGIN;
+        metrics.maxHeight = metrics.height - TermAttributes.MARGIN;
+        metrics.minWidth = TermAttributes.MARGIN;
+        metrics.minHeight = TermAttributes.MARGIN_TOP;
+    }
+
+    private static final void resetScreenSize() {
+        TermAttributes.FRAME_NB_COLS = TermAttributes.DEF_FRAME_NB_COLS;
+        TermAttributes.FRAME_NB_ROWS = TermAttributes.DEF_FRAME_NB_ROWS;
+        metrics.width = TermAttributes.FRAME_NB_COLS;
+        metrics.height = TermAttributes.FRAME_NB_ROWS;
+        metrics.maxWidth = metrics.width - TermAttributes.MARGIN;
+        metrics.maxHeight = metrics.height - TermAttributes.MARGIN;
+        metrics.minWidth = TermAttributes.MARGIN;
+        metrics.minHeight = TermAttributes.MARGIN_TOP;
     }
 
     // GETTERS
     public static final boolean isUp() { return up; }
+    public static final ScreenMetrics metrics() { return metrics; }
+
     public static final Screen getScreen() { return screen; }
     public static final Terminal getTerminal() { return terminal; }
 }

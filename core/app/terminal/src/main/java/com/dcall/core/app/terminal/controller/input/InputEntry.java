@@ -16,8 +16,6 @@ public class InputEntry<T> {
     }
 
     public void reset() {
-        if (buffer != null)
-            System.gc();
         buffer = new ArrayList<>(TermAttributes.DEF_INPUT_NB_LINE);
         x = 0;
         y = 0;
@@ -130,4 +128,8 @@ public class InputEntry<T> {
         return sb.toString();
     }
 
+    public void finalize() {
+        this.buffer.clear();
+        this.buffer = null;
+    }
 }

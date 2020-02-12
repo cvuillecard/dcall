@@ -14,8 +14,10 @@ public class TermAttributes {
     public static final int DEF_FRAME_NB_ROWS = 24;
     public static int FRAME_NB_COLS = DEF_FRAME_NB_COLS;
     public static int FRAME_NB_ROWS = DEF_FRAME_NB_ROWS;
+    public static int MARGIN = 1;
     public static int MARGIN_LEFT = 1;
     public static int MARGIN_RIGHT = 1;
+    public static int MARGIN_TOP = 2;
 
     // HEADER
     public static final TextColor HEADER_BACKGROUND = new TextColor.RGB(230, 230, 0); // YELLOW
@@ -50,5 +52,13 @@ public class TermAttributes {
 
     public static final int getMarginWidth() {
         return MARGIN_LEFT + MARGIN_RIGHT;
+    }
+
+    public static final int screenPosX(final int x) {
+        return MARGIN + x;
+    }
+
+    public static final int screenPosY(final int y) {
+        return MARGIN_TOP + y;
     }
 }

@@ -1,28 +1,31 @@
 package com.dcall.core.app.terminal;
 
 import com.dcall.core.app.terminal.controller.gui.GUIController;
+import com.dcall.core.app.terminal.controller.gui.ScreenController;
+import com.dcall.core.app.terminal.controller.gui.drawer.TextDrawer;
+import com.dcall.core.app.terminal.controller.gui.handler.IOHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 public final class TerminalApp {
     private static final Logger LOG = LoggerFactory.getLogger(TerminalApp.class);
+    private static final IOHandler handler = new IOHandler();
 
-    private static final void init() {
+    public static final void start() {
         GUIController.init();
+        TerminalApp.handle();
     }
 
-//    public static final void start() {
-//        try {
-//            init();
-//            handle();
-//        } catch (IOException e) {
-//            LOG.error(TerminalApp.class.getName() + " - start() ERROR > " + e.getMessage());
-//        }
-//    }
+    public static final void handle() {
+        GUIController.prompt(true, handler, ScreenController.metrics());
+        while (ScreenController.isUp()) {
 
-    public static final boolean isUp () {
-        return GUIController.isUp();
+        }
+
+        close();
+    }
+
+    private static final void close() {
+        ScreenController.close();
     }
 }

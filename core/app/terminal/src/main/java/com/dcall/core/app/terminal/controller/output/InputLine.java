@@ -36,11 +36,6 @@ public class InputLine<T> {
         return this;
     }
 
-    public void finalize() {
-        this.buffer.clear();
-        this.buffer = null;
-    }
-
     public List<T> getBuffer() { return buffer; }
     public int size() { return buffer.size(); }
 
@@ -51,5 +46,10 @@ public class InputLine<T> {
         this.buffer.forEach(s -> sb.append(s.toString()));
 
         return sb.toString();
+    }
+
+    public void finalize() {
+        this.buffer.clear();
+        this.buffer = null;
     }
 }

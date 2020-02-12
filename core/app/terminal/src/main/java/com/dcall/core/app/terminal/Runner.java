@@ -18,7 +18,8 @@ public class Runner {
 
     public static void main(final String[] args) {
         LOG.info("Running Lanterna test");
-        TerminalUI.start();
+        TerminalApp.start();
+//        TerminalUI.start();
 //        initTerminal();
     }
 

@@ -8,8 +8,12 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class KeyboardController {
+public final class KeyboardController {
     private static final Logger LOG = LoggerFactory.getLogger(KeyboardController.class);
     private static KeyStroke keyPressed;
     private static final Map<KeyboardAction, Runnable> controlKeys = new HashMap<>(); // IOHandler::methods -> inputHandler / outputHandler
+
+    public static final void init() {
+
+    }
 }
