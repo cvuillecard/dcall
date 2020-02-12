@@ -25,7 +25,7 @@ public class InputEntry<T> {
     }
 
     public InputEntry add(final T e) {
-        final int currLineSize = buffer.get(y).size();
+        final int currLineSize = currLineSize();
         final int lineSize = currLineSize + 1;
 
         if (lineSize > TermAttributes.getTotalLineWidth()) {
@@ -54,7 +54,7 @@ public class InputEntry<T> {
         else
             x = newX >= 0 ? newX : x;
 
-        if (buffer.get(y).size() > 0)
+        if (currLineSize() > 0)
             buffer.get(y).removeAt(x);
 
         return this;
@@ -63,7 +63,7 @@ public class InputEntry<T> {
 
     public void moveAfterX(final int length) {
         if (length > 0) {
-            final int currLineSize = buffer.get(y).size();
+            final int currLineSize = currLineSize();
             final int newX = x + length;
             final int moved = TermAttributes.getTotalLineWidth() - x;
 
@@ -99,6 +99,15 @@ public class InputEntry<T> {
             moveBeforeX(length);
     }
 
+    public void moveY(final int length) {
+        final int newY = y + length;
+
+        if (length > 0)
+            y = newY < maxNbLine() ? newY : maxNbLine();
+        else
+            y = newY >= 0 ? newY : 0;
+    }
+
     // GETTERS
     public List<InputLine<T>> getBuffer() { return this.buffer; }
     public int posX() { return this.x; }
@@ -111,6 +120,7 @@ public class InputEntry<T> {
     // UTILS
     public int nbLine() { return this.buffer.size(); }
     public int maxNbLine() { return this.nbLine() - 1; }
+    private int currLineSize() {   return buffer.get(y).size(); }
 
     public String toString() {
         final StringBuilder sb = new StringBuilder(this.buffer.size());

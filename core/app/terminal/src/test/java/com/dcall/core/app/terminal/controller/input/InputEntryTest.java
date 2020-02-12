@@ -619,4 +619,68 @@ public class InputEntryTest {
         Assert.assertEquals(totalnbLines - 1, entry.posY());
         Assert.assertEquals(entry.maxNbLine(), entry.posY());
     }
+
+    /** InputEntry::moveY() **/
+    @Test
+    public void should_move_posY_position_before_or_after_posY_moveY() {
+        final int s1Length = s1.length; // 15
+        final int s2Length = s2.length; // 56
+        final int s3Length = s3.length; // 180
+        final int totalLength = s1Length + s2Length + s3Length; // 251
+        final int nbLines = totalLength / TermAttributes.getTotalLineWidth();
+        final int rest = totalLength % TermAttributes.getTotalLineWidth();
+        final int totalnbLines = nbLines + (rest > 0 ? 1 : 0);
+
+        // init
+        addtoEntry(s1);
+        addtoEntry(s2);
+        addtoEntry(s3);
+
+        // state : 4 lines
+        Assert.assertEquals(rest, entry.posX());
+        Assert.assertEquals(nbLines, entry.posY());
+        Assert.assertEquals(totalnbLines - 1, entry.posY());
+        Assert.assertEquals(entry.maxNbLine(), entry.posY());
+        Assert.assertEquals(totalnbLines, entry.nbLine());
+
+        // when : moveY(0) does nothing
+        entry.moveY(0);
+
+        // then : nothing changed
+        Assert.assertEquals(nbLines, entry.posY());
+
+        // when : moving cursor Y to last line
+        entry.moveY(totalnbLines - 1); // identical to nbLines
+
+        // then : expected - posY() = 3 -> is the last line of entry (4 lines)
+        Assert.assertEquals(totalnbLines - 1, entry.posY());
+        Assert.assertEquals(nbLines, entry.posY());
+
+        // when : We want to move 2 lines before the last line (current line = posY())
+        entry.moveY(-2);
+
+        // then : expected - posY() = 1 ->  is the line 2
+        Assert.assertEquals(totalnbLines - 3, entry.posY());
+        Assert.assertEquals(entry.maxNbLine() - 2, entry.posY());
+
+        // when : We want to move 1 line after current line
+        entry.moveY(1);
+
+        // then : expected - posY() = 2 -> posY must be at line 3 (1 line from last line)
+        Assert.assertEquals(totalnbLines - 2, entry.posY());
+        Assert.assertEquals(entry.maxNbLine() - 1, entry.posY());
+
+        // when : trying to go out of bounds after last line
+        entry.moveY(totalnbLines);
+
+        // then
+        Assert.assertEquals(totalnbLines - 1, entry.posY());
+        Assert.assertEquals(entry.maxNbLine(), entry.posY());
+
+        // when : trying to go out of bounds before first line
+        entry.moveY(totalnbLines * -1);
+
+        // then
+        Assert.assertEquals(0, entry.posY());
+    }
 }
