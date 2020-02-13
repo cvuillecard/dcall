@@ -118,6 +118,7 @@ public class InputEntry<T> {
     // UTILS
     public int nbLine() { return this.buffer.size(); }
     public int maxNbLine() { return this.nbLine() - 1; }
+    public int totalSize() { return this.buffer.stream().mapToInt(b -> b.getBuffer().size()).reduce(0, Integer::sum); }
     private int currLineSize() {   return buffer.get(y).size(); }
 
     public String toString() {

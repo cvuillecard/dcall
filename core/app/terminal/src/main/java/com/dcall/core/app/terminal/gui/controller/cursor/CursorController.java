@@ -1,6 +1,7 @@
 package com.dcall.core.app.terminal.gui.controller.cursor;
 
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
+import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.googlecode.lanterna.TerminalPosition;
@@ -26,16 +27,16 @@ public final class CursorController {
         LOG.info(" cursor X = " + metrics.currX);
         LOG.info(" cursor Y = " + metrics.currY);
 
-        if (metrics.currX == metrics.maxWidth) {
+        if (metrics.currX  == metrics.maxWidth) {
             if (metrics.currY == metrics.maxHeight)
                 DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
             else {
-                metrics.currX = 1;
+                metrics.currX = metrics.minWidth;
                 metrics.currY += (metrics.currY == metrics.maxHeight ? 0 : 1);
             }
         }
 
-        CursorController.screen.setCursorPosition(new TerminalPosition(metrics.currX + 1, metrics.currY));
+        CursorController.screen.setCursorPosition(new TerminalPosition(metrics.currX, metrics.currY));
     }
 
     public static final void moveBefore(final ScreenMetrics metrics) {

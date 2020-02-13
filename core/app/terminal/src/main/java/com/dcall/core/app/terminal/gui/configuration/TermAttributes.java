@@ -61,4 +61,8 @@ public class TermAttributes {
     public static final int screenPosY(final int y) {
         return MARGIN_TOP + y;
     }
+
+    public static final int getPromptStartIdx() {
+        return TermAttributes.PROMPT.length() + 1;
+    }
 }

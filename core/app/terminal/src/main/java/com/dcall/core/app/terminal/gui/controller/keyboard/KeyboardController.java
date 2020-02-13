@@ -1,6 +1,7 @@
 package com.dcall.core.app.terminal.gui.controller.keyboard;
 
 import com.dcall.core.app.terminal.bus.handler.IOHandler;
+import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
@@ -18,6 +19,7 @@ public final class KeyboardController {
     private static KeyStroke keyPressed;
     private static IOHandler bus;
     private static Terminal term;
+    private static volatile Boolean lock;
 
     public static final void init(final Terminal term, final IOHandler bus) {
         KeyboardController.term = term;
@@ -35,23 +37,24 @@ public final class KeyboardController {
 
     public static final void handleKeyboard() {
         readInput();
+        lock = false;
         if (keyPressed != null) {
             Stream.of(KeyboardAction.values())
                     .filter(k -> k.getKeyType().equals(KeyboardController.keyPressed.getKeyType()))
                     .forEach(action -> handleKeys(action));
-
-//            GUIProcessor.flush(); // SLOW PERF
         }
     }
 
     private static void handleKeys(final KeyboardAction action) {
-        switch (action.getTypeAction()) {
-            case CTRL:
-                KeyboardController.handleCTRLKey(action);
-                break;
-            default:
-                KeyboardController.runAction(action);
-                break;
+        if (!lock) {
+            switch (action.getTypeAction()) {
+                case CTRL:
+                    KeyboardController.handleCTRLKey(action);
+                    break;
+                default:
+                    KeyboardController.runAction(action);
+                    break;
+            }
         }
     }
 
@@ -69,6 +72,7 @@ public final class KeyboardController {
         if (action.getFunction() != null) {
             LOG.debug("Key pressed : " + keyPressed.getCharacter().charValue() + " [ type = "+ action.getTypeAction() + " ]");
             action.getFunction().run();
+            lock = true;
         }
         else
             LOG.debug("Key Pressed - not handled " + "[ type = " + action.getTypeAction() + " ]");
@@ -86,10 +90,37 @@ public final class KeyboardController {
         final int posX = bus.input().current().posX();
         final int posY = bus.input().current().posY();
 
-        if (posY > 0 || (posY == 0 && posX > (TermAttributes.PROMPT.length() + 1))) {
+        if (posY > 0 || (posY == 0 && posX > TermAttributes.getPromptStartIdx())) {
             bus.input().current().remove();
             DisplayController.deleteCharacter(ScreenController.metrics());
         }
+    }
+
+    public static final void moveStart() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+
+        bus.input().current().setX(TermAttributes.getPromptStartIdx());
+        bus.input().current().setY(0);
+
+        metrics.currX = TermAttributes.getPromptStartIdx();
+
+        if (metrics.currY >= metrics.minHeight)
+            metrics.currY -= bus.input().current().maxNbLine();
+
+        DisplayController.moveStart(metrics);
+    }
+
+    public static final void moveEnd() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final InputEntry<String> entry = bus.input().current();
+
+        entry.setX(entry.getBuffer().get(entry.maxNbLine()).size());
+        entry.setY(entry.maxNbLine());
+
+        metrics.currX = entry.posX();
+        metrics.currY = TermAttributes.screenPosY(entry.posY());
+
+        DisplayController.moveEnd(metrics);
     }
 
     public static final void stop() {

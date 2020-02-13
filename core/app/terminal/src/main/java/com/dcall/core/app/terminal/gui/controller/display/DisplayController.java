@@ -33,9 +33,9 @@ public final class DisplayController {
         try {
             LOG.debug("character : " + character);
 
-            CursorController.moveAfter(metrics);
-
             TextDrawer.drawString(metrics, character);
+
+            CursorController.moveAfter(metrics);
 
             ScreenController.refresh();
         }
@@ -58,6 +58,16 @@ public final class DisplayController {
 
         CursorController.moveAt(metrics);
 
+        ScreenController.refresh();
+    }
+
+    public static void moveStart(final ScreenMetrics metrics) {
+        CursorController.moveAt(metrics);
+        ScreenController.refresh();
+    }
+
+    public static void moveEnd(final ScreenMetrics metrics) {
+        CursorController.moveAt(metrics);
         ScreenController.refresh();
     }
 
