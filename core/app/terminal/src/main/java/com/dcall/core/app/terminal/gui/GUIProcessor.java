@@ -6,7 +6,7 @@ import com.dcall.core.app.terminal.gui.controller.keyboard.KeyboardController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.bus.handler.IOHandler;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
-import com.dcall.core.app.terminal.gui.service.DisplayProvider;
+import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
 import org.slf4j.Logger;
@@ -31,9 +31,9 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         terminal = ScreenController.getTerminal();
         screen = ScreenController.getScreen();
 
-        KeyboardController.init(terminal);
+        KeyboardController.init(terminal, bus);
         CursorController.init(screen);
-        DisplayProvider.init(ScreenController.metrics());
+        DisplayController.init(ScreenController.metrics());
     }
 
     public static void prompt(final boolean firstTime, final ScreenMetrics metrics) {
@@ -42,13 +42,13 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
 
         if (metrics.currY != metrics.maxHeight)
             metrics.currY++;
-//        else
-//            scrollUp(TermAttributes.SCROLL_PADDING_UP);
-        bus.input().addEntry(TermAttributes.PROMPT);
+        else
+            DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
+        
+        bus.input().addEntry(TermAttributes.PROMPT + ' ');
 
-        DisplayProvider.displayPrompt(metrics);
+        DisplayController.displayPrompt(metrics);
 
-        ScreenController.refresh();
     }
 
     public static final void flush() {
@@ -61,11 +61,12 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
     }
 
     public static final void loop() {
+
         GUIProcessor.prompt(true, ScreenController.metrics());
+
         while (ScreenController.isUp()) {
 //            screen.doResizeIfNecessary();
             KeyboardController.handleKeyboard();
-            GUIProcessor.flush();
         }
 
         GUIProcessor.close();

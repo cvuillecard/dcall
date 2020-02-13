@@ -3,14 +3,18 @@ package com.dcall.core.app.terminal.gui.service.drawer;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
+import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.graphics.TextGraphics;
 
 public final class TextDrawer {
+
     public static void drawHeader(final int width) {
-        ScreenController.getScreen().newTextGraphics().drawLine(0, 0, width, 0, new TextCharacter(' ')
+        TextDrawer.textGraphics().drawLine(0, 0, width, 0, new TextCharacter(' ')
                 .withBackgroundColor(TermAttributes.HEADER_BACKGROUND));
-        ScreenController.getScreen().newTextGraphics()
+
+        TextDrawer.textGraphics()
                 .setBackgroundColor(TermAttributes.HEADER_BACKGROUND)
                 .setForegroundColor(TermAttributes.HEADER_FOREGROUND)
                 .putString((width / 2) - (TermAttributes.HEADER_TITLE.length() / 2), 0,
@@ -18,11 +22,30 @@ public final class TextDrawer {
     }
 
     public static void drawPrompt(final ScreenMetrics metrics) {
-        ScreenController.getScreen().newTextGraphics().drawLine(0, metrics.currY, TermAttributes.PROMPT.length(), metrics.currY, new TextCharacter(' ')
+        TextDrawer.textGraphics().drawLine(0, metrics.currY, TermAttributes.PROMPT.length(), metrics.currY, new TextCharacter(' ')
                 .withBackgroundColor(TermAttributes.PROMPT_BACKGROUND));
-        ScreenController.getScreen().newTextGraphics()
+
+        TextDrawer.promptTextGraphics().putString(0, metrics.currY, TermAttributes.PROMPT, SGR.BOLD);
+    }
+
+    public static void drawCharacter(final ScreenMetrics metrics, final String character) {
+        TextDrawer.inputTextGraphics().putString(DisplayController.moveX(metrics), metrics.currY, character, SGR.BOLD);
+    }
+
+    // UTILS
+    private static final TextGraphics textGraphics() {
+        return  ScreenController.getScreen().newTextGraphics();
+    }
+
+    private static final TextGraphics inputTextGraphics() {
+        return ScreenController.getScreen().newTextGraphics()
+                .setBackgroundColor(TermAttributes.INPUT_BACKGROUND)
+                .setForegroundColor(TermAttributes.INPUT_FOREGROUND);
+    }
+
+    private static final TextGraphics promptTextGraphics() {
+        return ScreenController.getScreen().newTextGraphics()
                 .setBackgroundColor(TermAttributes.PROMPT_BACKGROUND)
-                .setForegroundColor(TermAttributes.PROMPT_FOREGROUND)
-                .putString(0, metrics.currY, TermAttributes.PROMPT, SGR.BOLD);
+                .setForegroundColor(TermAttributes.PROMPT_FOREGROUND);
     }
 }

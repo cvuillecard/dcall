@@ -207,7 +207,7 @@ public class InputEntryTest {
         Assert.assertEquals(0, entry.posY());
         Assert.assertEquals(1, entry.nbLine());
 
-        // when : trying to move out of buffer range
+        // when : trying to moveAt out of buffer range
         entry.moveAfterX(1);
 
         // then : check point must be the result
@@ -241,7 +241,7 @@ public class InputEntryTest {
         Assert.assertEquals(1, entry.nbLine());
         Assert.assertEquals(5, entry.getBuffer().get(entry.posY()).size());
 
-        // when : trying to move in line
+        // when : trying to moveAt in line
         entry.moveAfterX(1);
 
         // then : expected -> X = 1 and Y = 0
@@ -265,7 +265,7 @@ public class InputEntryTest {
         Assert.assertEquals(0, entry.posY());
         Assert.assertEquals(1, entry.nbLine());
 
-        // when : trying to move out of line bounds
+        // when : trying to moveAt out of line bounds
         entry.moveAfterX(1);
 
         // then : we are already on the next position entry in line
@@ -298,7 +298,7 @@ public class InputEntryTest {
         Assert.assertEquals(0, entry.posY());
         Assert.assertEquals(totalnbLines, entry.nbLine());
 
-        // when : trying to move at last element of line bounds
+        // when : trying to moveAt at last element of line bounds
         entry.moveAfterX(TermAttributes.getMaxLineWidth());
 
         // then : We must be on the last element idx of current line
@@ -306,7 +306,7 @@ public class InputEntryTest {
         Assert.assertEquals(0, entry.posY());
         Assert.assertEquals(totalnbLines, entry.nbLine());
 
-        // when : trying to move on the 5th element of next line
+        // when : trying to moveAt on the 5th element of next line
         entry.moveAfterX(5);
 
         // then : we must be at the 5th element idx(=4) of next line
@@ -314,7 +314,7 @@ public class InputEntryTest {
         Assert.assertEquals(1, entry.posY());
         Assert.assertEquals(totalnbLines, entry.nbLine());
 
-        // when : trying to move out of entry buffer bounds
+        // when : trying to moveAt out of entry buffer bounds
         entry.moveAfterX(totalLength);
 
         // then : we must be on the next element of last line
@@ -399,7 +399,7 @@ public class InputEntryTest {
         Assert.assertEquals(0, entry.posY());
         Assert.assertEquals(1, entry.nbLine());
 
-        // when : trying to move before first element of first line (out of bounds)
+        // when : trying to moveAt before first element of first line (out of bounds)
         entry.moveBeforeX(-1);
 
         // then : we are already on the first position entry in line
@@ -430,7 +430,7 @@ public class InputEntryTest {
         Assert.assertEquals(entry.maxNbLine(), entry.posY());
         Assert.assertEquals(totalnbLines, entry.nbLine());
 
-        // when : trying to move at last element of line bounds
+        // when : trying to moveAt at last element of line bounds
         entry.moveBeforeX(rest * -1);
 
         // then : We must be on the first element idx of current line (is also the last line)
@@ -439,14 +439,14 @@ public class InputEntryTest {
         Assert.assertEquals(totalnbLines - 1, entry.posY());
         Assert.assertEquals(entry.maxNbLine(), entry.posY());
 
-        // when : trying to move on the 5th element of previous line from its EOL
+        // when : trying to moveAt on the 5th element of previous line from its EOL
         entry.moveBeforeX(-5);
 
         // then : we must be at the 5th element from EOL on previous line
         Assert.assertEquals(TermAttributes.getMaxLineWidth() - 5, entry.posX());
         Assert.assertEquals(nbLines - 1, entry.posY());
 
-        // when : trying to move out of entry buffer bounds
+        // when : trying to moveAt out of entry buffer bounds
         entry.moveBeforeX(totalLength * -1);
 
         // then : we must be on the first line's first element
@@ -479,7 +479,7 @@ public class InputEntryTest {
         Assert.assertEquals(0, entry.posY());
         Assert.assertEquals(totalnbLines, entry.nbLine());
 
-        // when : trying to move at last element of line bounds
+        // when : trying to moveAt at last element of line bounds
         entry.moveX(TermAttributes.getMaxLineWidth());
 
         // then : We must be on the last element idx of current line
@@ -487,7 +487,7 @@ public class InputEntryTest {
         Assert.assertEquals(0, entry.posY());
         Assert.assertEquals(totalnbLines, entry.nbLine());
 
-        // when : trying to move on the 5th element of next line
+        // when : trying to moveAt on the 5th element of next line
         entry.moveX(5);
 
         // then : we must be at the 5th element idx(=4) of next line
@@ -495,7 +495,7 @@ public class InputEntryTest {
         Assert.assertEquals(1, entry.posY());
         Assert.assertEquals(totalnbLines, entry.nbLine());
 
-        // when : trying to move out of entry buffer bounds
+        // when : trying to moveAt out of entry buffer bounds
         entry.moveX(totalLength);
 
         // then : we must be on the next element of last line
@@ -527,7 +527,7 @@ public class InputEntryTest {
         Assert.assertEquals(entry.maxNbLine(), entry.posY());
         Assert.assertEquals(totalnbLines, entry.nbLine());
 
-        // when : trying to move at last element of line bounds
+        // when : trying to moveAt at last element of line bounds
         entry.moveX(rest * -1);
 
         // then : We must be on the first element idx of current line (is also the last line)
@@ -536,14 +536,14 @@ public class InputEntryTest {
         Assert.assertEquals(totalnbLines - 1, entry.posY());
         Assert.assertEquals(entry.maxNbLine(), entry.posY());
 
-        // when : trying to move on the 5th element of previous line from its EOL
+        // when : trying to moveAt on the 5th element of previous line from its EOL
         entry.moveX(-5);
 
         // then : we must be at the 5th element from EOL on previous line
         Assert.assertEquals(TermAttributes.getMaxLineWidth() - 5, entry.posX());
         Assert.assertEquals(nbLines - 1, entry.posY());
 
-        // when : trying to move out of entry buffer bounds
+        // when : trying to moveAt out of entry buffer bounds
         entry.moveX(totalLength * -1);
 
         // then : we must be on the first line's first element
@@ -573,7 +573,7 @@ public class InputEntryTest {
         Assert.assertEquals(entry.maxNbLine(), entry.posY());
         Assert.assertEquals(totalnbLines, entry.nbLine());
 
-        // when : trying to move at last element of line bounds
+        // when : trying to moveAt at last element of line bounds
         entry.moveX(rest * -1);
 
         // then : We must be on the first element idx of current line (is also the last line)
@@ -582,7 +582,7 @@ public class InputEntryTest {
         Assert.assertEquals(totalnbLines - 1, entry.posY());
         Assert.assertEquals(entry.maxNbLine(), entry.posY());
 
-        // when : trying to move on the 5th element of previous line from its EOL
+        // when : trying to moveAt on the 5th element of previous line from its EOL
         entry.moveX(-5);
 
         // then : we must be at the 5th element from EOL on previous line
@@ -596,21 +596,21 @@ public class InputEntryTest {
         Assert.assertEquals(rest - 1, entry.posX());
         Assert.assertEquals(nbLines, entry.posY());
 
-        // when : trying to move at next idx element entry on last line
+        // when : trying to moveAt at next idx element entry on last line
         entry.moveX(1);
 
         // then : We must be at the end of last line on idx next entry
         Assert.assertEquals(rest, entry.posX());
         Assert.assertEquals(nbLines, entry.posY());
 
-        // when : trying to move out of bounds before first line
+        // when : trying to moveAt out of bounds before first line
         entry.moveX(totalLength * -1);
 
         // then : we must be on the first line's idx
         Assert.assertEquals(0, entry.posX());
         Assert.assertEquals(0, entry.posY());
 
-        // when : trying to move out of bounds after last line
+        // when : trying to moveAt out of bounds after last line
         entry.moveX(totalLength);
 
         // then : we must be on the first line's idx
@@ -656,14 +656,14 @@ public class InputEntryTest {
         Assert.assertEquals(totalnbLines - 1, entry.posY());
         Assert.assertEquals(nbLines, entry.posY());
 
-        // when : We want to move 2 lines before the last line (current line = posY())
+        // when : We want to moveAt 2 lines before the last line (current line = posY())
         entry.moveY(-2);
 
         // then : expected - posY() = 1 ->  is the line 2
         Assert.assertEquals(totalnbLines - 3, entry.posY());
         Assert.assertEquals(entry.maxNbLine() - 2, entry.posY());
 
-        // when : We want to move 1 line after current line
+        // when : We want to moveAt 1 line after current line
         entry.moveY(1);
 
         // then : expected - posY() = 2 -> posY must be at line 3 (1 line from last line)

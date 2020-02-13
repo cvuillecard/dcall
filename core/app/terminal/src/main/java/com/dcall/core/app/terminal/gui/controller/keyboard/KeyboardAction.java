@@ -1,6 +1,5 @@
 package com.dcall.core.app.terminal.gui.controller.keyboard;
 
-import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.googlecode.lanterna.input.KeyType;
 
 public enum KeyboardAction {
@@ -10,19 +9,19 @@ public enum KeyboardAction {
     MOVE_LEFT(KeyType.ArrowLeft, TypeAction.MOVE, null, null),
     CTRL_MOVE_RIGHT(KeyType.ArrowRight, TypeAction.CTRL, null, null),
     CTRL_MOVE_LEFT(KeyType.ArrowLeft, TypeAction.CTRL, null, null),
-    CTRL_MOVE_START(KeyType.Character, TypeAction.CTRL, null, null),
-    CTRL_MOVE_END(KeyType.Character, TypeAction.CTRL, null, null),
-    CTRL_CUT(KeyType.Character, TypeAction.CTRL, null, null),
-    CTRL_PASTE(KeyType.Character, TypeAction.CTRL, null, null),
+    CTRL_MOVE_START(KeyType.Character, TypeAction.CTRL, "A", null),
+    CTRL_MOVE_END(KeyType.Character, TypeAction.CTRL, "E", null),
+    CTRL_CUT(KeyType.Character, TypeAction.CTRL, "K", null),
+    CTRL_PASTE(KeyType.Character, TypeAction.CTRL, "Y", null),
     CTRL_CLEAR_SCREEN(KeyType.Character, TypeAction.CTRL, "L", null),
-    CTRL_EXIT(KeyType.Character, TypeAction.CTRL, "C", ScreenController::stop),
+    CTRL_EXIT(KeyType.Character, TypeAction.CTRL, "C", KeyboardController::stop),
     SCROLL_UP(KeyType.ArrowUp, TypeAction.SCROLL, null, null),
     SCROLL_DOWN(KeyType.ArrowDown, TypeAction.SCROLL, null, null),
     SCROLL_TOP(KeyType.PageUp, TypeAction.SCROLL, null, null),
     SCROLL_BOTTOM(KeyType.PageDown, TypeAction.SCROLL, null, null),
     SHIFT_SELECT_RIGHT(KeyType.ArrowRight, TypeAction.SELECT, null, null),
     SHIFT_SELECT_LEFT(KeyType.ArrowLeft, TypeAction.SELECT, null, null),
-    ADD(KeyType.Character, TypeAction.ADD, null, null),
+    ADD(KeyType.Character, TypeAction.ADD, null, KeyboardController::handleCharacter),
     DELETE(KeyType.Backspace, TypeAction.DELETE, null, null),
     ENTER(KeyType.Enter, TypeAction.ENTER, null, null);
 
