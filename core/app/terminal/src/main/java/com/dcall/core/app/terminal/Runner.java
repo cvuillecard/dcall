@@ -1,6 +1,5 @@
 package com.dcall.core.app.terminal;
 
-import com.dcall.core.app.terminal.controller.gui.TerminalUI;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
@@ -18,7 +17,7 @@ public class Runner {
 
     public static void main(final String[] args) {
         LOG.info("Running Lanterna test");
-        TerminalApp.start();
+        TerminalApp.run();
 //        TerminalUI.start();
 //        initTerminal();
     }
