@@ -26,15 +26,30 @@ public final class CursorController {
         LOG.info(" cursor X = " + metrics.currX);
         LOG.info(" cursor Y = " + metrics.currY);
 
-        if (metrics.currX == metrics.maxWidth && metrics.currY == metrics.maxHeight)
-            DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
-
         if (metrics.currX == metrics.maxWidth) {
-            metrics.currX = 1;
-            metrics.currY += (metrics.currY == metrics.maxHeight ? 0 : 1);
+            if (metrics.currY == metrics.maxHeight)
+                DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
+            else {
+                metrics.currX = 1;
+                metrics.currY += (metrics.currY == metrics.maxHeight ? 0 : 1);
+            }
         }
 
         CursorController.screen.setCursorPosition(new TerminalPosition(metrics.currX + 1, metrics.currY));
-        CursorController.screen.refresh();
+    }
+
+    public static final void moveBefore(final ScreenMetrics metrics) {
+        LOG.info(" cursor X = " + metrics.currX);
+        LOG.info(" cursor Y = " + metrics.currY);
+
+        if (metrics.currX == metrics.minWidth) {
+            metrics.currX = metrics.maxWidth;
+            metrics.currY--;
+        }
+        else
+            metrics.currX--;
+
+
+        CursorController.moveAt(metrics);
     }
 }

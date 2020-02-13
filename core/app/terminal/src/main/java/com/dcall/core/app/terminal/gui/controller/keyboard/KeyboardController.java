@@ -1,8 +1,10 @@
 package com.dcall.core.app.terminal.gui.controller.keyboard;
 
 import com.dcall.core.app.terminal.bus.handler.IOHandler;
+import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
+import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.Terminal;
 import org.slf4j.Logger;
@@ -74,8 +76,20 @@ public final class KeyboardController {
 
     public static final void handleCharacter() {
         final String character = keyPressed.getCharacter().toString();
+
         bus.input().current().add(character);
+
         DisplayController.displayCharacter(ScreenController.metrics(), character);
+    }
+
+    public static final void deleteCharacter() {
+        final int posX = bus.input().current().posX();
+        final int posY = bus.input().current().posY();
+
+        if (posY > 0 || (posY == 0 && posX > (TermAttributes.PROMPT.length() + 1))) {
+            bus.input().current().remove();
+            DisplayController.deleteCharacter(ScreenController.metrics());
+        }
     }
 
     public static final void stop() {

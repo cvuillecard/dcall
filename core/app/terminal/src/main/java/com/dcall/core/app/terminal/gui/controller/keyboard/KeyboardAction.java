@@ -22,7 +22,7 @@ public enum KeyboardAction {
     SHIFT_SELECT_RIGHT(KeyType.ArrowRight, TypeAction.SELECT, null, null),
     SHIFT_SELECT_LEFT(KeyType.ArrowLeft, TypeAction.SELECT, null, null),
     ADD(KeyType.Character, TypeAction.ADD, null, KeyboardController::handleCharacter),
-    DELETE(KeyType.Backspace, TypeAction.DELETE, null, null),
+    DELETE(KeyType.Backspace, TypeAction.DELETE, null, KeyboardController::deleteCharacter),
     ENTER(KeyType.Enter, TypeAction.ENTER, null, null);
 
     private KeyType keyType;

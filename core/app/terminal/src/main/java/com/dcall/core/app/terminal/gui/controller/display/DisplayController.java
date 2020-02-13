@@ -5,6 +5,7 @@ import com.dcall.core.app.terminal.gui.controller.cursor.CursorController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.service.drawer.TextDrawer;
+import com.googlecode.lanterna.TerminalPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public final class DisplayController {
 
             CursorController.moveAfter(metrics);
 
-            TextDrawer.drawCharacter(metrics, character);
+            TextDrawer.drawString(metrics, character);
 
             ScreenController.refresh();
         }
@@ -43,7 +44,24 @@ public final class DisplayController {
         }
     }
 
-    public static final int moveX(final ScreenMetrics metrics) {
+    public static void deleteCharacter(final ScreenMetrics metrics) {
+        final int newX = metrics.currX - 1;
+
+        if (metrics.currX == metrics.minWidth) {
+            metrics.currX = metrics.maxWidth - TermAttributes.MARGIN_RIGHT;
+            metrics.currY--;
+        }
+        else
+            metrics.currX--;
+
+        TextDrawer.drawCharacter(metrics, ' ');
+
+        CursorController.moveAt(metrics);
+
+        ScreenController.refresh();
+    }
+
+    public static final int moveAfterX(final ScreenMetrics metrics) {
         try {
             if (metrics.currX + 1 == ScreenController.getTerminal().getTerminalSize().getColumns()) {
                 metrics.currY += 1;

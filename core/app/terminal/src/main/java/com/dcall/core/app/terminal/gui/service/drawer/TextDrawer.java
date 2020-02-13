@@ -5,6 +5,7 @@ import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.graphics.TextGraphics;
 
@@ -28,8 +29,12 @@ public final class TextDrawer {
         TextDrawer.promptTextGraphics().putString(0, metrics.currY, TermAttributes.PROMPT, SGR.BOLD);
     }
 
-    public static void drawCharacter(final ScreenMetrics metrics, final String character) {
-        TextDrawer.inputTextGraphics().putString(DisplayController.moveX(metrics), metrics.currY, character, SGR.BOLD);
+    public static void drawString(final ScreenMetrics metrics, final String character) {
+        TextDrawer.inputTextGraphics().putString(DisplayController.moveAfterX(metrics), metrics.currY, character, SGR.BOLD);
+    }
+
+    public static void drawCharacter(final ScreenMetrics metrics, final char c) {
+        TextDrawer.textGraphics().setCharacter(new TerminalPosition(metrics.currX, metrics.currY), c);
     }
 
     // UTILS

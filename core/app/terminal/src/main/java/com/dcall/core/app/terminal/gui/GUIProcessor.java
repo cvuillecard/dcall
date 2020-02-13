@@ -44,11 +44,10 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
             metrics.currY++;
         else
             DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
-        
+
         bus.input().addEntry(TermAttributes.PROMPT + ' ');
 
         DisplayController.displayPrompt(metrics);
-
     }
 
     public static final void flush() {
