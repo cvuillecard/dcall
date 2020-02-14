@@ -99,6 +99,8 @@ public class InputEntryTest {
         Assert.assertNotEquals(entry.posY(), entry.maxNbLine());
         Assert.assertEquals(nbLines, entry.maxNbLine());
         Assert.assertEquals(totalLines, entry.nbLine());
+
+        Assert.assertEquals(finalString, entry.toString());
     }
 
     /** InputEntry::add() + nbLine() + maxNbLine() **/
