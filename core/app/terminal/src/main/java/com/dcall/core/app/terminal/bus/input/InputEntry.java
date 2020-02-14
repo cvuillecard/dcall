@@ -164,7 +164,7 @@ public class InputEntry<T> {
     // UTILS
     public int nbLine() { return this.buffer.size(); }
     public int maxNbLine() { return this.nbLine() - 1; }
-    public boolean isValidPosition() { return this.x >= 0 && this.y <= maxNbLine() && x <= buffer.get(y).size(); }
+    public boolean isValidPosition() { return this.x >= 0 && this.y <= maxNbLine() && this.y >= 0 && x <= buffer.get(y).size(); }
     public boolean isAppend() { return y == maxNbLine() && x == buffer.get(y).size(); }
     public int totalSize() { return this.buffer.stream().mapToInt(b -> b.getBuffer().size()).sum(); }
     private int currLineSize() {   return buffer.get(y).size(); }

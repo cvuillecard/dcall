@@ -85,6 +85,20 @@ public class InputEntryTest {
         Assert.assertNotEquals(entry.posY(), entry.maxNbLine());
         Assert.assertEquals(nbLines, entry.maxNbLine());
         Assert.assertEquals(totalLines, entry.nbLine());
+
+        // when : set Y out of bounds
+        entry.setX(0);
+        entry.setY(-1);
+
+        addtoEntry(s3);
+
+        // then : nothing append
+        Assert.assertFalse(entry.isAppend());
+        Assert.assertFalse(entry.isValidPosition());
+        Assert.assertNotEquals(entry.posX(), entry.getBuffer().get(entry.maxNbLine()).size());
+        Assert.assertNotEquals(entry.posY(), entry.maxNbLine());
+        Assert.assertEquals(nbLines, entry.maxNbLine());
+        Assert.assertEquals(totalLines, entry.nbLine());
     }
 
     /** InputEntry::add() + nbLine() + maxNbLine() **/
