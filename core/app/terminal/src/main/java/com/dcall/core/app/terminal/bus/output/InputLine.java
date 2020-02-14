@@ -9,7 +9,7 @@ public class InputLine<T> {
     private List<T> buffer;
 
     public InputLine() {
-        this.buffer = new ArrayList<>(TermAttributes.getMaxLineWidth() + 1);
+        this.buffer = new ArrayList<>(TermAttributes.getTotalLineWidth());
     }
 
     public InputLine add(final T e) {
