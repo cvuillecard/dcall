@@ -59,7 +59,7 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         }
     }
 
-    public static void loop() {
+    private static void loop() {
 
         GUIProcessor.prompt(true, ScreenController.metrics());
 
