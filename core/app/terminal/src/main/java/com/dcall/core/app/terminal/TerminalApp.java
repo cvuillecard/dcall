@@ -9,7 +9,6 @@ public final class TerminalApp {
 
     public static void run() {
         GUIProcessor.start();
-        GUIProcessor.loop();
 
         LOG.debug("killed..");
     }
