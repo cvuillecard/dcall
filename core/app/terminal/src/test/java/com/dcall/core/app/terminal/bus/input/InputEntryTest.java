@@ -39,6 +39,8 @@ public class InputEntryTest {
         addtoEntry(s3);
 
         // state
+        Assert.assertTrue(entry.isValidPosition());
+        Assert.assertTrue(entry.isAppend());
         Assert.assertEquals(entry.posX(), entry.getBuffer().get(entry.maxNbLine()).size());
         Assert.assertEquals(entry.posY(), entry.maxNbLine());
         Assert.assertEquals(nbLines, entry.maxNbLine());
