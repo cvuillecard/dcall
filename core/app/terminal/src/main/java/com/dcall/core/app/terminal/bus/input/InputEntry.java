@@ -84,7 +84,7 @@ public class InputEntry<T> {
     }
 
     public InputEntry remove() {
-        if (isValidPosition() && y >= 0) {
+        if (isValidPosition()) {
             final int newX = x - 1;
             final int newY = y - 1;
 
