@@ -40,21 +40,19 @@ public final class KeyboardController {
         lock = false;
         if (keyPressed != null) {
             Stream.of(KeyboardAction.values())
-                    .filter(k -> k.getKeyType().equals(KeyboardController.keyPressed.getKeyType()))
+                    .filter(k -> !lock && k.getKeyType().equals(KeyboardController.keyPressed.getKeyType()))
                     .forEach(KeyboardController::handleKeys);
         }
     }
 
     private static void handleKeys(final KeyboardAction action) {
-        if (!lock) {
-            switch (action.getTypeAction()) {
-                case CTRL:
-                    KeyboardController.handleCTRLKey(action);
-                    break;
-                default:
-                    KeyboardController.runAction(action);
-                    break;
-            }
+        switch (action.getTypeAction()) {
+            case CTRL:
+                KeyboardController.handleCTRLKey(action);
+                break;
+            default:
+                KeyboardController.runAction(action);
+                break;
         }
     }
 
