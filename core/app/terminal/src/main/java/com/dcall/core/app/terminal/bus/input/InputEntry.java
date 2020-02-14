@@ -5,7 +5,6 @@ import com.dcall.core.app.terminal.bus.output.InputLine;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class InputEntry<T> {
     private List<InputLine<T>> buffer = null;
@@ -24,7 +23,7 @@ public class InputEntry<T> {
     }
 
     public InputEntry add(final T e) {
-        if (x >= 0) {
+        if (x >= 0 && isValidPosition()) {
             if (isAppend()) {
                 final int lineSize = currLineSize() + 1;
 
@@ -44,7 +43,7 @@ public class InputEntry<T> {
     }
 
     public InputEntry insert(final T e) {
-        if (!isAppend()) {
+        if (!isAppend() && isValidPosition()) {
             final int newTotalSize = totalSize() + 1;
             final int newTotalNbLines = (newTotalSize / TermAttributes.getTotalLineWidth())
                     + ((newTotalSize % TermAttributes.getTotalLineWidth()) > 0 ? 1 : 0);
@@ -68,7 +67,7 @@ public class InputEntry<T> {
                 line.remove(endLineIdx);
                 buffer.get(nextY).addAt(0, lastLineElem);
 
-                for (int i = y; i < nbLine(); i++) {
+                for (int i = nextY; i < nbLine(); i++) {
                     if (buffer.get(i).size() > TermAttributes.getTotalLineWidth()) {
                         final int lastIdx = buffer.get(i).size() - 1;
                         final T lastElem = buffer.get(i).getBuffer().get(lastIdx);
@@ -166,7 +165,7 @@ public class InputEntry<T> {
     public int nbLine() { return this.buffer.size(); }
     public int maxNbLine() { return this.nbLine() - 1; }
     public boolean isValidPosition() { return this.x >= 0 && this.y <= maxNbLine(); }
-    private boolean isAppend() { return x == buffer.get(y).size() && y == maxNbLine(); }
+    public boolean isAppend() { return y == maxNbLine() && x == buffer.get(y).size(); }
     public int totalSize() { return this.buffer.stream().mapToInt(b -> b.getBuffer().size()).sum(); }
     private int currLineSize() {   return buffer.get(y).size(); }
 

@@ -25,6 +25,54 @@ public class InputEntryTest {
         for (int i = 0; i < in.length; i++) entry.add(String.valueOf(in[i]));
     }
 
+    /** InputEntry::isAppend() + isValidPosition() **/
+    @Test
+    public void should_return_false_if_not_in_bounds_or_true_if_in_bounds_isAppend_with_isValidPosition() {
+        final String finalString = String.valueOf(s1) + String.valueOf(s2) + String.valueOf(s3);
+        int nbLines = finalString.length() / TermAttributes.getTotalLineWidth();
+        int rest = finalString.length() % TermAttributes.getTotalLineWidth();
+        int totalLines = nbLines + (rest > 0 ? 1 : 0);
+
+        // init
+        addtoEntry(s1);
+        addtoEntry(s2);
+        addtoEntry(s3);
+
+        // state
+        Assert.assertEquals(entry.posX(), entry.getBuffer().get(entry.maxNbLine()).size());
+        Assert.assertEquals(entry.posY(), entry.maxNbLine());
+        Assert.assertEquals(nbLines, entry.maxNbLine());
+        Assert.assertEquals(totalLines, entry.nbLine());
+
+        // when : set X out of bounds
+        entry.setX(-1);
+        entry.setY(0);
+
+        addtoEntry(s3);
+
+        // then : nothing append
+        Assert.assertFalse(entry.isAppend());
+        Assert.assertFalse(entry.isValidPosition());
+        Assert.assertNotEquals(entry.posX(), entry.getBuffer().get(entry.maxNbLine()).size());
+        Assert.assertNotEquals(entry.posY(), entry.maxNbLine());
+        Assert.assertEquals(nbLines, entry.maxNbLine());
+        Assert.assertEquals(totalLines, entry.nbLine());
+
+        // when : set Y out of bounds
+        entry.setX(0);
+        entry.setY(totalLines + 1);
+
+        addtoEntry(s3);
+
+        // then : nothing append
+        Assert.assertFalse(entry.isAppend());
+        Assert.assertFalse(entry.isValidPosition());
+        Assert.assertNotEquals(entry.posX(), entry.getBuffer().get(entry.maxNbLine()).size());
+        Assert.assertNotEquals(entry.posY(), entry.maxNbLine());
+        Assert.assertEquals(nbLines, entry.maxNbLine());
+        Assert.assertEquals(totalLines, entry.nbLine());
+    }
+
     /** InputEntry::add() + nbLine() + maxNbLine() **/
     @Test
     public void should_init_with_non_empty_buffer_add_nbLine_maxNbLine() {
@@ -94,16 +142,21 @@ public class InputEntryTest {
     public void should_insert_element_keeping_size_of_other_line_buffer_add() {
         final String superStr = "<< oups ! une phrase s'est glissee, et en plus c'est du francais ! youpi ! >>";
         final String baseStr = String.valueOf(s1) + String.valueOf(s2) + String.valueOf(s3);
-        final String newStr = String.valueOf(s1) + superStr + String.valueOf(s2) + String.valueOf(s3);
-        final int randIdx = String.valueOf(s1).length();
+        final String newStrBetween = String.valueOf(s1) + superStr + String.valueOf(s2) + String.valueOf(s3);
+        final String newStrAtEnd = newStrBetween + superStr;
+        final int idxAfterS1Length = String.valueOf(s1).length();
 
         final int nbLinesBeforeInsert = baseStr.length() / TermAttributes.getTotalLineWidth();
         final int restBeforeInsert = baseStr.length() % TermAttributes.getTotalLineWidth();
         final int totalNbLinesBeforeInsert = nbLinesBeforeInsert + (restBeforeInsert > 0 ? 1 : 0);
 
-        final int nbLinesAfterInsert = newStr.length() / TermAttributes.getTotalLineWidth();
-        final int restAfterInsert = newStr.length() % TermAttributes.getTotalLineWidth();
+        final int nbLinesAfterInsert = newStrBetween.length() / TermAttributes.getTotalLineWidth();
+        final int restAfterInsert = newStrBetween.length() % TermAttributes.getTotalLineWidth();
         final int totalNbLinesAfterInsert = nbLinesAfterInsert + (restAfterInsert > 0 ? 1 : 0);
+
+        final int nbLinesAfterInsert2 = newStrAtEnd.length() / TermAttributes.getTotalLineWidth();
+        final int restAfterInsert2 = newStrAtEnd.length() % TermAttributes.getTotalLineWidth();
+        final int totalNbLinesAfterInsert2 = nbLinesAfterInsert2 + (restAfterInsert2 > 0 ? 1 : 0);
 
         // init
         addtoEntry(s1);
@@ -113,10 +166,12 @@ public class InputEntryTest {
         // state
         Assert.assertEquals(nbLinesBeforeInsert, entry.maxNbLine());
         Assert.assertEquals(totalNbLinesBeforeInsert, entry.nbLine());
+        Assert.assertEquals(baseStr, entry.toString());
 
         // when : we set posX at s1.length() (only for this test, cause we know s1.length() < getMaxLineWidth())
-        entry.setX(randIdx);
+        entry.setX(idxAfterS1Length);
         entry.setY(0);
+
 
         addtoEntry(superStr.toCharArray());
 
@@ -129,7 +184,24 @@ public class InputEntryTest {
         IntStream.range(0, entry.maxNbLine()).forEach(y ->
                 Assert.assertEquals(TermAttributes.getTotalLineWidth(), entry.getBuffer().get(y).size()));
 
-        Assert.assertEquals(newStr, entry.toString());
+        Assert.assertEquals(newStrBetween, entry.toString());
+
+        // when : we try to insert at last line entry's idx to see if insert() acts like add when append another string
+        entry.setX(entry.getBuffer().get(entry.maxNbLine()).size());
+        entry.setY(entry.maxNbLine());
+
+        addtoEntry(superStr.toCharArray());
+
+        // then : we must have previous added string in line and the same new string at end of buffer entry
+        Assert.assertEquals(nbLinesAfterInsert2, entry.maxNbLine());
+        Assert.assertEquals(totalNbLinesAfterInsert2, entry.nbLine());
+
+        // then : max line buffer size must have been keeped (and the same) for each buffer line
+        // before (getTotalLineWidth - 1) according getMaxLineWidth()
+        IntStream.range(0, entry.maxNbLine()).forEach(y ->
+                Assert.assertEquals(TermAttributes.getTotalLineWidth(), entry.getBuffer().get(y).size()));
+
+        Assert.assertEquals(newStrAtEnd, entry.toString());
     }
 
     /** InputEntry::remove() **/
