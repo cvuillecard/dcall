@@ -5,7 +5,6 @@ import com.dcall.core.app.terminal.gui.controller.cursor.CursorController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.service.drawer.TextDrawer;
-import com.googlecode.lanterna.TerminalPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +13,7 @@ import java.io.IOException;
 public final class DisplayController {
     private static final Logger LOG = LoggerFactory.getLogger(DisplayController.class);
 
-    public static final void init(final ScreenMetrics metrics) {
+    public static void init(final ScreenMetrics metrics) {
         TextDrawer.drawHeader(metrics.width);
         metrics.currX++;
     }
@@ -30,22 +29,16 @@ public final class DisplayController {
     }
 
     public static void displayCharacter(final ScreenMetrics metrics, final String character) {
-        try {
-            LOG.debug("character : " + character);
+        LOG.debug("character : " + character);
 
-            TextDrawer.drawString(metrics, character);
+        TextDrawer.drawString(metrics, character);
 
-            CursorController.moveAfter(metrics);
+        CursorController.moveAfter(metrics);
 
-            ScreenController.refresh();
-        }
-        catch (IOException e) {
-            LOG.error(DisplayController.class.getName() + " > ERROR < " + e.getMessage());
-        }
+        ScreenController.refresh();
     }
 
     public static void deleteCharacter(final ScreenMetrics metrics) {
-        final int newX = metrics.currX - 1;
 
         if (metrics.currX == metrics.minWidth) {
             metrics.currX = metrics.maxWidth - TermAttributes.MARGIN_RIGHT;
@@ -55,9 +48,7 @@ public final class DisplayController {
             metrics.currX--;
 
         TextDrawer.drawCharacter(metrics, ' ');
-
         CursorController.moveAt(metrics);
-
         ScreenController.refresh();
     }
 
@@ -71,7 +62,7 @@ public final class DisplayController {
         ScreenController.refresh();
     }
 
-    public static final int moveAfterX(final ScreenMetrics metrics) {
+    public static int moveAfterX(final ScreenMetrics metrics) {
         try {
             if (metrics.currX + 1 == ScreenController.getTerminal().getTerminalSize().getColumns()) {
                 metrics.currY += 1;

@@ -7,8 +7,10 @@ import org.slf4j.LoggerFactory;
 public final class TerminalApp {
     private static final Logger LOG = LoggerFactory.getLogger(TerminalApp.class);
 
-    public static final void run() {
+    public static void run() {
         GUIProcessor.start();
         GUIProcessor.loop();
+
+        LOG.debug("killed..");
     }
 }

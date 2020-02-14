@@ -42,27 +42,27 @@ public class TermAttributes {
     public static final int SCROLL_PADDING_DOWN = -1;
 
     // UTILS
-    public static final int getMaxLineWidth() {
+    public static int getMaxLineWidth() {
         return getTotalLineWidth() - 1;
     }
 
-    public static final int getTotalLineWidth() {
+    public static int getTotalLineWidth() {
         return FRAME_NB_COLS - getMarginWidth();
     }
 
-    public static final int getMarginWidth() {
+    public static int getMarginWidth() {
         return MARGIN_LEFT + MARGIN_RIGHT;
     }
 
-    public static final int screenPosX(final int x) {
+    public static int screenPosX(final int x) {
         return MARGIN + x;
     }
 
-    public static final int screenPosY(final int y) {
+    public static int screenPosY(final int y) {
         return MARGIN_TOP + y;
     }
 
-    public static final int getPromptStartIdx() {
+    public static int getPromptStartIdx() {
         return TermAttributes.PROMPT.length() + 1;
     }
 }

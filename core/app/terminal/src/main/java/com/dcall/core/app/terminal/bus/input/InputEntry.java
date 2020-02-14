@@ -19,7 +19,7 @@ public class InputEntry<T> {
         buffer = new ArrayList<>(TermAttributes.DEF_INPUT_NB_LINE);
         x = 0;
         y = 0;
-        buffer.add(new InputLine());
+        buffer.add(new InputLine<>());
     }
 
     public InputEntry add(final T e) {
@@ -27,7 +27,7 @@ public class InputEntry<T> {
         final int lineSize = currLineSize + 1;
 
         if (lineSize > TermAttributes.getTotalLineWidth()) {
-            buffer.add(new InputLine());
+            buffer.add(new InputLine<>());
             y++;
             x = 0;
         }
@@ -42,10 +42,7 @@ public class InputEntry<T> {
         final int newY = y - 1;
 
         if (newX < 0 && newY >= 0) {
-            if (newY >= 0)
-                this.buffer.remove(y);
-            else
-                this.buffer.get(y).clear();
+            this.buffer.remove(y);
             x = TermAttributes.getMaxLineWidth();
             y = newY;
         }

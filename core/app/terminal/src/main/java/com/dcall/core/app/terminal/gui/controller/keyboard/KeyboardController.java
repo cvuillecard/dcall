@@ -21,12 +21,12 @@ public final class KeyboardController {
     private static Terminal term;
     private static volatile Boolean lock;
 
-    public static final void init(final Terminal term, final IOHandler bus) {
+    public static void init(final Terminal term, final IOHandler bus) {
         KeyboardController.term = term;
         KeyboardController.bus = bus;
     }
 
-    private static final void readInput() {
+    private static void readInput() {
         try {
             KeyboardController.keyPressed = KeyboardController.term.pollInput();
         }
@@ -35,13 +35,13 @@ public final class KeyboardController {
         }
     }
 
-    public static final void handleKeyboard() {
+    public static void handleKeyboard() {
         readInput();
         lock = false;
         if (keyPressed != null) {
             Stream.of(KeyboardAction.values())
                     .filter(k -> k.getKeyType().equals(KeyboardController.keyPressed.getKeyType()))
-                    .forEach(action -> handleKeys(action));
+                    .forEach(KeyboardController::handleKeys);
         }
     }
 
@@ -61,16 +61,16 @@ public final class KeyboardController {
     private static void handleCTRLKey(final KeyboardAction action) {
             if (KeyboardController.keyPressed.isCtrlDown() && KeyboardController.keyPressed.getCharacter() != null &&
                     (
-                            ((int) KeyboardController.keyPressed.getCharacter().charValue()) == action.intValue()
+                            ((int) KeyboardController.keyPressed.getCharacter()) == action.intValue()
                             ||
-                            ((int) KeyboardController.keyPressed.getCharacter().charValue()) == (action.intValue() + 32)
+                            ((int) KeyboardController.keyPressed.getCharacter()) == (action.intValue() + 32)
                     ))
                 KeyboardController.runAction(action);
     }
 
-    private static final void runAction(final KeyboardAction action) {
+    private static void runAction(final KeyboardAction action) {
         if (action.getFunction() != null) {
-            LOG.debug("Key pressed : " + keyPressed.getCharacter().charValue() + " [ type = "+ action.getTypeAction() + " ]");
+            LOG.debug("Key pressed : " + keyPressed.getCharacter() + " [ type = "+ action.getTypeAction() + " ]");
             action.getFunction().run();
             lock = true;
         }
@@ -78,7 +78,7 @@ public final class KeyboardController {
             LOG.debug("Key Pressed - not handled " + "[ type = " + action.getTypeAction() + " ]");
     }
 
-    public static final void handleCharacter() {
+    public static void handleCharacter() {
         final String character = keyPressed.getCharacter().toString();
 
         bus.input().current().add(character);
@@ -86,7 +86,7 @@ public final class KeyboardController {
         DisplayController.displayCharacter(ScreenController.metrics(), character);
     }
 
-    public static final void deleteCharacter() {
+    public static void deleteCharacter() {
         final int posX = bus.input().current().posX();
         final int posY = bus.input().current().posY();
 
@@ -96,7 +96,7 @@ public final class KeyboardController {
         }
     }
 
-    public static final void moveStart() {
+    public static void moveStart() {
         final ScreenMetrics metrics = ScreenController.metrics();
 
         bus.input().current().setX(TermAttributes.getPromptStartIdx());
@@ -110,7 +110,7 @@ public final class KeyboardController {
         DisplayController.moveStart(metrics);
     }
 
-    public static final void moveEnd() {
+    public static void moveEnd() {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
 
@@ -123,7 +123,7 @@ public final class KeyboardController {
         DisplayController.moveEnd(metrics);
     }
 
-    public static final void stop() {
+    public static void stop() {
         ScreenController.stop();
     }
 

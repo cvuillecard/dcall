@@ -25,7 +25,7 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         GUIProcessor.loop();
     }
 
-    public static final void init() {
+    private static void init() {
         ScreenController.init();
 
         terminal = ScreenController.getTerminal();
@@ -36,7 +36,7 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         DisplayController.init(ScreenController.metrics());
     }
 
-    public static void prompt(final boolean firstTime, final ScreenMetrics metrics) {
+    private static void prompt(final boolean firstTime, final ScreenMetrics metrics) {
         if (firstTime)
             metrics.currY += 1;
 
@@ -50,7 +50,7 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         DisplayController.displayPrompt(metrics);
     }
 
-    public static final void flush() {
+    public static void flush() {
         try {
             terminal.flush();
         }
@@ -59,7 +59,7 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         }
     }
 
-    public static final void loop() {
+    public static void loop() {
 
         GUIProcessor.prompt(true, ScreenController.metrics());
 
@@ -71,7 +71,7 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         GUIProcessor.close();
     }
 
-    private static final void close() {
+    private static void close() {
         ScreenController.close();
     }
 

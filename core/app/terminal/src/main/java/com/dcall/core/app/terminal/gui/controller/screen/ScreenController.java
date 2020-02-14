@@ -24,15 +24,15 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
     private static Screen screen;
     private static Terminal terminal;
 
-    public static final void init() {
+    public static void init() {
         initScreen();
     }
 
-    public static final void stop() {
+    public static void stop() {
         ScreenController.up =  false;
     }
 
-    public static final void close() {
+    public static void close() {
         try {
             screen.stopScreen();
             screen.close();
@@ -41,12 +41,12 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
         }
     }
 
-    private static final void resetPosition() {
+    private static void resetPosition() {
         metrics.currX = 0;
         metrics.currY = TermAttributes.MARGIN_TOP;
     }
 
-    public static final void refresh() {
+    public static void refresh() {
         try {
             screen.doResizeIfNecessary();
             screen.refresh();
@@ -65,7 +65,7 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
         });
     }
 
-    private static final void addWindowListeners() {
+    private static void addWindowListeners() {
         if (terminal instanceof SwingTerminalFrame) {
             ((SwingTerminalFrame) terminal).setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             addWindowListener();
@@ -91,7 +91,7 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
         });
     }
 
-    private static final void initScreen() {
+    private static void initScreen() {
         try {
             terminal = new DefaultTerminalFactory()
                     .setTerminalEmulatorTitle(TermAttributes.FRAME_TITLE)
@@ -115,7 +115,7 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
         }
     }
 
-    private static final void setScreenSize(final int nbCols, final int nbRows) {
+    private static void setScreenSize(final int nbCols, final int nbRows) {
         TermAttributes.FRAME_NB_COLS = nbCols;
         TermAttributes.FRAME_NB_ROWS = nbRows;
         metrics.width = nbCols;
@@ -126,7 +126,7 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
         metrics.minHeight = TermAttributes.MARGIN_TOP;
     }
 
-    private static final void resetScreenSize() {
+    private static void resetScreenSize() {
         TermAttributes.FRAME_NB_COLS = TermAttributes.DEF_FRAME_NB_COLS;
         TermAttributes.FRAME_NB_ROWS = TermAttributes.DEF_FRAME_NB_ROWS;
         metrics.width = TermAttributes.FRAME_NB_COLS;
@@ -138,9 +138,9 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
     }
 
     // GETTERS
-    public static final boolean isUp() { return up; }
-    public static final ScreenMetrics metrics() { return metrics; }
+    public static boolean isUp() { return up; }
+    public static ScreenMetrics metrics() { return metrics; }
 
-    public static final Screen getScreen() { return screen; }
-    public static final Terminal getTerminal() { return terminal; }
+    public static Screen getScreen() { return screen; }
+    public static Terminal getTerminal() { return terminal; }
 }
