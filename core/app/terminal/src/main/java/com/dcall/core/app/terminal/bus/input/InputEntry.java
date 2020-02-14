@@ -43,42 +43,43 @@ public class InputEntry<T> {
     }
 
     public InputEntry insert(final T e) {
-        if (!isAppend() && isValidPosition()) {
-            final int newTotalSize = totalSize() + 1;
-            final int newTotalNbLines = (newTotalSize / TermAttributes.getTotalLineWidth())
-                    + ((newTotalSize % TermAttributes.getTotalLineWidth()) > 0 ? 1 : 0);
+        if (isValidPosition()) {
+            if (!isAppend()) {
+                final int newTotalSize = totalSize() + 1;
+                final int newTotalNbLines = (newTotalSize / TermAttributes.getTotalLineWidth())
+                        + ((newTotalSize % TermAttributes.getTotalLineWidth()) > 0 ? 1 : 0);
 
-            if (newTotalNbLines > nbLine())
-                buffer.add(new InputLine<>());
+                if (newTotalNbLines > nbLine())
+                    buffer.add(new InputLine<>());
 
-            if (x == TermAttributes.getTotalLineWidth()) {
-                x = 0;
-                y++;
-            }
+                if (x == TermAttributes.getTotalLineWidth()) {
+                    x = 0;
+                    y++;
+                }
 
-            final List<T> line = buffer.get(y).getBuffer();
+                final List<T> line = buffer.get(y).getBuffer();
 
-            line.add(x++, e);
+                line.add(x++, e);
 
-            if (line.size() > TermAttributes.getTotalLineWidth()) {
-                final int nextY = y + 1;
-                final int endLineIdx = line.size() - 1;
-                final T lastLineElem = line.get(endLineIdx);
-                line.remove(endLineIdx);
-                buffer.get(nextY).addAt(0, lastLineElem);
+                if (line.size() > TermAttributes.getTotalLineWidth()) {
+                    final int nextY = y + 1;
+                    final int endLineIdx = line.size() - 1;
+                    final T lastLineElem = line.get(endLineIdx);
+                    line.remove(endLineIdx);
+                    buffer.get(nextY).addAt(0, lastLineElem);
 
-                for (int i = nextY; i < nbLine(); i++) {
-                    if (buffer.get(i).size() > TermAttributes.getTotalLineWidth()) {
-                        final int lastIdx = buffer.get(i).size() - 1;
-                        final T lastElem = buffer.get(i).getBuffer().get(lastIdx);
-                        buffer.get(i + 1).addAt(0, lastElem);
-                        buffer.get(i).removeAt(lastIdx);
+                    for (int i = nextY; i < nbLine(); i++) {
+                        if (buffer.get(i).size() > TermAttributes.getTotalLineWidth()) {
+                            final int lastIdx = buffer.get(i).size() - 1;
+                            final T lastElem = buffer.get(i).getBuffer().get(lastIdx);
+                            buffer.get(i + 1).addAt(0, lastElem);
+                            buffer.get(i).removeAt(lastIdx);
+                        }
                     }
                 }
-            }
+            } else
+                add(e);
         }
-        else
-            add(e);
 
         return this;
     }
