@@ -118,7 +118,7 @@ public class InputEntry<T> {
                     y = newY;
                 }
                 else
-                    x = newX;
+                    x = newX >= 0 ? newX : 0;
 
                 if (currLineSize() > 0) {
                     buffer.get(y).removeAt(x);
