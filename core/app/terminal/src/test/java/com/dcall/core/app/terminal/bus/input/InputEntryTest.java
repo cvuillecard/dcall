@@ -332,6 +332,115 @@ public class InputEntryTest {
         Assert.assertEquals(1, entry.nbLine());
     }
 
+    /** InputEntry::remove() + delete() **/
+    @Test
+    public void should_remove_in_line_using_delete() {
+        final String strS1 = String.valueOf(s1);
+        final String strS2 = String.valueOf(s2);
+        final String strS3 = String.valueOf(s3);
+        final String strBeforeDel = strS1 + strS2 + strS3;
+        final String strToDel = " Suspendisse ";
+        final String strAfterDel = strS1 + strS2 + strS3.substring(strToDel.length(), strS3.length());
+
+        int nbLinesBefore = strBeforeDel.length() / TermAttributes.getTotalLineWidth();
+        int restBefore = strBeforeDel.length() % TermAttributes.getTotalLineWidth();
+        int totalLinesBefore = nbLinesBefore + (restBefore > 0 ? 1 : 0);
+
+        int nbLinesAfter = strAfterDel.length() / TermAttributes.getTotalLineWidth();
+        int restAfter = strAfterDel.length() % TermAttributes.getTotalLineWidth();
+        int totalLinesAfter = nbLinesAfter + (restAfter > 0 ? 1 : 0);
+
+        // init
+        addtoEntry(s1);
+        addtoEntry(s2);
+        addtoEntry(s3);
+
+        // state
+        Assert.assertEquals(totalLinesBefore, entry.nbLine());
+        Assert.assertEquals(nbLinesBefore, entry.maxNbLine());
+        Assert.assertEquals(strBeforeDel, entry.toString());
+
+        // when : we set manually position to second line (y  = 1) after "disse " on first letter idx of "lectus[...]"
+        entry.setX(6);
+        entry.setY(1);
+
+        // we try to remove strToDel which actually ends the line 1 (y = 0) of buffer
+        IntStream.range(0, strToDel.length()).forEach( i -> entry.remove());
+
+        // then :
+        Assert.assertEquals(totalLinesAfter, entry.nbLine());
+        Assert.assertEquals(nbLinesAfter, entry.maxNbLine());
+        Assert.assertEquals(strAfterDel, entry.toString());
+    }
+
+    @Test
+    public void should_remove_line_if_necessary_on_remove_using_delete() {
+        final String strS1 = String.valueOf(s1);
+        final String strS2 = String.valueOf(s2);
+        final String strS3 = String.valueOf(s3);
+        final String strBeforeDel = strS1 + strS2 + strS3;
+        final String strToDel = strS2;
+        final String strToDel2 = strS1;
+        final String strAfterDel = strS1 + strS3;
+        final String strAfterDel2 = strS3;
+
+        int nbLinesBefore = strBeforeDel.length() / TermAttributes.getTotalLineWidth();
+        int restBefore = strBeforeDel.length() % TermAttributes.getTotalLineWidth();
+        int totalLinesBefore = nbLinesBefore + (restBefore > 0 ? 1 : 0);
+
+        int nbLinesAfter = strAfterDel.length() / TermAttributes.getTotalLineWidth();
+        int restAfter = strAfterDel.length() % TermAttributes.getTotalLineWidth();
+        int totalLinesAfter = nbLinesAfter + (restAfter > 0 ? 1 : 0);
+
+        // init
+        addtoEntry(s1);
+        addtoEntry(s2);
+        addtoEntry(s3);
+
+        // state
+        Assert.assertEquals(totalLinesBefore, entry.nbLine());
+        Assert.assertEquals(nbLinesBefore, entry.maxNbLine());
+        Assert.assertEquals(strBeforeDel, entry.toString());
+
+        // when : remove s2 from buffer - we set manually position on first line (y  = 1) after first idx of s2Str in buffer "[...]elit."
+        entry.setX(71);
+        entry.setY(0);
+
+        // we try to remove s2 in buffer
+        IntStream.range(0, strToDel.length()).forEach( i -> entry.remove());
+
+        // then : we normally have one line less in buffer size
+        Assert.assertEquals(totalLinesAfter, entry.nbLine());
+        Assert.assertEquals(totalLinesBefore - 1, entry.nbLine());
+        Assert.assertEquals(nbLinesAfter, entry.maxNbLine());
+        Assert.assertEquals(nbLinesBefore -1, entry.maxNbLine());
+        Assert.assertEquals(strAfterDel, entry.toString());
+
+        // when : remove s1 from buffer - we set manually position on first line (y  = 1) after first idx of strS1 in buffer "[...]risus."
+        entry.setX(strS1.length());
+        entry.setY(0);
+
+        // we try to remove s1 in buffer
+        IntStream.range(0, strToDel2.length()).forEach( i -> entry.remove());
+
+        // then : entry.toString must be equals to s3(= strS3)
+        Assert.assertEquals(strAfterDel2, entry.toString());
+
+        // when : remove all buffer - we set manually position on last line after last element in append mode"
+        entry.setX(entry.getBuffer().get(entry.maxNbLine()).size());
+        entry.setY(entry.maxNbLine());
+
+        // we try to remove s3 in buffer
+        IntStream.range(0, strS3.length()).forEach( i -> entry.remove());
+
+        // then : buffer must be empty, and size = 0 because we just removed the last string in buffer
+        Assert.assertEquals(1, entry.nbLine());
+        Assert.assertEquals(0, entry.maxNbLine());
+        Assert.assertEquals(0, entry.totalSize());
+        Assert.assertEquals(0, entry.toString().length());
+        Assert.assertEquals("", entry.toString());
+    }
+
     /** InputEntry::moveAfterX() **/
     @Test
     public void should_not_move_posX_when_already_at_EOL_moveAfterX() {

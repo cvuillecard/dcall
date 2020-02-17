@@ -36,7 +36,7 @@ public class InputEntry<T> {
                 buffer.get(y).addAt(x++, e);
             }
             else
-                insert(e);
+                return insert(e);
         }
 
         return this;
@@ -78,7 +78,7 @@ public class InputEntry<T> {
                     }
                 }
             } else
-                add(e);
+                return add(e);
         }
 
         return this;
@@ -86,23 +86,61 @@ public class InputEntry<T> {
 
     public InputEntry remove() {
         if (isValidPosition()) {
-            final int newX = x - 1;
-            final int newY = y - 1;
+            if (isAppend()) {
+                final int newX = x - 1;
+                final int newY = y - 1;
 
-            if (newX < 0 && newY >= 0) {
-                this.buffer.remove(y);
-                x = TermAttributes.getMaxLineWidth();
-                y = newY;
-            } else
-                x = newX >= 0 ? newX : x;
+                if (newX < 0 && newY >= 0) {
+                    this.buffer.remove(y);
+                    x = TermAttributes.getMaxLineWidth();
+                    y = newY;
+                } else
+                    x = newX >= 0 ? newX : x;
 
-            if (currLineSize() > 0)
-                buffer.get(y).removeAt(x);
+                if (currLineSize() > 0)
+                    buffer.get(y).removeAt(x);
+            }
+            else
+                return delete();
         }
 
         return this;
     }
 
+    public InputEntry delete() {
+        if (isValidPosition()) {
+            if (!isAppend()) {
+                final int newX = x - 1;
+                final int newY = y - 1;
+
+                if (newX < 0 && newY >= 0) {
+                    x = TermAttributes.getMaxLineWidth();
+                    y = newY;
+                }
+                else
+                    x = newX;
+
+                if (currLineSize() > 0) {
+                    buffer.get(y).removeAt(x);
+
+                    for (int i = y; nbLine() > 1 && i < maxNbLine(); i++) {
+                        final int nextY = i + 1;
+
+                        if (buffer.get(nextY).size() > 0 && buffer.get(i).size() < TermAttributes.getTotalLineWidth()) {
+                            final T nextFirst = buffer.get(nextY).getBuffer().get(0);
+                            buffer.get(i).addAt(buffer.get(i).size(), nextFirst);
+                            buffer.get(nextY).removeAt(0);
+                        }
+                        else
+                            buffer.remove(nextY);
+                    }
+                }
+            }
+            else
+                return remove();
+        }
+        return this;
+    }
 
     public void moveAfterX(final int length) {
         if (isValidPosition() && length > 0) {
