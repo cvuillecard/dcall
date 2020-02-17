@@ -52,17 +52,7 @@ public final class DisplayController {
         ScreenController.refresh();
     }
 
-    public static void moveStart(final ScreenMetrics metrics) {
-        CursorController.moveAt(metrics);
-        ScreenController.refresh();
-    }
-
-    public static void moveEnd(final ScreenMetrics metrics) {
-        CursorController.moveAt(metrics);
-        ScreenController.refresh();
-    }
-
-    public static void moveLeft(final ScreenMetrics metrics) {
+    public static void moveAt(final ScreenMetrics metrics) {
         CursorController.moveAt(metrics);
         ScreenController.refresh();
     }

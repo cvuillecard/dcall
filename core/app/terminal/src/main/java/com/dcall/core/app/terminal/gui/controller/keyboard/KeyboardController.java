@@ -88,7 +88,7 @@ public final class KeyboardController {
         final int posX = bus.input().current().posX();
         final int posY = bus.input().current().posY();
 
-        if (posY > 0 || (posY == 0 && posX > TermAttributes.getPromptStartIdx())) {
+        if (posY > 0 || (posY == 0 && posX > TermAttributes.PROMPT.length())) {
             bus.input().current().remove();
             DisplayController.deleteCharacter(ScreenController.metrics());
         }
@@ -103,7 +103,7 @@ public final class KeyboardController {
         metrics.currX = bus.input().current().posX();
         metrics.currY = TermAttributes.screenPosY(bus.input().current().posY());
 
-        DisplayController.moveStart(metrics);
+        DisplayController.moveAt(metrics);
     }
 
     public static void moveEnd() {
@@ -122,7 +122,7 @@ public final class KeyboardController {
             metrics.currY = TermAttributes.screenPosY(entry.posY());
         }
 
-        DisplayController.moveEnd(metrics);
+        DisplayController.moveAt(metrics);
     }
 
     public static void moveLeft() {
@@ -137,7 +137,7 @@ public final class KeyboardController {
         metrics.currX = TermAttributes.screenPosX(entry.posX());
         metrics.currY = TermAttributes.screenPosY(entry.posY());
 
-        DisplayController.moveLeft(metrics);
+        DisplayController.moveAt(metrics);
     }
 
     public static void stop() {
