@@ -68,7 +68,7 @@ public final class KeyboardController {
 
     private static void runAction(final KeyboardAction action) {
         if (action.getFunction() != null) {
-            LOG.debug("Key pressed : " + keyPressed.getCharacter() + " [ type = "+ action.getTypeAction() + " ]");
+            LOG.debug("Key pressed : " + keyPressed.getCharacter() + " [ type = "+ action.getTypeAction() + " : " + action.name() + "]");
             action.getFunction().run();
             lock = true;
         }
@@ -100,10 +100,8 @@ public final class KeyboardController {
         bus.input().current().setX(TermAttributes.getPromptStartIdx());
         bus.input().current().setY(0);
 
-        metrics.currX = TermAttributes.getPromptStartIdx();
-
-        if (metrics.currY >= metrics.minHeight)
-            metrics.currY -= bus.input().current().maxNbLine();
+        metrics.currX = bus.input().current().posX();
+        metrics.currY = TermAttributes.screenPosY(bus.input().current().posY());
 
         DisplayController.moveStart(metrics);
     }
@@ -115,10 +113,31 @@ public final class KeyboardController {
         entry.setX(entry.getBuffer().get(entry.maxNbLine()).size());
         entry.setY(entry.maxNbLine());
 
-        metrics.currX = entry.posX();
-        metrics.currY = TermAttributes.screenPosY(entry.posY());
+        if (entry.posX() == TermAttributes.getTotalLineWidth()) {
+            metrics.currX = TermAttributes.screenPosX(0);
+            metrics.currY = TermAttributes.screenPosY(entry.posY() + 1);
+        }
+        else {
+            metrics.currX = TermAttributes.screenPosX(entry.posX());
+            metrics.currY = TermAttributes.screenPosY(entry.posY());
+        }
 
         DisplayController.moveEnd(metrics);
+    }
+
+    public static void moveLeft() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final InputEntry<String> entry = bus.input().current();
+
+        if (entry.posY() == 0 && entry.posX() == TermAttributes.PROMPT.length())
+            return;
+
+        entry.moveBeforeX(-1);
+
+        metrics.currX = TermAttributes.screenPosX(entry.posX());
+        metrics.currY = TermAttributes.screenPosY(entry.posY());
+
+        DisplayController.moveLeft(metrics);
     }
 
     public static void stop() {

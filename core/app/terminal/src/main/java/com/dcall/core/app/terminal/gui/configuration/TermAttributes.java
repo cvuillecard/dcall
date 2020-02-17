@@ -29,7 +29,7 @@ public class TermAttributes {
     public static final TextColor PROMPT_BACKGROUND = TextColor.ANSI.BLACK;
     public static final TextColor PROMPT_FOREGROUND = TextColor.ANSI.CYAN;
     public static final SGR[] PROMPT_STYLE = new SGR[] { SGR.BOLD };
-    public static final String PROMPT = " DCall >";
+    public static final String PROMPT = "DCall > ";
 
     // INPUT
     public static final int DEF_INPUT_NB_LINE = 255;
@@ -63,6 +63,6 @@ public class TermAttributes {
     }
 
     public static int getPromptStartIdx() {
-        return TermAttributes.PROMPT.length() + 1;
+        return MARGIN_LEFT + TermAttributes.PROMPT.length();
     }
 }

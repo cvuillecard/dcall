@@ -6,7 +6,7 @@ public enum KeyboardAction {
     MOVE_UP(KeyType.ArrowUp, TypeAction.MOVE, null, null),
     MOVE_DOWN(KeyType.ArrowDown, TypeAction.MOVE, null, null),
     MOVE_RIGHT(KeyType.ArrowRight, TypeAction.MOVE, null, null),
-    MOVE_LEFT(KeyType.ArrowLeft, TypeAction.MOVE, null, null),
+    MOVE_LEFT(KeyType.ArrowLeft, TypeAction.MOVE, null, KeyboardController::moveLeft),
     CTRL_MOVE_RIGHT(KeyType.ArrowRight, TypeAction.CTRL, null, null),
     CTRL_MOVE_LEFT(KeyType.ArrowLeft, TypeAction.CTRL, null, null),
     CTRL_MOVE_START(KeyType.Character, TypeAction.CTRL, "A", KeyboardController::moveStart),

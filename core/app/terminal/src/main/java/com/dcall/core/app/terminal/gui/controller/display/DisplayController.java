@@ -21,7 +21,7 @@ public final class DisplayController {
     public static void displayPrompt(final ScreenMetrics metrics) {
         TextDrawer.drawPrompt(metrics);
 
-        metrics.currX = TermAttributes.PROMPT.length() + 1;
+        metrics.currX = TermAttributes.getPromptStartIdx();
 
         CursorController.moveAt(metrics);
 
@@ -62,9 +62,30 @@ public final class DisplayController {
         ScreenController.refresh();
     }
 
+    public static void moveLeft(final ScreenMetrics metrics) {
+        CursorController.moveAt(metrics);
+        ScreenController.refresh();
+    }
+
     public static int moveAfterX(final ScreenMetrics metrics) {
         try {
             if (metrics.currX + 1 == ScreenController.getTerminal().getTerminalSize().getColumns()) {
+                metrics.currY += 1;
+                metrics.currX = 1;
+
+                return metrics.currX;
+            }
+        }
+        catch (IOException e) {
+            LOG.error(DisplayController.class.getName() + " > ERROR < " + e.getMessage());
+        }
+
+        return metrics.currX++;
+    }
+
+    public static int moveBeforeX(final ScreenMetrics metrics) {
+        try {
+            if (metrics.currX - 1 == ScreenController.getTerminal().getTerminalSize().getColumns()) {
                 metrics.currY += 1;
                 metrics.currX = 1;
 

@@ -23,10 +23,10 @@ public final class TextDrawer {
     }
 
     public static void drawPrompt(final ScreenMetrics metrics) {
-        TextDrawer.textGraphics().drawLine(0, metrics.currY, TermAttributes.PROMPT.length(), metrics.currY, new TextCharacter(' ')
+        TextDrawer.textGraphics().drawLine(TermAttributes.MARGIN_LEFT, metrics.currY, TermAttributes.PROMPT.length() - 1, metrics.currY, new TextCharacter(' ')
                 .withBackgroundColor(TermAttributes.PROMPT_BACKGROUND));
 
-        TextDrawer.promptTextGraphics().putString(0, metrics.currY, TermAttributes.PROMPT, SGR.BOLD);
+        TextDrawer.promptTextGraphics().putString(TermAttributes.MARGIN_LEFT, metrics.currY, TermAttributes.PROMPT, SGR.BOLD);
     }
 
     public static void drawString(final ScreenMetrics metrics, final String character) {

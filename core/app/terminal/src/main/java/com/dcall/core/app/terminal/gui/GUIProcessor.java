@@ -45,7 +45,7 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         else
             DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
 
-        bus.input().addEntry(TermAttributes.PROMPT + ' ');
+        bus.input().addEntry(TermAttributes.PROMPT);
 
         DisplayController.displayPrompt(metrics);
     }

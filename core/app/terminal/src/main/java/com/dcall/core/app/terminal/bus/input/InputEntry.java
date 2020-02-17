@@ -166,7 +166,7 @@ public class InputEntry<T> {
 
             if (newX < 0 && y > 0) {
                 y--;
-                x = TermAttributes.getMaxLineWidth();
+                x = TermAttributes.getTotalLineWidth();
                 this.moveBeforeX(length + moved);
             } else
                 x = newX < 0 && y == 0 ? 0 : newX;
