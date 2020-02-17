@@ -140,6 +140,28 @@ public final class KeyboardController {
         DisplayController.moveAt(metrics);
     }
 
+
+    public static void moveRight() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final InputEntry<String> entry = bus.input().current();
+
+        if (entry.posY() == entry.maxNbLine() && entry.posX() == entry.getBuffer().get(entry.posY()).size())
+            return;
+
+        entry.moveAfterX(1);
+
+        if (entry.posX() > TermAttributes.getMaxLineWidth()) {
+            metrics.currX = TermAttributes.screenPosX(0);
+            metrics.currY = TermAttributes.screenPosY(entry.posY() + 1);
+        }
+        else {
+            metrics.currX = TermAttributes.screenPosX(entry.posX());
+            metrics.currY = TermAttributes.screenPosY(entry.posY());
+        }
+
+        DisplayController.moveAt(metrics);
+    }
+
     public static void stop() {
         ScreenController.stop();
     }

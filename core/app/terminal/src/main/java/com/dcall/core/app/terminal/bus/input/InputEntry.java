@@ -148,7 +148,7 @@ public class InputEntry<T> {
             final int newX = x + length;
             final int moved = TermAttributes.getTotalLineWidth() - x;
 
-            if (newX > TermAttributes.getMaxLineWidth()) {
+            if (newX > TermAttributes.getTotalLineWidth()) {
                 if (y < this.maxNbLine()) {
                     y++;
                     x = 0;
