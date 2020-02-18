@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 public final class KeyboardController {
@@ -57,13 +58,21 @@ public final class KeyboardController {
     }
 
     private static void handleCTRLKey(final KeyboardAction action) {
-            if (KeyboardController.keyPressed.isCtrlDown() && KeyboardController.keyPressed.getCharacter() != null &&
+        final KeyboardAction[] noKeyActions = new KeyboardAction[] { KeyboardAction.CTRL_MOVE_UP, KeyboardAction.CTRL_MOVE_DOWN };
+        if (KeyboardController.keyPressed.isCtrlDown()) {
+            if (KeyboardController.keyPressed.getCharacter() != null &&
                     (
                             ((int) KeyboardController.keyPressed.getCharacter()) == action.intValue()
-                            ||
+                                    ||
                             ((int) KeyboardController.keyPressed.getCharacter()) == (action.intValue() + 32)
-                    ))
+                    )
+                )
                 KeyboardController.runAction(action);
+            else
+                Arrays.stream(noKeyActions)
+                        .filter(a -> a.equals(action)).findFirst()
+                        .ifPresent(KeyboardController::runAction);
+        }
     }
 
     private static void runAction(final KeyboardAction action) {
@@ -81,7 +90,7 @@ public final class KeyboardController {
 
         bus.input().current().add(character);
 
-        DisplayController.displayCharacter(ScreenController.metrics(), character);
+        DisplayController.displayCharacter(bus.input().current(), ScreenController.metrics(), character);
     }
 
     public static void deleteCharacter() {
@@ -90,17 +99,17 @@ public final class KeyboardController {
 
         if (posY > 0 || (posY == 0 && posX > TermAttributes.PROMPT.length())) {
             bus.input().current().remove();
-            DisplayController.deleteCharacter(ScreenController.metrics());
+            DisplayController.deleteCharacter(bus.input().current(), ScreenController.metrics());
         }
     }
 
     public static void moveStart() {
         final ScreenMetrics metrics = ScreenController.metrics();
 
-        bus.input().current().setX(TermAttributes.getPromptStartIdx());
+        bus.input().current().setX(TermAttributes.PROMPT.length());
         bus.input().current().setY(0);
 
-        metrics.currX = bus.input().current().posX();
+        metrics.currX = TermAttributes.screenPosX(bus.input().current().posX());
         metrics.currY = TermAttributes.screenPosY(bus.input().current().posY());
 
         DisplayController.moveAt(metrics);
@@ -123,6 +132,40 @@ public final class KeyboardController {
         }
 
         DisplayController.moveAt(metrics);
+    }
+
+    public static void moveDown() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final InputEntry<String> entry = bus.input().current();
+
+        if (entry.posY() < entry.maxNbLine()) {
+            final int newY = entry.posY() + 1;
+
+            entry.setY(newY);
+            entry.setX(entry.posX() > entry.getBuffer().get(newY).size() ? entry.getBuffer().get(newY).size() : entry.posX());
+
+            metrics.currX = TermAttributes.screenPosX(entry.posX());
+            metrics.currY = TermAttributes.screenPosY(entry.posY());
+
+            DisplayController.moveAt(metrics);
+        }
+    }
+
+    public static void moveUp() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final InputEntry<String> entry = bus.input().current();
+
+        if (entry.posY() > 0) {
+            final int newY = entry.posY() - 1;
+
+            entry.setY(newY);
+            entry.setX(newY == 0 && entry.posX() < TermAttributes.PROMPT.length() ? TermAttributes.PROMPT.length() : entry.posX());
+
+            metrics.currX = TermAttributes.screenPosX(entry.posX());
+            metrics.currY = TermAttributes.screenPosY(entry.posY());
+
+            DisplayController.moveAt(metrics);
+        }
     }
 
     public static void moveLeft() {

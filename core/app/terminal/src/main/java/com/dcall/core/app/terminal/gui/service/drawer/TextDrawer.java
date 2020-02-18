@@ -29,12 +29,12 @@ public final class TextDrawer {
         TextDrawer.promptTextGraphics().putString(TermAttributes.MARGIN_LEFT, metrics.currY, TermAttributes.PROMPT, SGR.BOLD);
     }
 
-    public static void drawString(final ScreenMetrics metrics, final String character) {
-        TextDrawer.inputTextGraphics().putString(DisplayController.moveAfterX(metrics), metrics.currY, character, SGR.BOLD);
+    public static void drawString(final int x, final int y, final String character) {
+        TextDrawer.inputTextGraphics().putString(x, y, character, SGR.BOLD);
     }
 
-    public static void drawCharacter(final ScreenMetrics metrics, final char c) {
-        TextDrawer.textGraphics().setCharacter(new TerminalPosition(metrics.currX, metrics.currY), c);
+    public static void drawCharacter(final int x, final int y, final char c) {
+        TextDrawer.textGraphics().setCharacter(new TerminalPosition(x, y), c);
     }
 
     // UTILS

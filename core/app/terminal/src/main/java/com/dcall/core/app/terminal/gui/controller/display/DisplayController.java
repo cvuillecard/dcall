@@ -1,5 +1,7 @@
 package com.dcall.core.app.terminal.gui.controller.display;
 
+import com.dcall.core.app.terminal.bus.input.InputEntry;
+import com.dcall.core.app.terminal.bus.output.InputLine;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.cursor.CursorController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
@@ -9,6 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.stream.IntStream;
+
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.screenPosX;
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.screenPosY;
 
 public final class DisplayController {
     private static final Logger LOG = LoggerFactory.getLogger(DisplayController.class);
@@ -28,28 +34,52 @@ public final class DisplayController {
         ScreenController.refresh();
     }
 
-    public static void displayCharacter(final ScreenMetrics metrics, final String character) {
+    public static void displayCharacter(final InputEntry<String> entry, final ScreenMetrics metrics, final String character) {
         LOG.debug("character : " + character);
 
-        TextDrawer.drawString(metrics, character);
+        TextDrawer.drawString(DisplayController.moveAfterX(metrics), metrics.currY, character);
+
+        if (!entry.isAppend())
+            drawInputEntry(entry);
 
         CursorController.moveAfter(metrics);
 
         ScreenController.refresh();
     }
 
-    public static void deleteCharacter(final ScreenMetrics metrics) {
+    public static void deleteCharacter(final InputEntry<String> entry, final ScreenMetrics metrics) {
 
         if (metrics.currX == metrics.minWidth) {
-            metrics.currX = metrics.maxWidth - TermAttributes.MARGIN_RIGHT;
+            metrics.currX = TermAttributes.getTotalLineWidth();
             metrics.currY--;
         }
         else
             metrics.currX--;
 
-        TextDrawer.drawCharacter(metrics, ' ');
+        TextDrawer.drawCharacter(metrics.currX, metrics.currY, ' ');
+
+        if (!entry.isAppend()) {
+            drawInputEntry(entry);
+            final InputLine<String> lastLine = entry.getBuffer().get((entry.maxNbLine()));
+            TextDrawer.drawCharacter(screenPosX(lastLine.getBuffer().size()), screenPosY(entry.maxNbLine()), ' ');
+        }
+
         CursorController.moveAt(metrics);
+
         ScreenController.refresh();
+    }
+
+    private static void drawInputEntry(InputEntry<String> entry) {
+        final InputLine<String> currLine = entry.getBuffer().get(entry.posY());
+
+        TextDrawer.drawString(screenPosX(entry.posX()), screenPosY(entry.posY()),
+                currLine.toString().substring(entry.posX(), currLine.size()));
+
+        if (entry.posY() < entry.maxNbLine()) {
+            IntStream.range(entry.posY() + 1, entry.nbLine()).forEach(y ->
+                    TextDrawer.drawString(screenPosX(0), screenPosY(y), entry.getBuffer().get(y).toString())
+            );
+        }
     }
 
     public static void moveAt(final ScreenMetrics metrics) {
