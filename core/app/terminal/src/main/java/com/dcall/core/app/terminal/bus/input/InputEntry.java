@@ -191,6 +191,66 @@ public class InputEntry<T> {
             y = newY >= 0 ? newY : 0;
     }
 
+    public void moveAfter(final T elem) {
+        if (isValidPosition() && elem != null) {
+            int posY = x > TermAttributes.getMaxLineWidth() && y < maxNbLine() ? y + 1 : y;
+            int posX = x > TermAttributes.getMaxLineWidth() && y < maxNbLine() ? 0 : x;
+            boolean isOnElem = buffer.get(posY).getBuffer().get(posX).equals(elem);
+            boolean found = false;
+
+            while (posY < nbLine()) {
+                if (isOnElem)
+                    while (posX < buffer.get(posY).size() && buffer.get(posY).getBuffer().get(posX).equals(elem)) posX++;
+                else
+                    while (posX < buffer.get(posY).size() && !buffer.get(posY).getBuffer().get(posX).equals(elem)) posX++;
+
+                if (posX < buffer.get(posY).size() &&
+                        (((isOnElem && !buffer.get(posY).getBuffer().get(posX).equals(elem))
+                                || (!isOnElem && buffer.get(posY).getBuffer().get(posX).equals(elem))))) {
+                    found = true;
+                    break;
+                }
+
+                posX = 0;
+                posY++;
+            }
+
+            setX(found ? posX : buffer.get(maxNbLine()).size());
+            setY(found ? posY : maxNbLine());
+        }
+    }
+
+    public void moveBefore(final T elem) {
+        if (isValidPosition() && elem != null) {
+            int posY = x == 0 && y > 0 ? y - 1 : y;
+            int posX = x >= buffer.get(posY).size() ? buffer.get(posY).size() - 1 : (x > 0 ? x - 1 : TermAttributes.getMaxLineWidth());
+            boolean isOnElem =  buffer.get(posY).getBuffer().get(posX).equals(elem);
+            boolean found = false;
+
+            while (posY >= 0) {
+                if (isOnElem)
+                    while (posX > 0 && buffer.get(posY).getBuffer().get(posX).equals(elem)) posX--;
+                else
+                    while (posX > 0 && !buffer.get(posY).getBuffer().get(posX).equals(elem)) posX--;
+
+                if (posX < buffer.get(posY).size() &&
+                        (((isOnElem && !buffer.get(posY).getBuffer().get(posX).equals(elem))
+                                || (!isOnElem && buffer.get(posY).getBuffer().get(posX).equals(elem))))) {
+                    found = true;
+                    break;
+                }
+
+                posX = TermAttributes.getMaxLineWidth();
+                posY--;
+            }
+
+            setX(found ? (posX == TermAttributes.getMaxLineWidth() ? 0 : posX + 1) : 0);
+            setY(found ? (posX == TermAttributes.getMaxLineWidth() ? posY + 1 : posY) : 0);
+//            setX(found ? (posX == TermAttributes.getMaxLineWidth() ? posX : posX + 1) : 0);
+//            setY(found ? (posX == TermAttributes.getMaxLineWidth() && posY > 0 ? posY -1 : posY) : 0);
+        }
+    }
+
     // GETTERS
     public List<InputLine<T>> getBuffer() { return this.buffer; }
     public int posX() { return this.x; }

@@ -3,8 +3,8 @@ package com.dcall.core.app.terminal.gui.controller.keyboard;
 import com.googlecode.lanterna.input.KeyType;
 
 public enum KeyboardAction {
-    CTRL_MOVE_RIGHT(KeyType.ArrowRight, TypeAction.CTRL, null, null),
-    CTRL_MOVE_LEFT(KeyType.ArrowLeft, TypeAction.CTRL, null, null),
+    CTRL_MOVE_RIGHT(KeyType.ArrowRight, TypeAction.CTRL, null, KeyboardController::moveAfter),
+    CTRL_MOVE_LEFT(KeyType.ArrowLeft, TypeAction.CTRL, null, KeyboardController::moveBefore),
     CTRL_MOVE_START(KeyType.Character, TypeAction.CTRL, "A", KeyboardController::moveStart),
     CTRL_MOVE_END(KeyType.Character, TypeAction.CTRL, "E", KeyboardController::moveEnd),
     CTRL_MOVE_UP(KeyType.ArrowUp, TypeAction.CTRL, null, KeyboardController::moveUp),

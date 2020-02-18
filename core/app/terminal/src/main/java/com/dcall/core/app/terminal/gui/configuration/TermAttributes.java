@@ -65,4 +65,8 @@ public class TermAttributes {
     public static int getPromptStartIdx() {
         return MARGIN_LEFT + TermAttributes.PROMPT.length();
     }
+
+    public static boolean onFirstLinePos(final int x, final int y) {
+        return y == 0 && x == PROMPT.length();
+    }
 }

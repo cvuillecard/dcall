@@ -15,12 +15,23 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.onFirstLinePos;
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.screenPosY;
+
 public final class KeyboardController {
     private static final Logger LOG = LoggerFactory.getLogger(KeyboardController.class);
     private static KeyStroke keyPressed;
     private static IOHandler bus;
     private static Terminal term;
     private static volatile Boolean lock;
+
+    private static final KeyboardAction[] noKeyActions = new KeyboardAction[] {
+            KeyboardAction.CTRL_MOVE_UP,
+            KeyboardAction.CTRL_MOVE_DOWN,
+            KeyboardAction.CTRL_MOVE_RIGHT,
+            KeyboardAction.CTRL_MOVE_LEFT
+    };
+
 
     public static void init(final Terminal term, final IOHandler bus) {
         KeyboardController.term = term;
@@ -58,7 +69,6 @@ public final class KeyboardController {
     }
 
     private static void handleCTRLKey(final KeyboardAction action) {
-        final KeyboardAction[] noKeyActions = new KeyboardAction[] { KeyboardAction.CTRL_MOVE_UP, KeyboardAction.CTRL_MOVE_DOWN };
         if (KeyboardController.keyPressed.isCtrlDown()) {
             if (KeyboardController.keyPressed.getCharacter() != null &&
                     (
@@ -172,7 +182,7 @@ public final class KeyboardController {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
 
-        if (entry.posY() == 0 && entry.posX() == TermAttributes.PROMPT.length())
+        if (onFirstLinePos(entry.posX(), entry.posY()))
             return;
 
         entry.moveBeforeX(-1);
@@ -193,6 +203,25 @@ public final class KeyboardController {
 
         entry.moveAfterX(1);
 
+        entryToMetricsEOL(metrics, entry);
+
+        DisplayController.moveAt(metrics);
+    }
+
+    public static void moveAfter() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final InputEntry<String> entry = bus.input().current();
+
+        if (!entry.isAppend()) {
+            entry.moveAfter(" ");
+
+            entryToMetricsEOL(metrics, entry);
+
+            DisplayController.moveAt(metrics);
+        }
+    }
+
+    private static void entryToMetricsEOL(ScreenMetrics metrics, InputEntry<String> entry) {
         if (entry.posX() > TermAttributes.getMaxLineWidth()) {
             metrics.currX = TermAttributes.screenPosX(0);
             metrics.currY = TermAttributes.screenPosY(entry.posY() + 1);
@@ -201,6 +230,22 @@ public final class KeyboardController {
             metrics.currX = TermAttributes.screenPosX(entry.posX());
             metrics.currY = TermAttributes.screenPosY(entry.posY());
         }
+    }
+
+    public static void moveBefore() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final InputEntry<String> entry = bus.input().current();
+
+        if (onFirstLinePos(entry.posX(), entry.posY()))
+            return;
+
+        entry.moveBefore(" ");
+
+        if (entry.posX() <= TermAttributes.PROMPT.length() && entry.posY() == 0)
+            entry.setX(TermAttributes.PROMPT.length());
+
+        metrics.currX = TermAttributes.screenPosX(entry.posX());
+        metrics.currY = TermAttributes.screenPosY(entry.posY());
 
         DisplayController.moveAt(metrics);
     }
