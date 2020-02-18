@@ -246,8 +246,6 @@ public class InputEntry<T> {
 
             setX(found ? (posX == TermAttributes.getMaxLineWidth() ? 0 : posX + 1) : 0);
             setY(found ? (posX == TermAttributes.getMaxLineWidth() ? posY + 1 : posY) : 0);
-//            setX(found ? (posX == TermAttributes.getMaxLineWidth() ? posX : posX + 1) : 0);
-//            setY(found ? (posX == TermAttributes.getMaxLineWidth() && posY > 0 ? posY -1 : posY) : 0);
         }
     }
 
