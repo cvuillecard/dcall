@@ -1,5 +1,6 @@
 package com.dcall.core.app.terminal.gui.controller.display;
 
+import com.dcall.core.app.terminal.bus.handler.IOHandler;
 import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.bus.output.InputLine;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.stream.IntStream;
 
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.getTotalLineWidth;
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.screenPosX;
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.screenPosY;
 
@@ -50,7 +52,7 @@ public final class DisplayController {
     public static void deleteCharacter(final InputEntry<String> entry, final ScreenMetrics metrics) {
 
         if (metrics.currX == metrics.minWidth) {
-            metrics.currX = TermAttributes.getTotalLineWidth();
+            metrics.currX = getTotalLineWidth();
             metrics.currY--;
         }
         else
@@ -69,11 +71,9 @@ public final class DisplayController {
         ScreenController.refresh();
     }
 
-    private static void drawInputEntry(InputEntry<String> entry) {
-        final InputLine<String> currLine = entry.getBuffer().get(entry.posY());
-
+    private static void drawInputEntry(final InputEntry<String> entry) {
         TextDrawer.drawString(screenPosX(entry.posX()), screenPosY(entry.posY()),
-                currLine.toString().substring(entry.posX(), currLine.size()));
+                entry.current().toString().substring(entry.posX(), entry.current().size()));
 
         if (entry.posY() < entry.maxNbLine()) {
             IntStream.range(entry.posY() + 1, entry.nbLine()).forEach(y ->
@@ -87,25 +87,37 @@ public final class DisplayController {
         ScreenController.refresh();
     }
 
+    public static void cut(final IOHandler bus, final ScreenMetrics metrics) {
+        final InputEntry<String> entry = bus.input().current();
+        final InputLine<String> input = new InputLine<>();
+        int x = entry.posX();
+        int y = entry.posY();
+        int nextY = y + 1;
+
+        TextDrawer.drawBlank(screenPosX(entry.posX()), screenPosY(entry.posY()), screenPosX(entry.current().size()), screenPosY(entry.posY()));
+        if (y < entry.maxNbLine())
+            TextDrawer.drawBlankRectangle(metrics.minWidth, screenPosY(nextY), getTotalLineWidth(), entry.nbLine() - nextY);
+
+        while (y < entry.nbLine()) {
+            while (x < entry.getBuffer().get(y).size()) {
+                input.add(entry.getBuffer().get(y).getBuffer().get(x));
+                entry.getBuffer().get(y).removeAt(x);
+            }
+            x = 0;
+            y++;
+        }
+
+        while (entry.maxNbLine() > entry.posY())
+            entry.getBuffer().remove(entry.maxNbLine());
+
+        bus.input().clipBoard().setContent(input.toString());
+
+        ScreenController.refresh();
+    }
+
     public static int moveAfterX(final ScreenMetrics metrics) {
         try {
             if (metrics.currX + 1 == ScreenController.getTerminal().getTerminalSize().getColumns()) {
-                metrics.currY += 1;
-                metrics.currX = 1;
-
-                return metrics.currX;
-            }
-        }
-        catch (IOException e) {
-            LOG.error(DisplayController.class.getName() + " > ERROR < " + e.getMessage());
-        }
-
-        return metrics.currX++;
-    }
-
-    public static int moveBeforeX(final ScreenMetrics metrics) {
-        try {
-            if (metrics.currX - 1 == ScreenController.getTerminal().getTerminalSize().getColumns()) {
                 metrics.currY += 1;
                 metrics.currX = 1;
 

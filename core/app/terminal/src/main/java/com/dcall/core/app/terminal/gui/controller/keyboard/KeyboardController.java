@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.onFirstLinePos;
-import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.screenPosY;
 
 public final class KeyboardController {
     private static final Logger LOG = LoggerFactory.getLogger(KeyboardController.class);
@@ -95,22 +94,35 @@ public final class KeyboardController {
             LOG.debug("Key Pressed - not handled " + "[ type = " + action.getTypeAction() + " ]");
     }
 
-    public static void handleCharacter() {
-        final String character = keyPressed.getCharacter().toString();
+    public static void moveAfter() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final InputEntry<String> entry = bus.input().current();
 
-        bus.input().current().add(character);
+        if (!entry.isAppend()) {
+            entry.moveAfter(" ");
 
-        DisplayController.displayCharacter(bus.input().current(), ScreenController.metrics(), character);
+            entryToMetricsEOL(metrics, entry);
+
+            DisplayController.moveAt(metrics);
+        }
     }
 
-    public static void deleteCharacter() {
-        final int posX = bus.input().current().posX();
-        final int posY = bus.input().current().posY();
+    public static void moveBefore() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final InputEntry<String> entry = bus.input().current();
 
-        if (posY > 0 || (posY == 0 && posX > TermAttributes.PROMPT.length())) {
-            bus.input().current().remove();
-            DisplayController.deleteCharacter(bus.input().current(), ScreenController.metrics());
-        }
+        if (onFirstLinePos(entry.posX(), entry.posY()))
+            return;
+
+        entry.moveBefore(" ");
+
+        if (entry.posX() <= TermAttributes.PROMPT.length() && entry.posY() == 0)
+            entry.setX(TermAttributes.PROMPT.length());
+
+        metrics.currX = TermAttributes.screenPosX(entry.posX());
+        metrics.currY = TermAttributes.screenPosY(entry.posY());
+
+        DisplayController.moveAt(metrics);
     }
 
     public static void moveStart() {
@@ -144,23 +156,6 @@ public final class KeyboardController {
         DisplayController.moveAt(metrics);
     }
 
-    public static void moveDown() {
-        final ScreenMetrics metrics = ScreenController.metrics();
-        final InputEntry<String> entry = bus.input().current();
-
-        if (entry.posY() < entry.maxNbLine()) {
-            final int newY = entry.posY() + 1;
-
-            entry.setY(newY);
-            entry.setX(entry.posX() > entry.getBuffer().get(newY).size() ? entry.getBuffer().get(newY).size() : entry.posX());
-
-            metrics.currX = TermAttributes.screenPosX(entry.posX());
-            metrics.currY = TermAttributes.screenPosY(entry.posY());
-
-            DisplayController.moveAt(metrics);
-        }
-    }
-
     public static void moveUp() {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
@@ -178,21 +173,34 @@ public final class KeyboardController {
         }
     }
 
-    public static void moveLeft() {
+    public static void moveDown() {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
 
-        if (onFirstLinePos(entry.posX(), entry.posY()))
-            return;
+        if (entry.posY() < entry.maxNbLine()) {
+            final int newY = entry.posY() + 1;
 
-        entry.moveBeforeX(-1);
+            entry.setY(newY);
+            entry.setX(entry.posX() > entry.getBuffer().get(newY).size() ? entry.getBuffer().get(newY).size() : entry.posX());
 
-        metrics.currX = TermAttributes.screenPosX(entry.posX());
-        metrics.currY = TermAttributes.screenPosY(entry.posY());
+            metrics.currX = TermAttributes.screenPosX(entry.posX());
+            metrics.currY = TermAttributes.screenPosY(entry.posY());
 
-        DisplayController.moveAt(metrics);
+            DisplayController.moveAt(metrics);
+        }
     }
 
+    public static void cut() {
+        final InputEntry<String> entry = bus.input().current();
+
+        if (!entry.isAppend()) {
+            DisplayController.cut(bus, ScreenController.metrics());
+        }
+    }
+
+    public static void stop() {
+        ScreenController.stop();
+    }
 
     public static void moveRight() {
         final ScreenMetrics metrics = ScreenController.metrics();
@@ -208,19 +216,40 @@ public final class KeyboardController {
         DisplayController.moveAt(metrics);
     }
 
-    public static void moveAfter() {
+    public static void moveLeft() {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
 
-        if (!entry.isAppend()) {
-            entry.moveAfter(" ");
+        if (onFirstLinePos(entry.posX(), entry.posY()))
+            return;
 
-            entryToMetricsEOL(metrics, entry);
+        entry.moveBeforeX(-1);
 
-            DisplayController.moveAt(metrics);
+        metrics.currX = TermAttributes.screenPosX(entry.posX());
+        metrics.currY = TermAttributes.screenPosY(entry.posY());
+
+        DisplayController.moveAt(metrics);
+    }
+
+    public static void handleCharacter() {
+        final String character = keyPressed.getCharacter().toString();
+
+        bus.input().current().add(character);
+
+        DisplayController.displayCharacter(bus.input().current(), ScreenController.metrics(), character);
+    }
+
+    public static void deleteCharacter() {
+        final int posX = bus.input().current().posX();
+        final int posY = bus.input().current().posY();
+
+        if (posY > 0 || (posY == 0 && posX > TermAttributes.PROMPT.length())) {
+            bus.input().current().remove();
+            DisplayController.deleteCharacter(bus.input().current(), ScreenController.metrics());
         }
     }
 
+    /** UTILS **/
     private static void entryToMetricsEOL(ScreenMetrics metrics, InputEntry<String> entry) {
         if (entry.posX() > TermAttributes.getMaxLineWidth()) {
             metrics.currX = TermAttributes.screenPosX(0);
@@ -230,28 +259,6 @@ public final class KeyboardController {
             metrics.currX = TermAttributes.screenPosX(entry.posX());
             metrics.currY = TermAttributes.screenPosY(entry.posY());
         }
-    }
-
-    public static void moveBefore() {
-        final ScreenMetrics metrics = ScreenController.metrics();
-        final InputEntry<String> entry = bus.input().current();
-
-        if (onFirstLinePos(entry.posX(), entry.posY()))
-            return;
-
-        entry.moveBefore(" ");
-
-        if (entry.posX() <= TermAttributes.PROMPT.length() && entry.posY() == 0)
-            entry.setX(TermAttributes.PROMPT.length());
-
-        metrics.currX = TermAttributes.screenPosX(entry.posX());
-        metrics.currY = TermAttributes.screenPosY(entry.posY());
-
-        DisplayController.moveAt(metrics);
-    }
-
-    public static void stop() {
-        ScreenController.stop();
     }
 
 }
