@@ -94,7 +94,9 @@ public final class DisplayController {
         int y = entry.posY();
         int nextY = y + 1;
 
+        // impossible de drawLine directement d'une position start a une position end avec un Y superieur et un X inferieur sans bug..j'ai du mal comprendre le fonctionnement ?
         TextDrawer.drawBlank(screenPosX(entry.posX()), screenPosY(entry.posY()), screenPosX(entry.current().size()), screenPosY(entry.posY()));
+        // donc .. drawRectangle
         if (y < entry.maxNbLine())
             TextDrawer.drawBlankRectangle(metrics.minWidth, screenPosY(nextY), getTotalLineWidth(), entry.nbLine() - nextY);
 
