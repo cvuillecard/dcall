@@ -13,7 +13,7 @@ public final class ClipBoard {
 
     public static void setContent(final String s) {
         if (s != null)
-            clipboard.setContents(new StringSelection(s.trim()), null);
+            clipboard.setContents(new StringSelection(s), null);
     }
 
     public static String getContent() {
@@ -21,7 +21,7 @@ public final class ClipBoard {
 
         if ((contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             try {
-                return contents.getTransferData(DataFlavor.stringFlavor).toString().trim();
+                return contents.getTransferData(DataFlavor.stringFlavor).toString();
             } catch (UnsupportedFlavorException | IOException e) {
                 LOG.error(ClipBoard.class.getName() + " > ERROR < " + e.getMessage());
             }

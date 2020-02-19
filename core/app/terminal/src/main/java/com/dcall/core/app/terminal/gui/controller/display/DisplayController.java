@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.stream.IntStream;
 
-import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.getTotalLineWidth;
-import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.screenPosX;
-import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.screenPosY;
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.*;
 
 public final class DisplayController {
     private static final Logger LOG = LoggerFactory.getLogger(DisplayController.class);
@@ -87,32 +85,50 @@ public final class DisplayController {
         ScreenController.refresh();
     }
 
-    public static void cut(final IOHandler bus, final ScreenMetrics metrics) {
+    private static void drawBlankFromPos(final InputEntry<String> entry) {
+        final int nextY = entry.posY() + 1;
+        // Lanterna : TextGraphics.drawLine() doesn't handle linear drawing from a start position to an end position with a different Y value -> anyway seems to be bugged or not complete
+        // Only startY seems to be considered by drawLine, so we can only draw the current rest of line from current position
+        TextDrawer.drawBlank(screenPosX(entry.posX()), screenPosY(entry.posY()), screenPosX(entry.current().size()), screenPosY(entry.posY()));
+        // because of drawLing incapacity and drawRectangle bugging if more than 3 lines to draw, i have not the choice of only print line by line...sorry, or i have to code a graphical library using swing
+        IntStream.range(nextY, entry.nbLine()).forEach(y -> TextDrawer.drawBlank(screenPosX(0), screenPosY(y), screenPosX(entry.getBuffer().get(y).size() - 1), screenPosY(y)));
+    }
+
+    public static void cut(final IOHandler bus) {
         final InputEntry<String> entry = bus.input().current();
         final InputLine<String> input = new InputLine<>();
-        int x = entry.posX();
-        int y = entry.posY();
-        int nextY = y + 1;
 
-        // impossible de drawLine directement d'une position start a une position end avec un Y superieur et un X inferieur sans bug..j'ai du mal comprendre le fonctionnement ? ou vous n'avez pas utilise mon InputEntry ?..blague
-        TextDrawer.drawBlank(screenPosX(entry.posX()), screenPosY(entry.posY()), screenPosX(entry.current().size()), screenPosY(entry.posY()));
-        // donc .. drawRectangle
-        if (y < entry.maxNbLine())
-            TextDrawer.drawBlankRectangle(metrics.minWidth, screenPosY(nextY), getTotalLineWidth(), entry.nbLine() - nextY);
+        drawBlankFromPos(entry);
 
-        while (y < entry.nbLine()) {
-            while (x < entry.getBuffer().get(y).size()) {
-                input.add(entry.getBuffer().get(y).getBuffer().get(x));
-                entry.getBuffer().get(y).removeAt(x);
-            }
-            x = 0;
-            y++;
-        }
-
-        while (entry.maxNbLine() > entry.posY())
-            entry.getBuffer().remove(entry.maxNbLine());
-
+        bus.input().entryToInputLineFromPos(entry, input);
+        bus.input().cleanEntryFromPos(entry);
         bus.input().clipBoard().setContent(input.toString());
+
+        ScreenController.refresh();
+    }
+
+    private static void drawLineFromPos(final InputEntry<String> entry, final ScreenMetrics metrics) {
+        int nextY = entryPosY(metrics.currY) + 1;
+
+        TextDrawer.drawString(metrics.currX, metrics.currY, entry.getBuffer().get(entryPosY(metrics.currY)).toString().substring(entryPosX(metrics.currX)));
+
+        IntStream.range(nextY, entry.nbLine()).forEach(y -> TextDrawer.drawString(screenPosX(0), screenPosY(y), entry.getBuffer().get(y).toString()));
+    }
+
+    public static void paste(final InputEntry<String> entry, final int length, final ScreenMetrics metrics) {
+        drawBlankFromPos(entry);
+
+        drawLineFromPos(entry, metrics);
+
+        entry.setX(entryPosX(metrics.currX));
+        entry.setY(entryPosY(metrics.currY));
+
+        entry.moveX(length);
+
+        metrics.currX = screenPosX(entry.posX());
+        metrics.currY = screenPosY(entry.posY());
+
+        moveAt(metrics);
 
         ScreenController.refresh();
     }

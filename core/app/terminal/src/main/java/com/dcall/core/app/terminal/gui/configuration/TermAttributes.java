@@ -58,8 +58,16 @@ public class TermAttributes {
         return MARGIN + x;
     }
 
+    public static int entryPosX(final int x) {
+        return x - MARGIN;
+    }
+
     public static int screenPosY(final int y) {
         return MARGIN_TOP + y;
+    }
+
+    public static int entryPosY(final int y) {
+        return y - MARGIN_TOP;
     }
 
     public static int getPromptStartIdx() {

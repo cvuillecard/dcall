@@ -20,7 +20,7 @@ import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.onFir
 public final class KeyboardController {
     private static final Logger LOG = LoggerFactory.getLogger(KeyboardController.class);
     private static KeyStroke keyPressed;
-    private static IOHandler bus;
+    private static volatile IOHandler bus;
     private static Terminal term;
     private static volatile Boolean lock;
 
@@ -193,8 +193,17 @@ public final class KeyboardController {
     public static void cut() {
         final InputEntry<String> entry = bus.input().current();
 
-        if (!entry.isAppend()) {
-            DisplayController.cut(bus, ScreenController.metrics());
+        if (!entry.isAppend())
+            DisplayController.cut(bus);
+    }
+
+    public static void paste() {
+        final InputEntry<String> entry = bus.input().current();
+        final String content = bus.input().clipBoard().getContent();
+
+        if (content != null) {
+            bus.input().addStrToEntry(entry, content);
+            DisplayController.paste(entry, content.length(),ScreenController.metrics());
         }
     }
 

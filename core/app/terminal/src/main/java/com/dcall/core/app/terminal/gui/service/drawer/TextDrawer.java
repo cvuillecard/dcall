@@ -38,8 +38,8 @@ public final class TextDrawer {
         TextDrawer.inputTextGraphics().drawRectangle(new TerminalPosition(startX, startY), new TerminalSize(nbCols, nbRows), new TextCharacter(' '));
     }
 
-    public static void drawString(final int x, final int y, final String character) {
-        TextDrawer.inputTextGraphics().putString(x, y, character, SGR.BOLD);
+    public static void drawString(final int x, final int y, final String s) {
+        TextDrawer.inputTextGraphics().putString(x, y, s, SGR.BOLD);
     }
 
     public static void drawCharacter(final int x, final int y, final char c) {
