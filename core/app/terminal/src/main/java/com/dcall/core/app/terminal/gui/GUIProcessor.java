@@ -36,14 +36,8 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         DisplayController.init(ScreenController.metrics());
     }
 
-    private static void prompt(final boolean firstTime, final ScreenMetrics metrics) {
-        if (firstTime)
-            metrics.currY += 1;
-
-        if (metrics.currY != metrics.maxHeight)
-            metrics.currY++;
-        else
-            DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
+    private static void prompt(final ScreenMetrics metrics) {
+        metrics.currY = metrics.minY;
 
         bus.input().addEntry(TermAttributes.PROMPT);
 
@@ -61,7 +55,7 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
 
     private static void loop() {
 
-        GUIProcessor.prompt(true, ScreenController.metrics());
+        GUIProcessor.prompt(ScreenController.metrics());
 
         while (ScreenController.isUp()) {
 //            screen.doResizeIfNecessary();

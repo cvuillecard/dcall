@@ -41,11 +41,6 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
         }
     }
 
-    private static void resetPosition() {
-        metrics.currX = 0;
-        metrics.currY = TermAttributes.MARGIN_TOP;
-    }
-
     public static void refresh() {
         try {
             screen.doResizeIfNecessary();
@@ -120,10 +115,10 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
         TermAttributes.FRAME_NB_ROWS = nbRows;
         metrics.width = nbCols;
         metrics.height = nbRows;
-        metrics.maxWidth = metrics.width - TermAttributes.MARGIN;
-        metrics.maxHeight = metrics.height - TermAttributes.MARGIN;
-        metrics.minWidth = TermAttributes.MARGIN;
-        metrics.minHeight = TermAttributes.MARGIN_TOP;
+        metrics.maxX = metrics.width - TermAttributes.MARGIN;
+        metrics.maxY = metrics.height - TermAttributes.MARGIN;
+        metrics.minX = TermAttributes.MARGIN;
+        metrics.minY = TermAttributes.MARGIN_TOP;
     }
 
     private static void resetScreenSize() {
@@ -131,10 +126,10 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
         TermAttributes.FRAME_NB_ROWS = TermAttributes.DEF_FRAME_NB_ROWS;
         metrics.width = TermAttributes.FRAME_NB_COLS;
         metrics.height = TermAttributes.FRAME_NB_ROWS;
-        metrics.maxWidth = metrics.width - TermAttributes.MARGIN;
-        metrics.maxHeight = metrics.height - TermAttributes.MARGIN;
-        metrics.minWidth = TermAttributes.MARGIN;
-        metrics.minHeight = TermAttributes.MARGIN_TOP;
+        metrics.maxX = metrics.width - TermAttributes.MARGIN;
+        metrics.maxY = metrics.height - TermAttributes.MARGIN;
+        metrics.minX = TermAttributes.MARGIN;
+        metrics.minY = TermAttributes.MARGIN_TOP;
     }
 
     // GETTERS

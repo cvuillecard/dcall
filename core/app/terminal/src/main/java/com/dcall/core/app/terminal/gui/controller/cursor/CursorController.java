@@ -1,8 +1,8 @@
 package com.dcall.core.app.terminal.gui.controller.cursor;
 
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
+import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
-import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.screen.Screen;
 import org.slf4j.Logger;
@@ -24,11 +24,14 @@ public final class CursorController {
         LOG.debug(" cursor X = " + metrics.currX);
         LOG.debug(" cursor Y = " + metrics.currY);
 
-        if (metrics.currX  == metrics.maxWidth) {
-            if (metrics.currY == metrics.maxHeight)
-                DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
+        if (metrics.currX  == metrics.maxX) {
+            if (metrics.currY == metrics.maxY) {
+                ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.height, 1);
+//                DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
+                metrics.currX = metrics.minX;
+            }
             else {
-                metrics.currX = metrics.minWidth;
+                metrics.currX = metrics.minX;
                 metrics.currY++;
             }
         }
@@ -40,8 +43,8 @@ public final class CursorController {
         LOG.info(" cursor X = " + metrics.currX);
         LOG.info(" cursor Y = " + metrics.currY);
 
-        if (metrics.currX == metrics.minWidth) {
-            metrics.currX = metrics.maxWidth;
+        if (metrics.currX == metrics.minX) {
+            metrics.currX = metrics.maxX;
             metrics.currY--;
         }
         else

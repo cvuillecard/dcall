@@ -14,7 +14,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.stream.IntStream;
 
-import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.*;
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.getTotalLineWidth;
+import static com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics.*;
 
 public final class DisplayController {
     private static final Logger LOG = LoggerFactory.getLogger(DisplayController.class);
@@ -49,7 +50,7 @@ public final class DisplayController {
 
     public static void deleteCharacter(final InputEntry<String> entry, final ScreenMetrics metrics) {
 
-        if (metrics.currX == metrics.minWidth) {
+        if (metrics.currX == metrics.minX) {
             metrics.currX = getTotalLineWidth();
             metrics.currY--;
         }
@@ -108,9 +109,9 @@ public final class DisplayController {
     }
 
     private static void drawLineFromPos(final InputEntry<String> entry, final ScreenMetrics metrics) {
-        int nextY = entryPosY(metrics.currY) + 1;
+        int nextY = ScreenMetrics.posY() + 1;
 
-        TextDrawer.drawString(metrics.currX, metrics.currY, entry.getBuffer().get(entryPosY(metrics.currY)).toString().substring(entryPosX(metrics.currX)));
+        TextDrawer.drawString(metrics.currX, metrics.currY, entry.getBuffer().get(ScreenMetrics.posY()).toString().substring(ScreenMetrics.posX()));
 
         IntStream.range(nextY, entry.nbLine()).forEach(y -> TextDrawer.drawString(screenPosX(0), screenPosY(y), entry.getBuffer().get(y).toString()));
     }
@@ -120,8 +121,8 @@ public final class DisplayController {
 
         drawLineFromPos(entry, metrics);
 
-        entry.setX(entryPosX(metrics.currX));
-        entry.setY(entryPosY(metrics.currY));
+        entry.setX(ScreenMetrics.posX());
+        entry.setY(ScreenMetrics.posY());
 
         entry.moveX(length);
 
