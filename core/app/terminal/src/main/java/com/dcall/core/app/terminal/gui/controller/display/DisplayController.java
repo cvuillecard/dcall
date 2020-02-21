@@ -24,7 +24,7 @@ public final class DisplayController {
     }
 
     public static void displayPrompt(final ScreenMetrics metrics) {
-        TextDrawer.drawBlank(MARGIN, MARGIN, metrics.maxX, MARGIN);
+        TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
         TextDrawer.drawPrompt(metrics);
 
         metrics.currX = TermAttributes.getPromptStartIdx();

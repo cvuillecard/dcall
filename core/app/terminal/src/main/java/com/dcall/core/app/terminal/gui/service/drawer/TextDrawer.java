@@ -10,6 +10,8 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.graphics.TextGraphics;
 
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGIN;
+
 public final class TextDrawer {
 
     public static void drawHeader(final int width) {
@@ -21,6 +23,7 @@ public final class TextDrawer {
                 .setForegroundColor(TermAttributes.HEADER_FOREGROUND)
                 .putString((width / 2) - (TermAttributes.HEADER_TITLE.length() / 2), 0,
                         TermAttributes.HEADER_TITLE, SGR.BOLD);
+        TextDrawer.drawBlank(MARGIN, MARGIN, width, MARGIN);
     }
 
     public static void drawPrompt(final ScreenMetrics metrics) {

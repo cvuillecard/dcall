@@ -7,6 +7,7 @@ import com.dcall.core.app.terminal.gui.controller.cursor.CursorController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
+import com.dcall.core.app.terminal.gui.service.drawer.TextDrawer;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.Terminal;
 import org.slf4j.Logger;
@@ -104,6 +105,9 @@ public final class KeyboardController {
         if (!entry.isAppend()) {
             entry.moveAfter(" ");
 
+            if (metrics.screenPosY(entry.posY()) > metrics.maxY)
+                DisplayController.updateScreenMetrics(entry, metrics);
+
             entryToMetricsEOL(metrics, entry);
 
             DisplayController.moveAt(metrics);
@@ -119,6 +123,9 @@ public final class KeyboardController {
 
         entry.moveBefore(" ");
 
+        if (metrics.screenPosY(entry.posY()) < MARGIN_TOP)
+            DisplayController.updateScreenMetrics(entry, metrics);
+
         if (entry.posX() <= PROMPT.length() && entry.posY() == 0)
             entry.setX(PROMPT.length());
 
@@ -130,12 +137,18 @@ public final class KeyboardController {
 
     public static void moveStart() {
         final ScreenMetrics metrics = ScreenController.metrics();
+        final InputEntry<String> entry = bus.input().current();
 
-        bus.input().current().setX(PROMPT.length());
-        bus.input().current().setY(0);
+        entry.setX(PROMPT.length());
+        entry.setY(0);
 
-        metrics.currX = metrics.screenPosX(bus.input().current().posX());
-        metrics.currY = metrics.screenPosY(bus.input().current().posY());
+        if (metrics.screenPosY(entry.posY()) < MARGIN_TOP) {
+            DisplayController.updateScreenMetrics(entry, metrics);
+            TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
+        }
+
+        metrics.currX = metrics.screenPosX(entry.posX());
+        metrics.currY = metrics.screenPosY(entry.posY());
 
         DisplayController.moveAt(metrics);
     }
@@ -146,6 +159,11 @@ public final class KeyboardController {
 
         entry.setX(entry.getBuffer().get(entry.maxNbLine()).size());
         entry.setY(entry.maxNbLine());
+
+        if (metrics.screenPosY(entry.posY()) > metrics.maxY) {
+            DisplayController.updateScreenMetrics(entry, metrics);
+            TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
+        }
 
         if (entry.posX() == TermAttributes.getTotalLineWidth()) {
             metrics.currX = metrics.screenPosX(0);
@@ -169,6 +187,9 @@ public final class KeyboardController {
             entry.setY(newY);
             entry.setX(newY == 0 && entry.posX() < PROMPT.length() ? PROMPT.length() : entry.posX());
 
+            if (metrics.screenPosY(entry.posY()) < MARGIN_TOP)
+                DisplayController.updateScreenMetrics(entry, metrics);
+
             metrics.currX = metrics.screenPosX(entry.posX());
             metrics.currY = metrics.screenPosY(entry.posY());
 
@@ -186,6 +207,11 @@ public final class KeyboardController {
             entry.setY(newY);
             entry.setX(entry.posX() > entry.getBuffer().get(newY).size() ? entry.getBuffer().get(newY).size() : entry.posX());
 
+            if (metrics.screenPosY(entry.posY()) > metrics.maxY) {
+                DisplayController.updateScreenMetrics(entry, metrics);
+                TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
+            }
+            
             metrics.currX = metrics.screenPosX(entry.posX());
             metrics.currY = metrics.screenPosY(entry.posY());
 
