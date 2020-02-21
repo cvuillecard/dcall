@@ -1,17 +1,31 @@
 package com.dcall.core.app.terminal.gui.controller.screen;
 
 public final class ScreenMetrics {
-    public static int width;
-    public static int height;
-    public static int minX;
-    public static int minY;
-    public static int maxX;
-    public static int maxY;
-    public static int currX = 0;
-    public static int currY = 0;
+    public int width;
+    public int height;
+    public int minX;
+    public int minY;
+    public int maxX;
+    public int maxY;
+    public int currX = 0;
+    public int currY = 0;
 
-    public static int screenPosX(final int x) { return minX + x; }
-    public static int screenPosY(final int y) { return minY + y; }
-    public static int posX() { return currX - minX; }
-    public static int posY() { return currY - minY; }
+    public ScreenMetrics() {}
+    public ScreenMetrics(final ScreenMetrics metrics) { this.setMetrics(metrics); }
+
+    public int screenPosX(final int x) { return minX + x; }
+    public int screenPosY(final int y) { return minY + y; }
+    public int posX() { return currX - minX; }
+    public int posY() { return currY - minY; }
+
+    public void setMetrics(final ScreenMetrics metrics) {
+        this.width = metrics.width;
+        this.height = metrics.height;
+        this.minX = metrics.minX;
+        this.minY = metrics.minY;
+        this.maxX = metrics.maxX;
+        this.maxY = metrics.maxY;
+        this.currX = metrics.currX;
+        this.currY = metrics.currY;
+    }
 }

@@ -11,11 +11,9 @@ import com.dcall.core.app.terminal.gui.service.drawer.TextDrawer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.stream.IntStream;
 
-import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.getTotalLineWidth;
-import static com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics.*;
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.*;
 
 public final class DisplayController {
     private static final Logger LOG = LoggerFactory.getLogger(DisplayController.class);
@@ -26,6 +24,7 @@ public final class DisplayController {
     }
 
     public static void displayPrompt(final ScreenMetrics metrics) {
+        TextDrawer.drawBlank(MARGIN, MARGIN, metrics.maxX, MARGIN);
         TextDrawer.drawPrompt(metrics);
 
         metrics.currX = TermAttributes.getPromptStartIdx();
@@ -38,12 +37,17 @@ public final class DisplayController {
     public static void displayCharacter(final InputEntry<String> entry, final ScreenMetrics metrics, final String character) {
         LOG.debug("character : " + character);
 
-        TextDrawer.drawString(DisplayController.moveAfterX(metrics), metrics.currY, character);
+        TextDrawer.drawString(metrics.currX++, metrics.currY, character);
+
+        if (metrics.currX == metrics.maxX) {
+            metrics.currX = metrics.minX;
+            metrics.currY++;
+        }
 
         if (!entry.isAppend())
-            drawInputEntry(entry);
+            drawInputEntry(entry, metrics);
 
-        CursorController.moveAfter(metrics);
+        CursorController.moveAt(metrics);
 
         ScreenController.refresh();
     }
@@ -60,9 +64,9 @@ public final class DisplayController {
         TextDrawer.drawCharacter(metrics.currX, metrics.currY, ' ');
 
         if (!entry.isAppend()) {
-            drawInputEntry(entry);
+            drawInputEntry(entry, metrics);
             final InputLine<String> lastLine = entry.getBuffer().get((entry.maxNbLine()));
-            TextDrawer.drawCharacter(screenPosX(lastLine.getBuffer().size()), screenPosY(entry.maxNbLine()), ' ');
+            TextDrawer.drawCharacter(metrics.screenPosX(lastLine.getBuffer().size()), metrics.screenPosY(entry.maxNbLine()), ' ');
         }
 
         CursorController.moveAt(metrics);
@@ -70,13 +74,13 @@ public final class DisplayController {
         ScreenController.refresh();
     }
 
-    private static void drawInputEntry(final InputEntry<String> entry) {
-        TextDrawer.drawString(screenPosX(entry.posX()), screenPosY(entry.posY()),
+    private static void drawInputEntry(final InputEntry<String> entry, final ScreenMetrics metrics) {
+        TextDrawer.drawString(metrics.screenPosX(entry.posX()), metrics.screenPosY(entry.posY()),
                 entry.current().toString().substring(entry.posX(), entry.current().size()));
 
         if (entry.posY() < entry.maxNbLine()) {
             IntStream.range(entry.posY() + 1, entry.nbLine()).forEach(y ->
-                    TextDrawer.drawString(screenPosX(0), screenPosY(y), entry.getBuffer().get(y).toString())
+                    TextDrawer.drawString(metrics.screenPosX(0), metrics.screenPosY(y), entry.getBuffer().get(y).toString())
             );
         }
     }
@@ -86,20 +90,20 @@ public final class DisplayController {
         ScreenController.refresh();
     }
 
-    private static void drawBlankFromPos(final InputEntry<String> entry) {
+    private static void drawBlankFromPos(final InputEntry<String> entry, final ScreenMetrics metrics) {
         final int nextY = entry.posY() + 1;
         // Lanterna : TextGraphics.drawLine() doesn't handle linear drawing from a start position to an end position with a different Y value -> anyway seems to be bugged or not complete
         // Only startY seems to be considered by drawLine, so we can only draw the current rest of line from current position
-        TextDrawer.drawBlank(screenPosX(entry.posX()), screenPosY(entry.posY()), screenPosX(entry.current().size()), screenPosY(entry.posY()));
+        TextDrawer.drawBlank(metrics.screenPosX(entry.posX()), metrics.screenPosY(entry.posY()), metrics.screenPosX(entry.current().size()), metrics.screenPosY(entry.posY()));
         // because of drawLing incapacity and drawRectangle bugging if more than 3 lines to draw, i have not the choice of only print line by line...sorry, or i have to code a graphical library using swing
-        IntStream.range(nextY, entry.nbLine()).forEach(y -> TextDrawer.drawBlank(screenPosX(0), screenPosY(y), screenPosX(entry.getBuffer().get(y).size() - 1), screenPosY(y)));
+        IntStream.range(nextY, entry.nbLine()).forEach(y -> TextDrawer.drawBlank(metrics.screenPosX(0), metrics.screenPosY(y), metrics.screenPosX(entry.getBuffer().get(y).size() - 1), metrics.screenPosY(y)));
     }
 
-    public static void cut(final IOHandler bus) {
+    public static void cut(final IOHandler bus, final ScreenMetrics metrics) {
         final InputEntry<String> entry = bus.input().current();
         final InputLine<String> input = new InputLine<>();
 
-        drawBlankFromPos(entry);
+        drawBlankFromPos(entry, metrics);
 
         bus.input().entryToInputLineFromPos(entry, input);
         bus.input().cleanEntryFromPos(entry);
@@ -108,53 +112,85 @@ public final class DisplayController {
         ScreenController.refresh();
     }
 
-    private static void drawLineFromPos(final InputEntry<String> entry, final ScreenMetrics metrics) {
-        int nextY = ScreenMetrics.posY() + 1;
+    private static void drawInputEntryFromPos(final InputEntry<String> entry, final ScreenMetrics metrics) {
+        int nextY = metrics.posY() + 1;
 
-        TextDrawer.drawString(metrics.currX, metrics.currY, entry.getBuffer().get(ScreenMetrics.posY()).toString().substring(ScreenMetrics.posX()));
+        drawCurrentInputLine(entry, metrics);
 
-        IntStream.range(nextY, entry.nbLine()).forEach(y -> TextDrawer.drawString(screenPosX(0), screenPosY(y), entry.getBuffer().get(y).toString()));
+        IntStream.range(nextY, entry.nbLine()).forEach(y -> TextDrawer.drawString(metrics.screenPosX(0), metrics.screenPosY(y), entry.getBuffer().get(y).toString()));
+    }
+
+    private static void drawCurrentInputLine(final InputEntry<String> entry, final ScreenMetrics metrics) {
+        if (metrics.posY() == 0 && metrics.posX() < PROMPT.length()) {
+            TextDrawer.drawPrompt(metrics);
+            metrics.currX = metrics.screenPosX(PROMPT.length());
+        }
+
+        TextDrawer.drawString(metrics.currX, metrics.currY, entry.getBuffer().get(metrics.posY()).toString().substring(metrics.posX()));
     }
 
     public static void paste(final InputEntry<String> entry, final int length, final ScreenMetrics metrics) {
-        drawBlankFromPos(entry);
+        updateScreenMetrics(entry, metrics);
 
-        drawLineFromPos(entry, metrics);
-
-        entry.setX(ScreenMetrics.posX());
-        entry.setY(ScreenMetrics.posY());
+        entry.setX(metrics.posX());
+        entry.setY(metrics.posY());
 
         entry.moveX(length);
 
-        metrics.currX = screenPosX(entry.posX());
-        metrics.currY = screenPosY(entry.posY());
+        metrics.currX = metrics.screenPosX(entry.posX());
+        metrics.currY = metrics.screenPosY(entry.posY());
 
         moveAt(metrics);
 
         ScreenController.refresh();
     }
 
-    public static int moveAfterX(final ScreenMetrics metrics) {
-        try {
-            if (metrics.currX + 1 == ScreenController.getTerminal().getTerminalSize().getColumns()) {
-                metrics.currY += 1;
-                metrics.currX = 1;
+    public static void updateScreenMetrics(final InputEntry<String> entry, final ScreenMetrics metrics) {
+        int nextY = metrics.screenPosY(entry.posY());
+        final int posX = metrics.posX();
+        final int posY = metrics.posY();
 
-                return metrics.currX;
+        if (nextY > metrics.maxY) {
+            final int distance = nextY - metrics.maxY;
+            metrics.minY-= distance;
+            metrics.currX = metrics.screenPosX(posX);
+            metrics.currY = metrics.screenPosY(posY);
+            ScreenController.getScreen().scrollLines(MARGIN_TOP, metrics.maxY, distance);
+            ScreenController.refresh();
+            drawBlankFromPos(entry, metrics);
+            drawInputEntryFromPos(entry, metrics);
+        }
+        else if (nextY < MARGIN_TOP) {
+            if (entry.posY() == 0) {
+                final int entryPosX = entry.posX();
+                entry.setX(0);
+                entry.setY(0);
+                metrics.minY = MARGIN_TOP;
+                metrics.currX = metrics.screenPosX(entry.posX());
+                metrics.currY =  metrics.screenPosY(entry.posY());
+                drawBlankFromPos(entry, metrics);
+                entry.setX(PROMPT.length());
+                drawInputEntryFromPos(entry, metrics);
+                entry.setX(entryPosX);
+                metrics.currX = metrics.screenPosX(entryPosX);
+            }
+            else {
+                final int linesBefore = metrics.minY < 0 ? (metrics.minY * -1) : metrics.minY;
+                final int distance = (linesBefore + MARGIN_TOP) - entry.posY();
+                metrics.minY += distance;
+                ScreenController.getScreen().scrollLines(MARGIN_TOP, metrics.maxY, distance * -1);
+                ScreenController.refresh();
+                metrics.currX = metrics.screenPosX(0);
+                metrics.currY =  metrics.screenPosY(entry.posY());
+                drawInputEntryFromPos(entry, metrics);
+                metrics.currX = metrics.screenPosX(entry.posX());
             }
         }
-        catch (IOException e) {
-            LOG.error(DisplayController.class.getName() + " > ERROR < " + e.getMessage());
+        else {
+            drawBlankFromPos(entry, metrics);
+            drawInputEntryFromPos(entry, metrics);
         }
-
-        return metrics.currX++;
-    }
-
-    public static void scrollUp(final ScreenMetrics metrics, final int distance) {
-        ScreenController.getScreen().scrollLines(1, metrics.height, distance);
-    }
-
-    public static void scrollDown(final ScreenMetrics metrics, final int distance) {
-        ScreenController.getScreen().scrollLines(1, metrics.height, (distance > 0 ? distance * -1 : distance));
     }
 }
+
+// CA ME PETE LES IOUCS COMME PAS DEUX MAIS TOIS !

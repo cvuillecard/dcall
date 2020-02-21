@@ -17,27 +17,44 @@ public final class CursorController {
     }
 
     public static void moveAt(final ScreenMetrics metrics) {
-        CursorController.screen.setCursorPosition(new TerminalPosition(metrics.currX, metrics.currY));
-    }
-
-    public static void moveAfter(final ScreenMetrics metrics) {
         LOG.debug(" cursor X = " + metrics.currX);
         LOG.debug(" cursor Y = " + metrics.currY);
 
-        if (metrics.currX  == metrics.maxX) {
-            if (metrics.currY == metrics.maxY) {
-                ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.height, 1);
-//                DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
-                metrics.currX = metrics.minX;
-            }
-            else {
-                metrics.currX = metrics.minX;
-                metrics.currY++;
+        if (metrics.currX == metrics.maxX && metrics.currY == metrics.maxY) {
+            metrics.currX = metrics.minX;
+            metrics.currY++;
+        }
+
+        if (metrics.currY > metrics.maxY) {
+            final int distance = metrics.currY - metrics.maxY;
+            metrics.currY = metrics.maxY;
+            if (distance != 0) {
+                metrics.minY -= distance;
+                ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.maxY, distance);
             }
         }
 
         CursorController.screen.setCursorPosition(new TerminalPosition(metrics.currX, metrics.currY));
     }
+//
+//    public static void moveAfter(final ScreenMetrics metrics) {
+//        LOG.debug(" cursor X = " + metrics.currX);
+//        LOG.debug(" cursor Y = " + metrics.currY);
+//
+//        if (metrics.currX  == metrics.maxX) {
+//            if (metrics.currY == metrics.maxY) {
+//                ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.height, 1);
+////                DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
+//                metrics.currX = metrics.minX;
+//            }
+//            else {
+//                metrics.currX = metrics.minX;
+//                metrics.currY++;
+//            }
+//        }
+//
+//        CursorController.screen.setCursorPosition(new TerminalPosition(metrics.currX, metrics.currY));
+//    }
 
     public static void moveBefore(final ScreenMetrics metrics) {
         LOG.info(" cursor X = " + metrics.currX);

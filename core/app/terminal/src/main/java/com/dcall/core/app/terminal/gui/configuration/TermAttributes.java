@@ -53,22 +53,6 @@ public class TermAttributes {
     public static int getMarginWidth() {
         return MARGIN_LEFT + MARGIN_RIGHT;
     }
-//
-//    public static int screenPosX(final int x) {
-//        return MARGIN + x;
-//    }
-//
-//    public static int entryPosX(final int x) {
-//        return x - MARGIN;
-//    }
-//
-//    public static int screenPosY(final int y) {
-//        return MARGIN_TOP + y;
-//    }
-//
-//    public static int entryPosY(final int y) {
-//        return y - MARGIN_TOP;
-//    }
 
     public static int getPromptStartIdx() {
         return MARGIN_LEFT + TermAttributes.PROMPT.length();
