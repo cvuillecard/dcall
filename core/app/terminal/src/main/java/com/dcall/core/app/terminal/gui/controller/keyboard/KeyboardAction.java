@@ -11,7 +11,7 @@ public enum KeyboardAction {
     CTRL_MOVE_DOWN(KeyType.ArrowDown, TypeAction.CTRL, null, KeyboardController::moveDown),
     CTRL_CUT(KeyType.Character, TypeAction.CTRL, "K", KeyboardController::cut),
     CTRL_PASTE(KeyType.Character, TypeAction.CTRL, "Y", KeyboardController::paste),
-    CTRL_CLEAR_SCREEN(KeyType.Character, TypeAction.CTRL, "L", null),
+    CTRL_CLEAR_SCREEN(KeyType.Character, TypeAction.CTRL, "L", KeyboardController::clearScreen),
     CTRL_EXIT(KeyType.Character, TypeAction.CTRL, "C", KeyboardController::stop),
     MOVE_UP(KeyType.ArrowUp, TypeAction.MOVE, null, null),
     MOVE_DOWN(KeyType.ArrowDown, TypeAction.MOVE, null, null),

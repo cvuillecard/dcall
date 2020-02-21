@@ -142,7 +142,23 @@ public final class DisplayController {
 
         moveAt(metrics);
 
+        TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
+
         ScreenController.refresh();
+    }
+
+    public static void clearScreen(final InputEntry<String> entry, final ScreenMetrics metrics) {
+        if (metrics.minY > MARGIN_TOP) {
+            final int distance = metrics.minY - MARGIN_TOP;
+            ScreenController.getScreen().scrollLines(MARGIN_TOP, metrics.maxY, distance);
+            ScreenController.refresh();
+            entry.setX(metrics.posX());
+            entry.setY(0);
+            metrics.minY = MARGIN_TOP;
+            metrics.currY = metrics.screenPosY(entry.posY());
+
+            moveAt(metrics);
+        }
     }
 
     public static void updateScreenMetrics(final InputEntry<String> entry, final ScreenMetrics metrics) {

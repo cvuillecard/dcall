@@ -142,10 +142,7 @@ public final class KeyboardController {
         entry.setX(PROMPT.length());
         entry.setY(0);
 
-        if (metrics.screenPosY(entry.posY()) < MARGIN_TOP) {
-            DisplayController.updateScreenMetrics(entry, metrics);
-            TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
-        }
+        handleScrollDown(metrics, entry);
 
         metrics.currX = metrics.screenPosX(entry.posX());
         metrics.currY = metrics.screenPosY(entry.posY());
@@ -160,10 +157,7 @@ public final class KeyboardController {
         entry.setX(entry.getBuffer().get(entry.maxNbLine()).size());
         entry.setY(entry.maxNbLine());
 
-        if (metrics.screenPosY(entry.posY()) > metrics.maxY) {
-            DisplayController.updateScreenMetrics(entry, metrics);
-            TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
-        }
+        handleScrollUp(metrics, entry);
 
         if (entry.posX() == TermAttributes.getTotalLineWidth()) {
             metrics.currX = metrics.screenPosX(0);
@@ -207,10 +201,7 @@ public final class KeyboardController {
             entry.setY(newY);
             entry.setX(entry.posX() > entry.getBuffer().get(newY).size() ? entry.getBuffer().get(newY).size() : entry.posX());
 
-            if (metrics.screenPosY(entry.posY()) > metrics.maxY) {
-                DisplayController.updateScreenMetrics(entry, metrics);
-                TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
-            }
+            handleScrollUp(metrics, entry);
 
             metrics.currX = metrics.screenPosX(entry.posX());
             metrics.currY = metrics.screenPosY(entry.posY());
@@ -236,6 +227,10 @@ public final class KeyboardController {
 
             DisplayController.paste(entry, content.length(), metrics);
         }
+    }
+
+    public static void clearScreen() {
+        DisplayController.clearScreen(bus.input().current(), ScreenController.metrics());
     }
 
     public static void stop() {
@@ -309,6 +304,20 @@ public final class KeyboardController {
 
         CursorController.moveAt(metrics);
         DisplayController.displayPrompt(metrics);
+    }
+
+    private static void handleScrollUp(final ScreenMetrics metrics, final InputEntry<String> entry) {
+        if (metrics.screenPosY(entry.posY()) > metrics.maxY) {
+            DisplayController.updateScreenMetrics(entry, metrics);
+            TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
+        }
+    }
+
+    private static void handleScrollDown(final ScreenMetrics metrics, final InputEntry<String> entry) {
+        if (metrics.screenPosY(entry.posY()) < MARGIN_TOP) {
+            DisplayController.updateScreenMetrics(entry, metrics);
+            TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
+        }
     }
 
     /** UTILS **/

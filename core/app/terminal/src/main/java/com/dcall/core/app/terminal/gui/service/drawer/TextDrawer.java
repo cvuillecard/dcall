@@ -15,14 +15,17 @@ import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGI
 public final class TextDrawer {
 
     public static void drawHeader(final int width) {
+        final int startX = (width / 2) - (TermAttributes.HEADER_TITLE.length() / 2);
+
         TextDrawer.textGraphics().drawLine(0, 0, width, 0, new TextCharacter(' ')
                 .withBackgroundColor(TermAttributes.HEADER_BACKGROUND));
 
         TextDrawer.textGraphics()
                 .setBackgroundColor(TermAttributes.HEADER_BACKGROUND)
                 .setForegroundColor(TermAttributes.HEADER_FOREGROUND)
-                .putString((width / 2) - (TermAttributes.HEADER_TITLE.length() / 2), 0,
+                .putString(startX, 0,
                         TermAttributes.HEADER_TITLE, SGR.BOLD);
+
         TextDrawer.drawBlank(MARGIN, MARGIN, width, MARGIN);
     }
 
