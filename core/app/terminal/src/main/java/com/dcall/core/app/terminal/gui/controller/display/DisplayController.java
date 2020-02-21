@@ -175,8 +175,8 @@ public final class DisplayController {
                 metrics.currX = metrics.screenPosX(entryPosX);
             }
             else {
-                final int linesBefore = metrics.minY < 0 ? (metrics.minY * -1) : metrics.minY;
-                final int distance = (linesBefore + MARGIN_TOP) - entry.posY();
+                final int nbLine = metrics.minY < 0 ? (metrics.minY * -1) : metrics.minY;
+                final int distance = (nbLine + MARGIN_TOP) - entry.posY();
                 metrics.minY += distance;
                 ScreenController.getScreen().scrollLines(MARGIN_TOP, metrics.maxY, distance * -1);
                 ScreenController.refresh();
