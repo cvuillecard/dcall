@@ -211,7 +211,7 @@ public final class KeyboardController {
                 DisplayController.updateScreenMetrics(entry, metrics);
                 TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
             }
-            
+
             metrics.currX = metrics.screenPosX(entry.posX());
             metrics.currY = metrics.screenPosY(entry.posY());
 

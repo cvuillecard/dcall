@@ -192,5 +192,3 @@ public final class DisplayController {
         }
     }
 }
-
-// CA ME PETE LES IOUCS COMME PAS DEUX MAIS TOIS !
