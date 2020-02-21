@@ -36,38 +36,4 @@ public final class CursorController {
 
         CursorController.screen.setCursorPosition(new TerminalPosition(metrics.currX, metrics.currY));
     }
-//
-//    public static void moveAfter(final ScreenMetrics metrics) {
-//        LOG.debug(" cursor X = " + metrics.currX);
-//        LOG.debug(" cursor Y = " + metrics.currY);
-//
-//        if (metrics.currX  == metrics.maxX) {
-//            if (metrics.currY == metrics.maxY) {
-//                ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.height, 1);
-////                DisplayController.scrollUp(metrics, TermAttributes.SCROLL_PADDING_UP);
-//                metrics.currX = metrics.minX;
-//            }
-//            else {
-//                metrics.currX = metrics.minX;
-//                metrics.currY++;
-//            }
-//        }
-//
-//        CursorController.screen.setCursorPosition(new TerminalPosition(metrics.currX, metrics.currY));
-//    }
-
-    public static void moveBefore(final ScreenMetrics metrics) {
-        LOG.info(" cursor X = " + metrics.currX);
-        LOG.info(" cursor Y = " + metrics.currY);
-
-        if (metrics.currX == metrics.minX) {
-            metrics.currX = metrics.maxX;
-            metrics.currY--;
-        }
-        else
-            metrics.currX--;
-
-
-        CursorController.moveAt(metrics);
-    }
 }
