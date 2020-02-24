@@ -1,7 +1,9 @@
 package com.dcall.core.app.terminal.gui.controller.screen;
 
+import com.dcall.core.app.terminal.gui.GUIProcessor;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.TerminalUI;
+import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
@@ -13,10 +15,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.IOException;
 
-public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawer / CursorDrawer
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.getMinScreenHeight;
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.getMinScreenWidth;
+
+public final class ScreenController {
     private static final Logger LOG = LoggerFactory.getLogger(ScreenController.class);
 
     private static volatile boolean up = true;
@@ -63,27 +69,40 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
     private static void addWindowListeners() {
         if (terminal instanceof SwingTerminalFrame) {
             ((SwingTerminalFrame) terminal).setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
             addWindowListener();
             addResizeListener();
         }
     }
 
     private static void addResizeListener() {
+        setMinimumSize();
         ScreenController.terminal.addResizeListener(new SimpleTerminalResizeListener(new TerminalSize(TermAttributes.FRAME_NB_COLS, TermAttributes.FRAME_NB_ROWS)) {
             @Override
             public synchronized void onResized(final Terminal terminal, final TerminalSize newSize) {
-                super.onResized(terminal, newSize);
                 try {
-                    LOG.debug(" *** Window resized to : "
-                            + terminal.getTerminalSize().getColumns() + " x "
-                            + terminal.getTerminalSize().getRows());
-                    setScreenSize(terminal.getTerminalSize().getColumns(), terminal.getTerminalSize().getRows());
+                    super.onResized(terminal, newSize);
+                    LOG.debug(" *** Window resized to : " + terminal.getTerminalSize().getColumns() + " x " + terminal.getTerminalSize().getRows());
+
                     ((SwingTerminalFrame)ScreenController.terminal).setTitle(TermAttributes.FRAME_TITLE + " (" + metrics.width + 'x' + metrics.height + ')');
+
+                    setScreenSize(terminal.getTerminalSize().getColumns(), terminal.getTerminalSize().getRows());
+                    DisplayController.resize(ScreenController.metrics());
+//                    if (terminal.getTerminalSize().getColumns() < getMinScreenWidth())
+//                        ((SwingTerminalFrame)ScreenController.terminal).setSize(((SwingTerminalFrame) ScreenController.terminal).getMinimumSize());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOG.error(ScreenController.class.getName() + " > ERROR < " + e.getMessage());
                 }
             }
         });
+    }
+
+    private static void setMinimumSize() {
+        if (ScreenController.terminal instanceof SwingTerminalFrame) {
+            final Dimension dimension = new Dimension();
+            dimension.setSize(getMinScreenWidth(), getMinScreenHeight());
+            ((SwingTerminalFrame) ScreenController.terminal).setPreferredSize(dimension);
+        }
     }
 
     private static void initScreen() {
@@ -93,6 +112,7 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
                     .setInitialTerminalSize(new TerminalSize(TermAttributes.FRAME_NB_COLS, TermAttributes.FRAME_NB_ROWS))
                     .createTerminal();
 
+            setMinimumSize();
             addWindowListeners();
 
             screen = new TerminalScreen(terminal);
@@ -118,7 +138,8 @@ public final class ScreenController { // DrawHandler -> TextDrawer / WindowDrawe
         metrics.maxX = metrics.width - TermAttributes.MARGIN;
         metrics.maxY = metrics.height - TermAttributes.MARGIN;
         metrics.minX = TermAttributes.MARGIN;
-        metrics.minY = TermAttributes.MARGIN_TOP;
+        metrics.currX = metrics.currX > metrics.maxX ? metrics.maxX : metrics.currX;
+        metrics.currY = metrics.currY > metrics.maxY ? metrics.maxY : metrics.currY;
     }
 
     private static void resetScreenSize() {

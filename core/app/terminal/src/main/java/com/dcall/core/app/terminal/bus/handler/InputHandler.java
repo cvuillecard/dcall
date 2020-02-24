@@ -2,6 +2,8 @@ package com.dcall.core.app.terminal.bus.handler;
 
 import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.bus.output.InputLine;
+import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
+import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +64,17 @@ public final class InputHandler {
         }
 
         return entry;
+    }
+
+    public final void resizeCurrent(final int totalLineWidth) {
+        final InputEntry<String> newEntry = new InputEntry<>();
+
+        current().getBuffer().stream()
+                .flatMap(line -> line.getBuffer().stream())
+                .forEach(e -> newEntry.add(e));
+
+        entries.remove(entries.size() - 1);
+        entries.add(newEntry);
     }
 
     public final int size() { return entries.size(); }

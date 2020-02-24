@@ -26,7 +26,7 @@ public final class TextDrawer {
                 .putString(startX, 0,
                         TermAttributes.HEADER_TITLE, SGR.BOLD);
 
-        TextDrawer.drawBlank(MARGIN, MARGIN, width, MARGIN);
+        TextDrawer.drawBlank(0, MARGIN, width, MARGIN);
     }
 
     public static void drawPrompt(final ScreenMetrics metrics) {

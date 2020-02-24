@@ -18,6 +18,7 @@ public class TermAttributes {
     public static int MARGIN_LEFT = 1;
     public static int MARGIN_RIGHT = 1;
     public static int MARGIN_TOP = 2;
+    public static int MIN_SIZE_COEF = 2;
 
     // HEADER
     public static final TextColor HEADER_BACKGROUND = new TextColor.RGB(230, 230, 0); // YELLOW
@@ -42,6 +43,14 @@ public class TermAttributes {
     public static final int SCROLL_PADDING_DOWN = -1;
 
     // UTILS
+    public static int getMinScreenWidth() {
+        return DEF_FRAME_NB_COLS / MIN_SIZE_COEF;
+    }
+
+    public static int getMinScreenHeight() {
+        return DEF_FRAME_NB_ROWS / MIN_SIZE_COEF;
+    }
+
     public static int getMaxLineWidth() {
         return getTotalLineWidth() - 1;
     }

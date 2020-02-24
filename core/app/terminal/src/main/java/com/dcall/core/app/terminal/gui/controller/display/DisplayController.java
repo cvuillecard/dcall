@@ -3,6 +3,7 @@ package com.dcall.core.app.terminal.gui.controller.display;
 import com.dcall.core.app.terminal.bus.handler.IOHandler;
 import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.bus.output.InputLine;
+import com.dcall.core.app.terminal.gui.GUIProcessor;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.cursor.CursorController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
@@ -86,17 +87,24 @@ public final class DisplayController {
     }
 
     public static void moveAt(final ScreenMetrics metrics) {
+        TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
         CursorController.moveAt(metrics);
         ScreenController.refresh();
     }
 
-    private static void drawBlankFromPos(final InputEntry<String> entry, final ScreenMetrics metrics) {
+    public static void drawBlankFromPos(final InputEntry<String> entry, final ScreenMetrics metrics) {
         final int nextY = entry.posY() + 1;
         // Lanterna : TextGraphics.drawLine() doesn't handle linear drawing from a start position to an end position with a different Y value -> anyway seems to be bugged or not complete
         // Only startY seems to be considered by drawLine, so we can only draw the current rest of line from current position
         TextDrawer.drawBlank(metrics.screenPosX(entry.posX()), metrics.screenPosY(entry.posY()), metrics.screenPosX(entry.current().size()), metrics.screenPosY(entry.posY()));
         // because of drawLing incapacity and drawRectangle bugging if more than 3 lines to draw, i have not the choice of only print line by line...sorry, or i have to code a graphical library using swing
         IntStream.range(nextY, entry.nbLine()).forEach(y -> TextDrawer.drawBlank(metrics.screenPosX(0), metrics.screenPosY(y), metrics.screenPosX(entry.getBuffer().get(y).size() - 1), metrics.screenPosY(y)));
+    }
+
+    public static void drawBlankEntry(final InputEntry<String> entry, final ScreenMetrics metrics) {
+        final int nextY = entry.posY() + 1;
+        TextDrawer.drawBlank(metrics.screenPosX(entry.posX()), metrics.screenPosY(entry.posY()), metrics.screenPosX(entry.current().size()), metrics.screenPosY(entry.posY()));
+        IntStream.range(nextY, TermAttributes.FRAME_NB_ROWS).forEach(y -> TextDrawer.drawBlank(metrics.screenPosX(0), metrics.screenPosY(y), metrics.maxX, metrics.screenPosY(y)));
     }
 
     public static void cut(final IOHandler bus, final ScreenMetrics metrics) {
@@ -112,7 +120,7 @@ public final class DisplayController {
         ScreenController.refresh();
     }
 
-    private static void drawInputEntryFromPos(final InputEntry<String> entry, final ScreenMetrics metrics) {
+    public static void drawInputEntryFromPos(final InputEntry<String> entry, final ScreenMetrics metrics) {
         int nextY = metrics.posY() + 1;
 
         drawCurrentInputLine(entry, metrics);
@@ -120,7 +128,7 @@ public final class DisplayController {
         IntStream.range(nextY, entry.nbLine()).forEach(y -> TextDrawer.drawString(metrics.screenPosX(0), metrics.screenPosY(y), entry.getBuffer().get(y).toString()));
     }
 
-    private static void drawCurrentInputLine(final InputEntry<String> entry, final ScreenMetrics metrics) {
+    public static void drawCurrentInputLine(final InputEntry<String> entry, final ScreenMetrics metrics) {
         if (metrics.posY() == 0 && metrics.posX() < PROMPT.length()) {
             TextDrawer.drawPrompt(metrics);
             metrics.currX = metrics.screenPosX(PROMPT.length());
@@ -142,7 +150,6 @@ public final class DisplayController {
 
         moveAt(metrics);
 
-        TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
 
         ScreenController.refresh();
     }
@@ -203,8 +210,15 @@ public final class DisplayController {
             }
         }
         else {
-            drawBlankFromPos(entry, metrics);
+//            drawBlankFromPos(entry, metrics);
             drawInputEntryFromPos(entry, metrics);
+        }
+    }
+
+    public static void resize(final ScreenMetrics metrics) {
+        if (metrics.width != TermAttributes.DEF_FRAME_NB_COLS || metrics.height != TermAttributes.DEF_FRAME_NB_ROWS) {
+            GUIProcessor.resize(metrics);
+            moveAt(metrics);
         }
     }
 }

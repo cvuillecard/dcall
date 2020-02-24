@@ -1,5 +1,6 @@
 package com.dcall.core.app.terminal.gui;
 
+import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.cursor.CursorController;
 import com.dcall.core.app.terminal.gui.controller.keyboard.KeyboardController;
@@ -13,6 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGIN_TOP;
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.PROMPT;
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.getTotalLineWidth;
 
 public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INPUT_PAGE_SIZE] / OutputHandler::OutputEntries[OUTPUT_PAGE_SIZE] -> KeyBoardController
     private static final Logger LOG = LoggerFactory.getLogger(GUIProcessor.class);
@@ -58,7 +63,6 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         GUIProcessor.prompt(ScreenController.metrics());
 
         while (ScreenController.isUp()) {
-//            screen.doResizeIfNecessary();
             KeyboardController.handleKeyboard();
         }
 
@@ -69,32 +73,37 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         ScreenController.close();
     }
 
-//    private static void loop() throws IOException {
-//        drawPrompt(true);
-//        while (isUp()) {
-//            TerminalUI.screen.doResizeIfNecessary();
-//            readInput();
-//            if (TerminalUI.keyPressed != null) {
-//                switch (TerminalUI.keyPressed.getKeyType()) {
-//                    case Character:
-//                        handleCharacter();
-//                        break;
-//                    case Enter:
-//                        drawPrompt(false);
-//                        break;
-//                    case Backspace:
-//                        deleteCharacter();
-//                        break;
-//                    case ArrowUp:
-//                        scrollDown(TermAttributes.SCROLL_PADDING_DOWN);
-//                        screen.refresh();
-//                        break;
-//                    default:
-//                        break;
-//                }
-//                TerminalUI.term.flush();
-//            }
-//        }
-//        TerminalUI.close();
-//    }
+    public static void resize(final ScreenMetrics metrics) {
+        bus.input().resizeCurrent(getTotalLineWidth());
+        final InputEntry<String> entry = bus.input().current();
+
+        if (metrics.maxY == metrics.minY) {
+            ScreenController.getScreen().scrollLines(MARGIN_TOP, metrics.maxY, 1);
+            metrics.minY -= 1;
+        }
+
+        final ScreenMetrics oldMetrics = new ScreenMetrics(metrics);
+        oldMetrics.currX = metrics.screenPosX(TermAttributes.getPromptStartIdx());
+        oldMetrics.currY = oldMetrics.minY;
+
+        bus.input().current().setX(TermAttributes.getPromptStartIdx());
+        bus.input().current().setY(0);
+
+        DisplayController.drawBlankEntry(bus.input().current(), oldMetrics);
+        ScreenController.refresh();
+
+        entry.setX(metrics.posX());
+        entry.setY(metrics.posY());
+
+        if (entry.posY() > entry.maxNbLine())
+            entry.setY(entry.maxNbLine());
+        if (entry.posX() > entry.getBuffer().get(entry.posY()).size())
+            entry.setX(entry.getBuffer().get(entry.posY()).size());
+
+        metrics.currX = metrics.screenPosX(entry.posX());
+        metrics.currY = metrics.screenPosY(entry.posY());
+
+        if (entry.getBuffer().get(0).size() > TermAttributes.getPromptStartIdx())
+            DisplayController.drawInputEntryFromPos(entry,  oldMetrics);
+    }
 }

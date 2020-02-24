@@ -1,12 +1,12 @@
 package com.dcall.core.app.terminal.gui.controller.screen;
 
 public final class ScreenMetrics {
-    public int width;
-    public int height;
-    public int minX;
-    public int minY;
-    public int maxX;
-    public int maxY;
+    public int width = 0;
+    public int height = 0;
+    public int minX = 0;
+    public int minY = 0;
+    public int maxX = 0;
+    public int maxY = 0;
     public int currX = 0;
     public int currY = 0;
 

@@ -105,8 +105,7 @@ public final class KeyboardController {
         if (!entry.isAppend()) {
             entry.moveAfter(" ");
 
-            if (metrics.screenPosY(entry.posY()) > metrics.maxY)
-                DisplayController.updateScreenMetrics(entry, metrics);
+            handleScrollUp(metrics, entry);
 
             entryToMetricsEOL(metrics, entry);
 
@@ -123,8 +122,7 @@ public final class KeyboardController {
 
         entry.moveBefore(" ");
 
-        if (metrics.screenPosY(entry.posY()) < MARGIN_TOP)
-            DisplayController.updateScreenMetrics(entry, metrics);
+        handleScrollDown(metrics, entry);
 
         if (entry.posX() <= PROMPT.length() && entry.posY() == 0)
             entry.setX(PROMPT.length());
@@ -181,8 +179,7 @@ public final class KeyboardController {
             entry.setY(newY);
             entry.setX(newY == 0 && entry.posX() < PROMPT.length() ? PROMPT.length() : entry.posX());
 
-            if (metrics.screenPosY(entry.posY()) < MARGIN_TOP)
-                DisplayController.updateScreenMetrics(entry, metrics);
+            handleScrollDown(metrics, entry);
 
             metrics.currX = metrics.screenPosX(entry.posX());
             metrics.currY = metrics.screenPosY(entry.posY());

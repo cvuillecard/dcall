@@ -16,7 +16,6 @@ public class Runner {
     private static final Logger LOG = LoggerFactory.getLogger(Runner.class);
 
     public static void main(final String[] args) {
-        LOG.info("Running Lanterna test");
         TerminalApp.run();
 //        TerminalUI.start();
 //        initTerminal();
