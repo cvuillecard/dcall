@@ -149,9 +149,6 @@ public final class DisplayController {
         metrics.currY = metrics.screenPosY(entry.posY());
 
         moveAt(metrics);
-
-
-        ScreenController.refresh();
     }
 
     public static void clearScreen(final InputEntry<String> entry, final ScreenMetrics metrics) {

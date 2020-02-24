@@ -66,7 +66,8 @@ public final class InputHandler {
         return entry;
     }
 
-    public final void resizeCurrent(final int totalLineWidth) {
+    /** Not optimized for large size. Simply constructs a new entry with current entry and replaces the current with the new. **/
+    public final void resizeCurrent() {
         final InputEntry<String> newEntry = new InputEntry<>();
 
         current().getBuffer().stream()

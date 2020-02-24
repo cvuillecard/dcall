@@ -74,7 +74,7 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
     }
 
     public static void resize(final ScreenMetrics metrics) {
-        bus.input().resizeCurrent(getTotalLineWidth());
+        bus.input().resizeCurrent();
         final InputEntry<String> entry = bus.input().current();
 
         if (metrics.maxY == metrics.minY) {
@@ -90,7 +90,6 @@ public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INP
         bus.input().current().setY(0);
 
         DisplayController.drawBlankEntry(bus.input().current(), oldMetrics);
-        ScreenController.refresh();
 
         entry.setX(metrics.posX());
         entry.setY(metrics.posY());
