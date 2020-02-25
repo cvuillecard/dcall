@@ -82,8 +82,21 @@ public final class InputHandler {
 
     public final InputEntry<String> prevEntry() {
         if (!entries.isEmpty() && entries.size() > 1) {
-            entryIdx = (entryIdx == 0 && entryIdx < entries.size()) ? entries.size() -1 : --entryIdx;
+            entryIdx = (entryIdx <= 0 && entryIdx < entries.size()) ? entries.size() -1 : --entryIdx;
             return entryIdx == 0 ? lastInput : entries.get(entryIdx - 1);
+        }
+
+        return null;
+    }
+
+    public final InputEntry<String> nextEntry() {
+        if (!entries.isEmpty() && entries.size() > 1) {
+            entryIdx = (entryIdx >= (entries.size() - 1)) ? -1 : entryIdx;
+            if (entryIdx == -1) {
+                entryIdx++;
+                return lastInput;
+            }
+            return entries.get(entryIdx++);
         }
 
         return null;

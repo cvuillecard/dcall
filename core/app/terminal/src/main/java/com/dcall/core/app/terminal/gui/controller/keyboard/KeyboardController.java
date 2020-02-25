@@ -235,10 +235,14 @@ public final class KeyboardController {
     }
 
     public static void prevInput() {
-        final ScreenMetrics metrics = ScreenController.metrics();
-        final InputEntry<String> entry = bus.input().current();
-        final InputEntry<String> prevEntry = bus.input().prevEntry();
+        switchInput(ScreenController.metrics(), bus.input().current(), bus.input().prevEntry());
+    }
 
+    public static void nextInput() {
+        switchInput(ScreenController.metrics(), bus.input().current(), bus.input().nextEntry());
+    }
+
+    private static void switchInput(ScreenMetrics metrics, InputEntry<String> entry, InputEntry<String> prevEntry) {
         if (prevEntry != null) {
             if (bus.input().lastInput().getBuffer().get(0) == entry.getBuffer().get(0))
                 bus.input().setLastInput(entry);
