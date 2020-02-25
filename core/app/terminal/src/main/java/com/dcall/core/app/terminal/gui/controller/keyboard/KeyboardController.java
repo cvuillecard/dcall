@@ -2,6 +2,7 @@ package com.dcall.core.app.terminal.gui.controller.keyboard;
 
 import com.dcall.core.app.terminal.bus.handler.IOHandler;
 import com.dcall.core.app.terminal.bus.input.InputEntry;
+import com.dcall.core.app.terminal.bus.input.InputLine;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.cursor.CursorController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
@@ -328,6 +329,8 @@ public final class KeyboardController {
 
         metrics.minY = metrics.screenPosY(entry.nbLine());
         metrics.currY = metrics.minY;
+
+        DisplayController.drawOutputLine(bus.output().current(), metrics);
 
         bus.input().addEntry(PROMPT);
 

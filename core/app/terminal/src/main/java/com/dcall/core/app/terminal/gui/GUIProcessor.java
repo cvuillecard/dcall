@@ -1,6 +1,7 @@
 package com.dcall.core.app.terminal.gui;
 
 import com.dcall.core.app.terminal.bus.input.InputEntry;
+import com.dcall.core.app.terminal.bus.input.InputLine;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.cursor.CursorController;
 import com.dcall.core.app.terminal.gui.controller.keyboard.KeyboardController;

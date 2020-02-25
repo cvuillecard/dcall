@@ -70,4 +70,13 @@ public class TermAttributes {
     public static boolean onFirstLinePos(final int x, final int y) {
         return y == 0 && x == PROMPT.length();
     }
+
+    public static int getNbLines(int length) {
+        if (length > 0) {
+            final int nbLines = (length / getTotalLineWidth()) + (length % getTotalLineWidth() > 0 ? 1 : 0);
+            return nbLines == 0 ? 1 : nbLines;
+        }
+
+        return 0;
+    }
 }

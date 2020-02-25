@@ -1,12 +1,18 @@
 package com.dcall.core.app.terminal.bus.handler;
 
+import com.dcall.core.app.terminal.bus.input.InputLine;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
+import com.dcall.core.configuration.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.PROMPT;
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.getTotalLineWidth;
 
 public final class IOHandler {
     private static final Logger LOG = LoggerFactory.getLogger(IOHandler.class);
@@ -16,6 +22,7 @@ public final class IOHandler {
     private final File pipe = new File("pipe");
     private Process process = null;
     private int _BUFFER_SIZE = 2048;
+    private String lastInput = null;
 
     public void init() {
         initOutputFile();
@@ -42,6 +49,7 @@ public final class IOHandler {
             process.waitFor();
             readOutput();
         } catch (IOException | InterruptedException e) {
+            output().addInputLine(lastInput + ": command not found");
             LOG.error(this.getClass().getName() + " > ERROR < " + e.getMessage());
         }
         return this;
@@ -54,7 +62,9 @@ public final class IOHandler {
             final InputStream cin = new DataInputStream(new FileInputStream(pipe));
 
             while ((nread = cin.read(buffer, 0, _BUFFER_SIZE)) > 0) {
-                LOG.debug(new String(buffer).trim());
+                final String str = new String(buffer).trim();
+                output().addInputLine(str);
+                LOG.debug(str);
             }
 
             cin.close();
@@ -63,12 +73,15 @@ public final class IOHandler {
     }
 
     public void handleInput() {
-        final String cmd = inputHandler.current().toString().substring(PROMPT.length());
-        this.execute(cmd.split(" "));
+        lastInput = StringUtils.epur(inputHandler.current().toString().substring(PROMPT.length()));
+
+        this.addOutput().execute(lastInput.split(" "));
     }
 
-    public void prevEntry() {
+    private final IOHandler addOutput() {
+        output().entries().add(new InputLine<>());
 
+        return this;
     }
 
     // GETTERS

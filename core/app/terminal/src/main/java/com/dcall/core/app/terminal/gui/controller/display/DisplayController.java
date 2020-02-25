@@ -38,7 +38,7 @@ public final class DisplayController {
     public static void displayCharacter(final InputEntry<String> entry, final ScreenMetrics metrics, final String character) {
         LOG.debug("character : " + character);
 
-        TextDrawer.drawString(metrics.currX++, metrics.currY, character);
+        TextDrawer.drawInputString(metrics.currX++, metrics.currY, character);
 
         if (metrics.currX == metrics.maxX) {
             metrics.currX = metrics.minX;
@@ -76,12 +76,12 @@ public final class DisplayController {
     }
 
     private static void drawInputEntry(final InputEntry<String> entry, final ScreenMetrics metrics) {
-        TextDrawer.drawString(metrics.screenPosX(entry.posX()), metrics.screenPosY(entry.posY()),
+        TextDrawer.drawInputString(metrics.screenPosX(entry.posX()), metrics.screenPosY(entry.posY()),
                 entry.current().toString().substring(entry.posX(), entry.current().size()));
 
         if (entry.posY() < entry.maxNbLine()) {
             IntStream.range(entry.posY() + 1, entry.nbLine()).forEach(y ->
-                    TextDrawer.drawString(metrics.screenPosX(0), metrics.screenPosY(y), entry.getBuffer().get(y).toString())
+                    TextDrawer.drawInputString(metrics.screenPosX(0), metrics.screenPosY(y), entry.getBuffer().get(y).toString())
             );
         }
     }
@@ -125,7 +125,7 @@ public final class DisplayController {
 
         drawCurrentInputLine(entry, metrics);
 
-        IntStream.range(nextY, entry.nbLine()).forEach(y -> TextDrawer.drawString(metrics.screenPosX(0), metrics.screenPosY(y), entry.getBuffer().get(y).toString()));
+        IntStream.range(nextY, entry.nbLine()).forEach(y -> TextDrawer.drawInputString(metrics.screenPosX(0), metrics.screenPosY(y), entry.getBuffer().get(y).toString()));
     }
 
     public static void drawCurrentInputLine(final InputEntry<String> entry, final ScreenMetrics metrics) {
@@ -134,7 +134,23 @@ public final class DisplayController {
             metrics.currX = metrics.screenPosX(PROMPT.length());
         }
 
-        TextDrawer.drawString(metrics.currX, metrics.currY, entry.getBuffer().get(metrics.posY()).toString().substring(metrics.posX()));
+        TextDrawer.drawInputString(metrics.currX, metrics.currY, entry.getBuffer().get(metrics.posY()).toString().substring(metrics.posX()));
+    }
+
+    public static void drawOutputLine(final InputLine<String> entry, final ScreenMetrics metrics) {
+        final int posY = metrics.currY + entry.size();
+
+        if (posY > metrics.maxY) {
+            final int distance = posY - metrics.maxY;
+            ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.maxY, distance);
+            metrics.minY -= distance;
+            ScreenController.refresh();
+        }
+
+        IntStream.range(0, entry.size()).forEach(y -> TextDrawer.drawOutputString(metrics.screenPosX(0), metrics.screenPosY(y), entry.getBuffer().get(y)));
+
+        metrics.minY += entry.size();
+        metrics.currY = metrics.minY;
     }
 
     public static void paste(final InputEntry<String> entry, final int length, final ScreenMetrics metrics) {
