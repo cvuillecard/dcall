@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGIN_TOP;
+import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.PROMPT;
 
 public final class GUIProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(GUIProcessor.class);
@@ -77,19 +78,21 @@ public final class GUIProcessor {
         bus.input().resizeCurrent();
         final InputEntry<String> entry = bus.input().current();
 
-        if (metrics.maxY == metrics.minY) {
-            ScreenController.getScreen().scrollLines(MARGIN_TOP, metrics.maxY, 1);
-            metrics.minY -= 1;
+        if (metrics.maxY < metrics.minY) {
+            final int distance = metrics.minY - metrics.maxY;
+            ScreenController.getScreen().scrollLines(MARGIN_TOP, metrics.maxY, distance);
+            metrics.minY -= distance;
         }
 
         final ScreenMetrics oldMetrics = new ScreenMetrics(metrics);
-        oldMetrics.currX = metrics.screenPosX(TermAttributes.getPromptStartIdx());
+        oldMetrics.currX = metrics.screenPosX(PROMPT.length());
         oldMetrics.currY = oldMetrics.minY;
 
-        bus.input().current().setX(TermAttributes.getPromptStartIdx());
+        bus.input().current().setX(PROMPT.length());
         bus.input().current().setY(0);
 
         DisplayController.drawBlankEntry(bus.input().current(), oldMetrics);
+        DisplayController.displayPrompt(metrics);
 
         entry.setX(metrics.posX());
         entry.setY(metrics.posY());
