@@ -325,7 +325,6 @@ public final class KeyboardController {
         DisplayController.updateScreenMetrics(entry, metrics);
 
         bus.handleInput();
-//        DisplayController.drawOutput(bus.output().current());
 
         metrics.minY = metrics.screenPosY(entry.nbLine());
         metrics.currY = metrics.minY;

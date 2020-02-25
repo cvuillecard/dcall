@@ -33,7 +33,7 @@ public final class InputHandler {
         IntStream.range(0, in.length).forEach(i -> entry.add(String.valueOf(in[i])));
 
         entries.add(entry);
-        entryIdx++;
+        entryIdx = entries.size();
 
         setLastInput(current());
     }
