@@ -1,4 +1,4 @@
-package com.dcall.core.app.terminal.bus.output;
+package com.dcall.core.app.terminal.bus.input;
 
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 

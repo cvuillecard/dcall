@@ -234,6 +234,31 @@ public final class KeyboardController {
         ScreenController.stop();
     }
 
+    public static void prevInput() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final InputEntry<String> entry = bus.input().current();
+        final InputEntry<String> prevEntry = bus.input().prevEntry();
+
+        if (prevEntry != null) {
+            if (bus.input().lastInput().getBuffer().get(0) == entry.getBuffer().get(0))
+                bus.input().setLastInput(entry);
+            entry.setX(PROMPT.length());
+            entry.setY(0);
+            metrics.currX = metrics.screenPosX(entry.posX());
+            metrics.currY = metrics.screenPosY(entry.posY());
+
+            DisplayController.drawBlankFromPos(entry, metrics);
+
+            entry.getBuffer().clear();
+            entry.getBuffer().addAll(prevEntry.getBuffer());
+
+            DisplayController.drawBlankFromPos(entry, metrics);
+            DisplayController.updateScreenMetrics(entry, metrics);
+
+            moveEnd();
+        }
+    }
+
     public static void moveRight() {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
@@ -293,6 +318,9 @@ public final class KeyboardController {
         entry.setY(entry.maxNbLine());
 
         DisplayController.updateScreenMetrics(entry, metrics);
+
+        bus.handleInput();
+//        DisplayController.drawOutput(bus.output().current());
 
         metrics.minY = metrics.screenPosY(entry.nbLine());
         metrics.currY = metrics.minY;

@@ -2,7 +2,7 @@ package com.dcall.core.app.terminal.gui.controller.display;
 
 import com.dcall.core.app.terminal.bus.handler.IOHandler;
 import com.dcall.core.app.terminal.bus.input.InputEntry;
-import com.dcall.core.app.terminal.bus.output.InputLine;
+import com.dcall.core.app.terminal.bus.input.InputLine;
 import com.dcall.core.app.terminal.gui.GUIProcessor;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.cursor.CursorController;

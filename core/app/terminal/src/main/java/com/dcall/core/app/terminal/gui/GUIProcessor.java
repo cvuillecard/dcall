@@ -16,16 +16,15 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGIN_TOP;
-import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.PROMPT;
-import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.getTotalLineWidth;
 
-public final class GUIProcessor { // IOHandler -> InputHandler::InputEntries[INPUT_PAGE_SIZE] / OutputHandler::OutputEntries[OUTPUT_PAGE_SIZE] -> KeyBoardController
+public final class GUIProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(GUIProcessor.class);
     private static final IOHandler bus = new IOHandler();
     private static Terminal terminal;
     private static Screen screen;
 
     public static void start() {
+        bus.init();
         GUIProcessor.init();
         GUIProcessor.loop();
     }

@@ -1,7 +1,6 @@
 package com.dcall.core.app.terminal.bus.input;
 
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
-import com.dcall.core.app.terminal.bus.output.InputLine;
 
 import java.util.ArrayList;
 import java.util.List;

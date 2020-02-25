@@ -1,22 +1,21 @@
 package com.dcall.core.app.terminal.bus.handler;
 
 import com.dcall.core.app.terminal.bus.input.InputEntry;
-import com.dcall.core.app.terminal.bus.output.InputLine;
-import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
-import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
+import com.dcall.core.app.terminal.bus.input.InputLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public final class InputHandler {
     private static final Logger LOG = LoggerFactory.getLogger(InputHandler.class);
 
     private final List<InputEntry<String> > entries = new ArrayList<>();
     private final ClipBoard clipBoard = new ClipBoard();
+    private int entryIdx = 0;
+    private InputEntry<String> lastInput = null;
 
     public final void reset() {
         this.entries.clear();
@@ -34,6 +33,9 @@ public final class InputHandler {
         IntStream.range(0, in.length).forEach(i -> entry.add(String.valueOf(in[i])));
 
         entries.add(entry);
+        entryIdx++;
+
+        setLastInput(current());
     }
 
     public final <T> void cleanEntryFromPos(final InputEntry<T> entry) {
@@ -78,8 +80,24 @@ public final class InputHandler {
         entries.add(newEntry);
     }
 
+    public final InputEntry<String> prevEntry() {
+        if (!entries.isEmpty() && entries.size() > 1) {
+            entryIdx = (entryIdx == 0 && entryIdx < entries.size()) ? entries.size() -1 : --entryIdx;
+            return entryIdx == 0 ? lastInput : entries.get(entryIdx - 1);
+        }
+
+        return null;
+    }
+
     public final int size() { return entries.size(); }
     public final List<InputEntry<String>> entries() { return entries; }
     public final InputEntry<String> current() { return entries.get(size() - 1); }
     public final ClipBoard clipBoard() { return clipBoard; }
+    public final InputEntry<String> lastInput() { return lastInput; }
+
+    public final void setLastInput(final InputEntry<String> lastInput) {
+        this.lastInput = new InputEntry<>();
+        this.lastInput.getBuffer().clear();
+        this.lastInput.getBuffer().addAll(lastInput.getBuffer());
+    }
 }

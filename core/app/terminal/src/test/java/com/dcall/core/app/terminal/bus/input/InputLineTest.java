@@ -1,6 +1,5 @@
 package com.dcall.core.app.terminal.bus.input;
 
-import com.dcall.core.app.terminal.bus.output.InputLine;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
