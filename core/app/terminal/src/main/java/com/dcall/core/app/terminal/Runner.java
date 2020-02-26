@@ -10,6 +10,7 @@ import com.googlecode.lanterna.terminal.Terminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.util.Arrays;
 
 public class Runner {
@@ -17,6 +18,7 @@ public class Runner {
 
     public static void main(final String[] args) {
         TerminalApp.run();
+
 //        TerminalUI.start();
 //        initTerminal();
     }
