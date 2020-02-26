@@ -1,18 +1,13 @@
 package com.dcall.core.app.terminal.bus.handler;
 
 import com.dcall.core.app.terminal.bus.input.InputLine;
-import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.configuration.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.PROMPT;
-import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.getTotalLineWidth;
 
 public final class IOHandler {
     private static final Logger LOG = LoggerFactory.getLogger(IOHandler.class);
