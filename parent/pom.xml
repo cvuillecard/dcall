@@ -27,10 +27,14 @@
 
         <!--Dependencies-->
         <lanterna.version>3.0.2</lanterna.version>
+        <h2.version>1.4.197</h2.version>
         <vertx.version>3.5.1</vertx.version>
         <vertx-auth.version>3.5.3</vertx-auth.version>
         <vertx.unit.version>3.0.0</vertx.unit.version>
-        <spring.version>4.3.7.RELEASE</spring.version>
+        <javax.persistence.version>2.2</javax.persistence.version>
+        <hibernate.version>5.4.10.Final</hibernate.version>
+        <spring.version>5.2.3.RELEASE</spring.version>
+        <spring.data.version>2.2.4.RELEASE</spring.data.version>
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
         <!--Utils-->
@@ -55,6 +59,46 @@
                 <groupId>com.dcall.core</groupId>
                 <artifactId>configuration</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <!--Database-->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
+
+            <!--Jpa-->
+            <dependency>
+                <groupId>javax.persistence</groupId>
+                <artifactId>javax.persistence-api</artifactId>
+                <version>${javax.persistence.version}</version>
+            </dependency>
+
+            <!--Hibernate - for configuration at compilation only -->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+
+            <!--Spring-->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-orm</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-jpa</artifactId>
+                <version>${spring.data.version}</version>
             </dependency>
 
             <!--GUI Terminal-->

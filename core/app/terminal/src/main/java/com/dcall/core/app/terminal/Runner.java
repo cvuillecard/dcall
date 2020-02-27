@@ -1,5 +1,6 @@
 package com.dcall.core.app.terminal;
 
+import com.dcall.core.configuration.app.JpaConfig;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
@@ -9,18 +10,19 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-import javax.swing.*;
 import java.util.Arrays;
 
 public class Runner {
     private static final Logger LOG = LoggerFactory.getLogger(Runner.class);
 
     public static void main(final String[] args) {
+//        ApplicationContext context = new AnnotationConfigApplicationContext(JpaConfig.class);
         TerminalApp.run();
-
-//        TerminalUI.start();
-//        initTerminal();
     }
 
     public static void initTerminal() {
