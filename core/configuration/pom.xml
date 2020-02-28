@@ -13,7 +13,7 @@
         <relativePath>../../parent</relativePath>
     </parent>
 
-    <name>Dcall-configuration</name>
+    <name>Configuration</name>
     <description>Dcall configuration</description>
 
     <dependencies>

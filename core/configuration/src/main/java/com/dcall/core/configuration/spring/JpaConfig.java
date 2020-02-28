@@ -1,4 +1,4 @@
-package com.dcall.core.configuration.app;
+package com.dcall.core.configuration.spring;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

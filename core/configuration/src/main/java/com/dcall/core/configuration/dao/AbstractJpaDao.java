@@ -1,5 +1,8 @@
 package com.dcall.core.configuration.dao;
 
+import io.vertx.core.Vertx;
+import io.vertx.core.net.NetServer;
+import io.vertx.core.net.NetServerOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -26,6 +29,10 @@ public abstract class AbstractJpaDao<B, T, ID extends Serializable> implements G
 
     @PersistenceContext
     EntityManager entityManager;
+
+    public void test() {
+//        NetServer server = Vertx.vertx().getOrCreateContext().owner().eventBus().
+    }
 
     public AbstractJpaDao() {
         this.type = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];

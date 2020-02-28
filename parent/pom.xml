@@ -6,7 +6,7 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>Dcall-parent</name>
+    <name>Parent</name>
 
     <prerequisites>
         <maven>3.0.4</maven>
@@ -23,7 +23,7 @@
         <!--General directories used -->
         <project.main.resources>src/main/resources</project.main.resources>
         <project.test.resources>src/test/resources</project.test.resources>
-        <project.extern.resources.directory>/var/lib/dcall/env</project.extern.resources.directory>
+        <project.extern.resources.directory>/var/lib/dcall</project.extern.resources.directory>
 
         <!--Dependencies-->
         <lanterna.version>3.0.2</lanterna.version>
@@ -301,7 +301,7 @@
             <id>DEV</id>
             <properties>
                 <maven.local.repository>/home/worker/.m2/repository</maven.local.repository>
-                <extern.global.properties>${project.extern.resources.directory}/local.properties</extern.global.properties>
+                <extern.global.properties>${project.extern.resources.directory}/env/local.properties</extern.global.properties>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>

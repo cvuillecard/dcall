@@ -6,7 +6,7 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>Dcall-core</name>
+    <name>Core</name>
 
     <modules>
         <module>configuration</module>
