@@ -1,6 +1,13 @@
 package com.dcall.core.app.client.vertx;
 
+import com.hazelcast.internal.util.concurrent.Pipe;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.eventbus.MessageConsumer;
+import io.vertx.core.file.AsyncFile;
+import io.vertx.core.file.FileSystem;
+import io.vertx.core.file.OpenOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -15,9 +22,24 @@ public class OutputConsumerVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
+//        MessageConsumer<String> messageConsumer = vertx.eventBus().consumer(OutputConsumerVerticle.class.getSimpleName());
         vertx.eventBus().consumer(OutputConsumerVerticle.class.getSimpleName(), handler -> {
-            LOG.info(handler.body().toString());
+//            FileSystem fs = vertx.fileSystem();
+//            fs.open("pipe", new OpenOptions(), ar -> {
+//                if (ar.succeeded()) {
+//                    AsyncFile file = ar.result();
+//                }
+//            });
+            executeHandler(handler.body().toString());
+            LOG.info(OutputConsumerVerticle.class.getSimpleName() + " received : " + handler.body().toString());
+//            ProcessBuilder processBuilder
             handler.reply("done");
         });
+    }
+
+    private void executeHandler(final String input) {
+        if (input != null) {
+            ProcessBuilder processBuilder = new ProcessBuilder();
+        }
     }
 }

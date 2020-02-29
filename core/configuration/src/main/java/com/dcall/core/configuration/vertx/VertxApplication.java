@@ -21,13 +21,13 @@ import java.util.Properties;
 
 /**
  * Classes that start the VertX application by deploying all verticles provided
- * in the {@link VertxApplication#start(Class[])} method
+ * in the {@link <T> VertxApplication#start(boolean, T[])} method
  */
 public final class VertxApplication {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VertxApplication.class);
 
-	public static void start(Class<? extends Verticle>... verticles) {
+	public static <T> void start(final boolean isSpringVerticle, T... verticles) {
 
 		if (verticles == null) {
 			throw new IllegalArgumentException("verticleToDeploy cannot be null");
@@ -46,32 +46,61 @@ public final class VertxApplication {
             Vertx.clusteredVertx(options, res -> {
                 if (res.succeeded()) {
                     final Vertx vertx = res.result();
-                    ApplicationContext context = new AnnotationConfigApplicationContext(JpaConfig.class);
-                    VerticleFactory verticleFactory = context.getBean(SpringVerticleFactory.class);
+                    final DeploymentOptions opts = new DeploymentOptions();
+                    final VerticleFactory verticleFactory = isSpringVerticle ? initSptring(vertx) : null;
 
-                    vertx.registerVerticleFactory(verticleFactory);
-
-                    DeploymentOptions opts = new DeploymentOptions();
-
-
-                    Arrays.stream(verticles).forEach(verticle -> vertx
-                            .deployVerticle(verticleFactory.prefix() + ':' + verticle.getName(), opts, handler -> {
-                                try {
-                                    if (handler.succeeded())
-                                        LOG.info(verticle.getName() + " verticle deployed");
-                                    else
-                                        throw new TechnicalException(VertxApplication.class.getName()
-                                                + " > Failed to deploy verticle : " + verticle.getName(), handler.cause());
-                                } catch (TechnicalException e) {
-                                    e.log();
-                                }
-                            }));
+                    if (verticles instanceof Class[])
+                        deployClasses(vertx, verticleFactory, opts, (Class<? extends Verticle>[]) verticles);
+                    else if (verticles instanceof Verticle[])
+                        deployInstances(vertx, opts, (Verticle[]) verticles);
                 }
             });
 		} catch (IOException e) {
 			new TechnicalException(e).log();
 		}
 	}
+
+    private static VerticleFactory initSptring(Vertx vertx) {
+        final ApplicationContext context = new AnnotationConfigApplicationContext(JpaConfig.class);
+        final VerticleFactory verticleFactory = context.getBean(SpringVerticleFactory.class);
+
+        vertx.registerVerticleFactory(verticleFactory);
+
+        return verticleFactory;
+    }
+
+    private static void deployClasses(final Vertx vertx, final VerticleFactory verticleFactory, final DeploymentOptions opts, final Class<? extends Verticle>[] verticles) {
+        Arrays.stream(verticles).forEach(verticle -> {
+            final String className = verticleFactory != null ? verticleFactory.prefix() + ':' + verticle.getName() : verticle.getName();
+
+            vertx.deployVerticle(className, opts, handler -> {
+                try {
+                    if (handler.succeeded())
+                        LOG.info(verticle.getName() + " verticle deployed");
+                    else
+                        throw new TechnicalException(VertxApplication.class.getName()
+                                + " > Failed to deploy verticle : " + verticle.getName(), handler.cause());
+                } catch (TechnicalException e) {
+                    e.log();
+                }
+            });
+        });
+    }
+
+    private static void deployInstances(final Vertx vertx, final DeploymentOptions opts, final Verticle[] verticles) {
+        Arrays.stream(verticles).forEach(verticle -> vertx
+                .deployVerticle(verticle, opts, handler -> {
+                    try {
+                        if (handler.succeeded())
+                            LOG.info(verticle.getClass().getName() + " verticle deployed");
+                        else
+                            throw new TechnicalException(VertxApplication.class.getName()
+                                    + " > Failed to deploy verticle : " + verticle.getClass().getName(), handler.cause());
+                    } catch (TechnicalException e) {
+                        e.log();
+                    }
+                }));
+    }
 
     public static void stop(Class<? extends Verticle>... verticles) {
         if (verticles == null) {

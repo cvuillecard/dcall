@@ -6,7 +6,7 @@ import com.dcall.core.configuration.vertx.VertxApplication;
 
 public final class Runner {
 
-    public static void main(String[] args) {
-        VertxApplication.start(OutputConsumerVerticle.class, InputProducerVerticle.class);
+    public static void main(final String[] args) {
+            VertxApplication.start(true, OutputConsumerVerticle.class, InputProducerVerticle.class);
     }
 }
