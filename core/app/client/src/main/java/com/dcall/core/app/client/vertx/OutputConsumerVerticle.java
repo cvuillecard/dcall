@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.nio.Buffer;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -19,7 +20,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 public class OutputConsumerVerticle extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(OutputConsumerVerticle.class);
     private final int BUF_SIZE = 2048;
-    private final File output = new File("output");
+    private final File file = new File("output");
+    private InputStreamReader inputStreamReader;
 
     private void execute(final Message<Object> handler) {
         if (handler != null) {
@@ -29,6 +31,7 @@ public class OutputConsumerVerticle extends AbstractVerticle {
                 final Process process = processBuilder.redirectErrorStream(true)
                         .command(handler.body().toString().split(" "))
                         .start();
+                inputStreamReader = new InputStreamReader(process.getInputStream());
                 handleProcess(handler, process);
             } catch (IOException e) {
                 LOG.error(e.getMessage());
@@ -37,35 +40,32 @@ public class OutputConsumerVerticle extends AbstractVerticle {
     }
 
     private void handleProcess(final Message<Object> handler, final Process process) {
-
         vertx.executeBlocking(future -> {
-            final byte[] buffer = new byte[BUF_SIZE];
-            int nread = 0;
+            final char[] buffer = new char[BUF_SIZE];
+
             try {
-                if ((nread = process.getInputStream().read(buffer, 0, BUF_SIZE)) > 0) {
-                    vertx.eventBus().send(InputConsumerVerticle.class.getName(), new String(buffer).substring(0, nread - 1), r -> {
+                int nread;
+                while ((nread = inputStreamReader.read(buffer, 0, BUF_SIZE)) > 0) {
+                    vertx.eventBus().send(InputConsumerVerticle.class.getName(), new String(buffer).substring(0, nread), r -> {
                         if (r.succeeded())
                             LOG.info(r.result().body().toString());
                         else
                             new TechnicalException(r.cause()).log();
                     });
                 }
-                future.complete();
             } catch (IOException e) {
                 LOG.error(e.getMessage());
             }
+            future.complete();
         }, res -> {
             if (res.succeeded()) {
-                final boolean isAlive = process.isAlive();
-                if (isAlive) {
-                    handleProcess(handler, process);
-                }
-                else {
-                    LOG.debug(" > reading successful (alive = " + isAlive + ")");
+                try {
+                    inputStreamReader.close();
                     handler.reply(" > DONE");
+                } catch (IOException e) {
+                    LOG.error(e.getMessage());
                 }
-            }
-            else
+            } else
                 LOG.debug(" > reading failed");
         });
     }
