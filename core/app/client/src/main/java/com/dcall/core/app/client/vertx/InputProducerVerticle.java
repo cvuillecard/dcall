@@ -31,7 +31,7 @@ public class InputProducerVerticle extends AbstractVerticle {
 
         if (input != null && !(exit = input.equals("exit"))) {
             LOG.info("input > " + input);
-            MessageProducer<String> producer = vertx.eventBus().sender(OutputConsumerVerticle.class.getSimpleName());
+            final MessageProducer<String> producer = vertx.eventBus().sender(OutputConsumerVerticle.class.getSimpleName());
             producer.send(input, handler -> {
                 if (handler.succeeded()) {
                     LOG.info(handler.result().body().toString());
