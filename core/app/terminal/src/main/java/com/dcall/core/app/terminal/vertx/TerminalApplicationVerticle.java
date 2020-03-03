@@ -5,7 +5,7 @@ import io.vertx.core.AbstractVerticle;
 
 public class TerminalApplicationVerticle extends AbstractVerticle {
     @Override
-    public void start() throws Exception {
+    public void start() {
         GUIProcessor.start();
     }
 }
