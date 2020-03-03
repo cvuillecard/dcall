@@ -1,6 +1,7 @@
 package com.dcall.core.app.terminal.bus.handler;
 
 import com.dcall.core.app.terminal.bus.input.InputLine;
+import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.configuration.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,17 @@ public final class IOHandler {
     public void handleInput() {
         lastInput = StringUtils.epur(inputHandler.current().toString().substring(PROMPT.length()));
 
-        this.addOutput().execute(lastInput.split(" "));
+        if (!close())
+            this.addOutput().execute(lastInput.split(" "));
+    }
+
+    private boolean close() {
+        final boolean close = lastInput.trim().toLowerCase().equals("exit");
+
+        if (close)
+            ScreenController.stop();
+
+        return close;
     }
 
     private final IOHandler addOutput() {
