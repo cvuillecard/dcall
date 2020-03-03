@@ -62,15 +62,8 @@ public final class GUIProcessor {
     }
 
     private static void loop() {
-
         GUIProcessor.prompt(ScreenController.metrics());
-
         IOHandler();
-//        while (ScreenController.isUp()) {
-//            KeyboardController.handleKeyboard();
-//        }
-
-//        GUIProcessor.close();
     }
 
     private static void IOHandler() {
