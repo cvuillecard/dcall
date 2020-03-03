@@ -1,8 +1,6 @@
 package com.dcall.core.app.terminal.gui.controller.screen;
 
-import com.dcall.core.app.terminal.gui.GUIProcessor;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
-import com.dcall.core.app.terminal.gui.TerminalUI;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.screen.Screen;
@@ -43,7 +41,7 @@ public final class ScreenController {
             screen.stopScreen();
             screen.close();
         } catch (IOException e) {
-            LOG.error(TerminalUI.class.getName() + " - close() ERROR > " + e.getMessage());
+            LOG.error(ScreenController.class.getName() + " - close() ERROR > " + e.getMessage());
         }
     }
 

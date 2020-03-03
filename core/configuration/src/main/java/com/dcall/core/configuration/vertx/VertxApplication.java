@@ -121,4 +121,9 @@ public final class VertxApplication {
                             }
                         }));
     }
+
+    public static void shutdown() {
+        Vertx.currentContext().owner().close();
+        LOG.debug("Local vertx context closed.");
+    }
 }

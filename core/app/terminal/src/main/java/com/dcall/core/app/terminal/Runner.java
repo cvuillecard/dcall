@@ -1,5 +1,7 @@
 package com.dcall.core.app.terminal;
 
+import com.dcall.core.app.terminal.vertx.TerminalApplicationVerticle;
+import com.dcall.core.configuration.vertx.VertxApplication;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
@@ -16,8 +18,7 @@ public class Runner {
     private static final Logger LOG = LoggerFactory.getLogger(Runner.class);
 
     public static void main(final String[] args) {
-//        ApplicationContext context = new AnnotationConfigApplicationContext(JpaConfig.class);
-        TerminalApp.run();
+        VertxApplication.start(false, new TerminalApplicationVerticle());
     }
 
     public static void initTerminal() {

@@ -9,8 +9,10 @@ import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.bus.handler.IOHandler;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
+import com.dcall.core.configuration.vertx.VertxApplication;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
+import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,15 +65,33 @@ public final class GUIProcessor {
 
         GUIProcessor.prompt(ScreenController.metrics());
 
-        while (ScreenController.isUp()) {
-            KeyboardController.handleKeyboard();
-        }
+        IOHandler();
+//        while (ScreenController.isUp()) {
+//            KeyboardController.handleKeyboard();
+//        }
 
-        GUIProcessor.close();
+//        GUIProcessor.close();
+    }
+
+    private static void IOHandler() {
+        Vertx.currentContext().executeBlocking(future -> future.complete(ScreenController.isUp()), handler -> {
+            if (handler.succeeded()) {
+                if (handler.result().equals(true)) {
+                    KeyboardController.handleKeyboard();
+                    IOHandler();
+                }
+                else
+                    GUIProcessor.close();
+            }
+            else {
+                LOG.error(GUIProcessor.class.getName() + " > IOHandler() : " + handler.cause().getMessage());
+            }
+        });
     }
 
     private static void close() {
         ScreenController.close();
+        VertxApplication.shutdown();
     }
 
     public static void resize(final ScreenMetrics metrics) {
