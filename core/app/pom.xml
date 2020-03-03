@@ -1,80 +1,27 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+<?xml version="1.0"?>
+<project
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dcall.core</groupId>
-    <artifactId>applications</artifactId>
+    <version>1.0.0</version>
+    <artifactId>app</artifactId>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>com.dcall</groupId>
         <artifactId>parent</artifactId>
         <version>1.0.0</version>
-        <relativePath>../../parent</relativePath>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <name>Applications</name>
-    <description>Dcall application modules</description>
+
+    <description>Dcall applications</description>
 
     <modules>
+        <module>server</module>
         <module>client</module>
-        <module>terminal</module>
     </modules>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <addMavenDescriptor>false</addMavenDescriptor>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>${maven.local.repository}</classpathPrefix>
-                            <classpathLayoutType>repository</classpathLayoutType>
-                            <mainClass>com.dcall.core.app.${project.artifactId}.Runner</mainClass>
-                        </manifest>
-                        <manifestEntries>
-                            <Built-By>Crea-Technologie (Charles Vuillecard)</Built-By>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <!--<profiles>-->
-        <!--<profile>-->
-            <!--<id>conf-classpath</id>-->
-            <!--<activation>-->
-                <!--<property>-->
-                    <!--<name>useClassPath</name>-->
-                    <!--<value>true</value>-->
-                <!--</property>-->
-            <!--</activation>-->
-
-            <!--<build>-->
-                <!--<plugins>-->
-                    <!--<plugin>-->
-                        <!--<groupId>org.apache.maven.plugins</groupId>-->
-                        <!--<artifactId>maven-jar-plugin</artifactId>-->
-                        <!--<version>${maven.jar.plugin.version}</version>-->
-                        <!--<configuration>-->
-                            <!--<archive>-->
-                                <!--<addMavenDescriptor>false</addMavenDescriptor>-->
-                                <!--<manifest>-->
-                                    <!--<addClasspath>true</addClasspath>-->
-                                    <!--<classpathPrefix>${outputDirectory.repository}</classpathPrefix>-->
-                                    <!--<classpathLayoutType>simple</classpathLayoutType>-->
-                                    <!--<mainClass>com.eci.core.app.${project.artifactId}.Runner</mainClass>-->
-                                <!--</manifest>-->
-                            <!--</archive>-->
-                        <!--</configuration>-->
-                    <!--</plugin>-->
-                <!--</plugins>-->
-            <!--</build>-->
-        <!--</profile>-->
-    <!--</profiles>-->
 
 </project>
