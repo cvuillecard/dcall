@@ -1,5 +1,6 @@
 package com.dcall.core.app.client.terminal.bus.handler;
 
+import com.dcall.core.app.client.terminal.bus.input.InputEntry;
 import com.dcall.core.app.client.terminal.bus.input.InputLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ public class OutputHandler {
     public final int size() { return entries.size(); }
     public final List<InputLine<String>> entries() { return entries; }
     public final InputLine<String> current() { return entries.get(size() - 1); }
+    public final String lastInput() { return current().getBuffer().get(current().size() - 1); }
 
     public void addInputLine(final String str) {
         final String[] lines = str.split("\n");

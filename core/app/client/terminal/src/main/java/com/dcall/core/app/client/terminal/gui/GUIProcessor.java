@@ -51,15 +51,6 @@ public final class GUIProcessor {
         DisplayController.displayPrompt(metrics);
     }
 
-    public static void flush() {
-        try {
-            terminal.flush();
-        }
-        catch (IOException e) {
-            LOG.error(GUIProcessor.class.getName() + " > ERROR < " + e.getMessage());
-        }
-    }
-
     private static void loop() {
         GUIProcessor.prompt(ScreenController.metrics());
         handleIO();
@@ -70,12 +61,11 @@ public final class GUIProcessor {
             if (handler.succeeded()) {
                 if (handler.result().equals(true)) {
                     KeyboardController.handleKeyboard();
+//                    DisplayController.displayLastOutput(bus, ScreenController.metrics());
                     handleIO();
-                }
-                else
+                } else
                     GUIProcessor.close();
-            }
-            else {
+            } else {
                 LOG.error(GUIProcessor.class.getName() + " > IOHandler() : " + handler.cause().getMessage());
             }
         });
@@ -120,4 +110,6 @@ public final class GUIProcessor {
         if (entry.getBuffer().get(0).size() > TermAttributes.getPromptStartIdx())
             DisplayController.drawInputEntryFromPos(entry,  oldMetrics);
     }
+
+    public static IOHandler bus() { return bus; }
 }

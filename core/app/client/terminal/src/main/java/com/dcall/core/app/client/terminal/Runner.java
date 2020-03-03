@@ -1,5 +1,6 @@
 package com.dcall.core.app.client.terminal;
 
+import com.dcall.core.app.client.terminal.vertx.InputConsumerVerticle;
 import com.dcall.core.app.client.terminal.vertx.TerminalApplicationVerticle;
 import com.dcall.core.configuration.vertx.VertxApplication;
 import com.googlecode.lanterna.TerminalSize;
@@ -18,7 +19,11 @@ public class Runner {
     private static final Logger LOG = LoggerFactory.getLogger(Runner.class);
 
     public static void main(final String[] args) {
-        VertxApplication.start(false, new TerminalApplicationVerticle());
+        VertxApplication.start(
+                false,
+                new InputConsumerVerticle(),
+                new TerminalApplicationVerticle()
+        );
     }
 
     public static void initTerminal() {

@@ -1,8 +1,13 @@
 package com.dcall.core.app.client.terminal.bus.handler;
 
 import com.dcall.core.app.client.terminal.bus.input.InputLine;
+import com.dcall.core.app.client.terminal.gui.GUIProcessor;
 import com.dcall.core.app.client.terminal.gui.controller.screen.ScreenController;
+import com.dcall.core.app.client.terminal.vertx.InputProducerVerticle;
+import com.dcall.core.app.client.terminal.vertx.constant.URIConfig;
 import com.dcall.core.configuration.utils.StringUtils;
+import com.dcall.core.configuration.vertx.VertxApplication;
+import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +47,9 @@ public final class IOHandler {
     public IOHandler execute(final String... cmd) {
         try {
             process = processBuilder.command(cmd).start();
-            process.waitFor();
+//            process.waitFor();
             readOutput();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             output().addInputLine(lastInput + ": command not found");
             LOG.error(this.getClass().getName() + " > ERROR < " + e.getMessage());
         }
@@ -71,8 +76,25 @@ public final class IOHandler {
     public void handleInput() {
         lastInput = StringUtils.epur(inputHandler.current().toString().substring(PROMPT.length()));
 
-        if (!close())
-            this.addOutput().execute(lastInput.split(" "));
+        if (!close()) {
+            addOutput();
+            sendLastInput();
+            execute(lastInput.split(" "));
+        }
+    }
+
+    public void sendLastInput() {
+        if (lastInput != null) {
+            Vertx.currentContext().owner().eventBus()
+                    .send(URIConfig.CMD_PROCESSOR_CONSUMER, lastInput, res -> {
+                        if (res.succeeded()) {
+                            LOG.debug(" > GUI command traited by remote processor : replied > " + res.result());
+                        } else {
+                            LOG.error(IOHandler.class.getName() + " ERROR > " + res.cause().getMessage());
+                        }
+                        lastInput = null;
+                    });
+        }
     }
 
     private boolean close() {
@@ -84,13 +106,16 @@ public final class IOHandler {
         return close;
     }
 
-    private final IOHandler addOutput() {
+    public final IOHandler addOutput() {
         output().entries().add(new InputLine<>());
 
         return this;
     }
 
     // GETTERS
-    public final InputHandler input() { return inputHandler; }
-    public final OutputHandler output() { return outputHandler; }
+    public final InputHandler input() { return this.inputHandler; }
+    public final OutputHandler output() { return this.outputHandler; }
+    public final String getLastInput() { return this.lastInput; }
+
+    public final void setLastInput(final String lastInput) { this.lastInput = lastInput; }
 }

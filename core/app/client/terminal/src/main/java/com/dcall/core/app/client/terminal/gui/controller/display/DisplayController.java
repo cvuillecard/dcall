@@ -137,6 +137,13 @@ public final class DisplayController {
         TextDrawer.drawInputString(metrics.currX, metrics.currY, entry.getBuffer().get(metrics.posY()).toString().substring(metrics.posX()));
     }
 
+    public static void displayLastOutput(final IOHandler bus, final ScreenMetrics metrics) {
+        if (bus.getLastInput() != null && bus.output().size() > 0) {
+            DisplayController.drawOutputLine(bus.output().current(), metrics);
+            CursorController.moveAt(metrics);
+        }
+    }
+
     public static void drawOutputLine(final InputLine<String> entry, final ScreenMetrics metrics) {
         final int posY = metrics.currY + entry.size();
 

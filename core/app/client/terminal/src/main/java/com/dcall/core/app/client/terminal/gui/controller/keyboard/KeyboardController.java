@@ -328,12 +328,14 @@ public final class KeyboardController {
         metrics.minY = metrics.screenPosY(entry.nbLine());
         metrics.currY = metrics.minY;
 
-        DisplayController.drawOutputLine(bus.output().current(), metrics);
+        if (ScreenController.isUp()) {
+            DisplayController.drawOutputLine(bus.output().current(), metrics);
 
-        bus.input().addEntry(PROMPT);
+            bus.input().addEntry(PROMPT);
 
-        CursorController.moveAt(metrics);
-        DisplayController.displayPrompt(metrics);
+            CursorController.moveAt(metrics);
+            DisplayController.displayPrompt(metrics);
+        }
     }
 
     private static void handleScrollUp(final ScreenMetrics metrics, final InputEntry<String> entry) {
