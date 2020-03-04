@@ -101,8 +101,6 @@ public final class DisplayController {
                 }
                 metrics.currY = metrics.screenPosY(i++);
                 TextDrawer.drawOutputString(metrics.screenPosX(0), metrics.currY, entry.getBuffer().get(y).toString());
-//                TextDrawer.drawOutputString(metrics.screenPosX(0), metrics.currY++, entry.getBuffer().get(y).toString());
-                ScreenController.refresh();
                 bus.output().setLastIdx(y + 1);
             }
 
