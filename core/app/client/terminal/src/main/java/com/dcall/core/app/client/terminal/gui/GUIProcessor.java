@@ -53,6 +53,7 @@ public final class GUIProcessor {
 
     private static void loop() {
         GUIProcessor.prompt(ScreenController.metrics());
+
         handleIO();
     }
 
@@ -60,8 +61,11 @@ public final class GUIProcessor {
         Vertx.currentContext().executeBlocking(future -> future.complete(ScreenController.isUp()), handler -> {
             if (handler.succeeded()) {
                 if (handler.result().equals(true)) {
-                    KeyboardController.handleKeyboard();
-//                    DisplayController.displayLastOutput(bus, ScreenController.metrics());
+                    if (DisplayController.getLock())
+                        KeyboardController.handleNextInput();
+                    else {
+                        KeyboardController.handleKeyboard();
+                    }
                     handleIO();
                 } else
                     GUIProcessor.close();

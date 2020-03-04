@@ -34,9 +34,20 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
                 inputStreamReader = new InputStreamReader(process.getInputStream());
                 handleProcess(handler, process);
             } catch (IOException e) {
-                LOG.error(e.getMessage());
+                handleError(handler, e.getMessage());
             }
         }
+    }
+
+    private void handleError(final Message<Object> handler, final String msgError) {
+        LOG.error(msgError);
+        vertx.eventBus().send(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, msgError, r -> {
+            if (r.succeeded())
+                LOG.info(r.result().body().toString());
+            else
+                new TechnicalException(r.cause()).log();
+        });
+        handler.fail(-1, "[ CMD_NOT_FOUND_ERROR ]");
     }
 
     private void handleProcess(final Message<Object> handler, final Process process) {
@@ -65,8 +76,10 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
                 } catch (IOException e) {
                     LOG.error(e.getMessage());
                 }
-            } else
+            } else {
                 LOG.debug(" > reading failed");
+                handler.reply(res.cause());
+            }
         });
     }
 

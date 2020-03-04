@@ -12,19 +12,19 @@ public class InputLine<T> {
         this.buffer = new ArrayList<>(TermAttributes.getTotalLineWidth());
     }
 
-    public InputLine add(final T e) {
+    public InputLine<T> add(final T e) {
         buffer.add(e);
 
         return this;
     }
 
-    public InputLine addAt(final int i, final T e) {
+    public InputLine<T> addAt(final int i, final T e) {
         buffer.add(i, e);
 
         return this;
     }
 
-    public InputLine removeAt(final int i) {
+    public InputLine<T> removeAt(final int i) {
         buffer.remove(i);
 
         return this;

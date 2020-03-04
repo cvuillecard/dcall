@@ -323,18 +323,23 @@ public final class KeyboardController {
 
         DisplayController.updateScreenMetrics(entry, metrics);
 
-        bus.handleInput();
-
         metrics.minY = metrics.screenPosY(entry.nbLine());
         metrics.currY = metrics.minY;
+        metrics.currX = metrics.minX;
 
-        if (ScreenController.isUp()) {
-            DisplayController.drawOutputLine(bus.output().current(), metrics);
+        DisplayController.moveAt(metrics);
 
-            bus.input().addEntry(PROMPT);
+        if (!bus.handleInput() && ScreenController.isUp())
+            DisplayController.addPrompt(bus);
+    }
 
-            CursorController.moveAt(metrics);
-            DisplayController.displayPrompt(metrics);
+    public static void handleNextInput() {
+        if (bus.output().size() > 0 && bus.output().getLastIdx() < bus.output().current().nbLine()) {
+            DisplayController.drawOutputEntry(bus, ScreenController.metrics());
+        }
+        else {
+            if (bus.output().current().getBuffer().size() > 0)
+                DisplayController.displayPromptOnReady(bus);
         }
     }
 

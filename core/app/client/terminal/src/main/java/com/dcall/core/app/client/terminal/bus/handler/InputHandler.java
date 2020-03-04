@@ -19,6 +19,9 @@ public final class InputHandler {
 
     public final void reset() {
         this.entries.clear();
+        this.lastInput = null;
+        this.entryIdx = 0;
+
         System.gc();
     }
 

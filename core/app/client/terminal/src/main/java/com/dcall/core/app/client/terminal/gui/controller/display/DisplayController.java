@@ -11,6 +11,7 @@ import com.dcall.core.app.client.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.client.terminal.gui.service.drawer.TextDrawer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.awt.X11.Screen;
 
 import java.util.stream.IntStream;
 
@@ -18,6 +19,8 @@ import static com.dcall.core.app.client.terminal.gui.configuration.TermAttribute
 
 public final class DisplayController {
     private static final Logger LOG = LoggerFactory.getLogger(DisplayController.class);
+    private static volatile boolean lock = false;
+    private static volatile boolean dataReady = true;
 
     public static void init(final ScreenMetrics metrics) {
         TextDrawer.drawHeader(metrics.width);
@@ -86,6 +89,36 @@ public final class DisplayController {
         }
     }
 
+    public static void drawOutputEntry(final IOHandler bus, final ScreenMetrics metrics) {
+        final InputEntry<String> entry = bus.output().current();
+
+        if (!entry.isAppend()) {
+            for (int y = bus.output().getLastIdx(), i = 0; y < entry.nbLine(); y++) {
+                if ((metrics.currY + 1) > metrics.maxY - 1) {
+                    ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.maxY, 2);
+                    metrics.minY -= 2;
+                    ScreenController.refresh();
+                }
+                metrics.currY = metrics.screenPosY(i++);
+                TextDrawer.drawOutputString(metrics.screenPosX(0), metrics.currY, entry.getBuffer().get(y).toString());
+//                TextDrawer.drawOutputString(metrics.screenPosX(0), metrics.currY++, entry.getBuffer().get(y).toString());
+                ScreenController.refresh();
+                bus.output().setLastIdx(y + 1);
+            }
+
+            metrics.currY++;
+            metrics.minY = metrics.currY;
+            moveAt(metrics);
+        }
+    }
+
+    public static void displayPromptOnReady(final IOHandler bus) {
+        if (dataReady) {
+            lock = false;
+            addPrompt(bus);
+        }
+    }
+
     public static void moveAt(final ScreenMetrics metrics) {
         TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
         CursorController.moveAt(metrics);
@@ -135,22 +168,6 @@ public final class DisplayController {
         }
 
         TextDrawer.drawInputString(metrics.currX, metrics.currY, entry.getBuffer().get(metrics.posY()).toString().substring(metrics.posX()));
-    }
-
-    public static void drawOutputLine(final InputLine<String> entry, final ScreenMetrics metrics) {
-        final int posY = metrics.currY + entry.size();
-
-        if (posY > metrics.maxY) {
-            final int distance = posY - metrics.maxY;
-            ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.maxY, distance);
-            metrics.minY -= distance;
-            ScreenController.refresh();
-        }
-
-        IntStream.range(0, entry.size()).forEach(y -> TextDrawer.drawOutputString(metrics.screenPosX(0), metrics.screenPosY(y), entry.getBuffer().get(y)));
-
-        metrics.minY += entry.size();
-        metrics.currY = metrics.minY;
     }
 
     public static void paste(final InputEntry<String> entry, final int length, final ScreenMetrics metrics) {
@@ -233,5 +250,41 @@ public final class DisplayController {
             GUIProcessor.resize(metrics);
             moveAt(metrics);
         }
+    }
+
+    /**
+     * Method used to lock DisplayController when bus (IOHandler) is again waiting datas from last input executed
+     */
+    public static void lock() {
+        lock = true;
+        dataReady = false;
+    }
+
+    /**
+     * Method used to unlock DisplayController when all bus's output datas are available
+     */
+    public static void unlock() {
+        lock = false;
+    }
+
+    public static boolean getLock() {
+        return lock;
+    }
+
+    public static void setDataReady(final boolean ready) {
+        dataReady = ready;
+    }
+
+    public static boolean dataReady() {
+        return dataReady;
+    }
+
+    public static void addPrompt(final IOHandler bus) {
+        ScreenMetrics metrics = ScreenController.metrics();
+
+        bus.input().addEntry(PROMPT);
+
+        CursorController.moveAt(metrics);
+        DisplayController.displayPrompt(metrics);
     }
 }
