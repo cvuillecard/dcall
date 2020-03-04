@@ -59,7 +59,8 @@ public final class IOHandler {
                         LOG.debug(" > GUI command traited by remote processor : replied > " + res.result());
                     } else {
                         final String msgError = IOHandler.class.getName() + res.cause().getMessage();
-                        output().addToEntry(res.cause().getMessage());
+                        if (!res.cause().getMessage().isEmpty())
+                            output().addToEntry(res.cause().getMessage());
                         LOG.error(msgError);
                     }
                     lastInput = null;

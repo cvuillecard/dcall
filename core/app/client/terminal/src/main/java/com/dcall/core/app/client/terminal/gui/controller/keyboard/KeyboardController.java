@@ -329,7 +329,7 @@ public final class KeyboardController {
 
         DisplayController.moveAt(metrics);
 
-        if (!bus.handleInput() && ScreenController.isUp())
+        if (!bus.handleInput())
             DisplayController.addPrompt(bus);
     }
 

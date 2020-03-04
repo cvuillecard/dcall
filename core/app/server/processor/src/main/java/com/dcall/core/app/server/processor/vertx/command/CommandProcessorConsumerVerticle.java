@@ -32,7 +32,7 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
                         .command(handler.body().toString().split(" "))
                         .start();
                 inputStreamReader = new InputStreamReader(process.getInputStream());
-                handleProcess(handler, process);
+                handleProcess(handler);
             } catch (IOException e) {
                 handleError(handler, e.getMessage());
             }
@@ -41,16 +41,16 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
 
     private void handleError(final Message<Object> handler, final String msgError) {
         LOG.error(msgError);
+        handler.fail(-1, "");
         vertx.eventBus().send(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, msgError, r -> {
             if (r.succeeded())
                 LOG.info(r.result().body().toString());
             else
                 new TechnicalException(r.cause()).log();
         });
-        handler.fail(-1, "[ CMD_NOT_FOUND_ERROR ]");
     }
 
-    private void handleProcess(final Message<Object> handler, final Process process) {
+    private void handleProcess(final Message<Object> handler) {
         vertx.executeBlocking(future -> {
             final char[] buffer = new char[BUF_SIZE];
 
