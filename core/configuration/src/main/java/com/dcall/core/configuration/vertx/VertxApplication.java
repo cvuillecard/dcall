@@ -9,8 +9,6 @@ import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.spi.VerticleFactory;
-import io.vertx.core.spi.cluster.ClusterManager;
-import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -25,10 +23,12 @@ import java.util.Properties;
  * in the {@link <T> VertxApplication#start(boolean, T[])} method
  */
 public final class VertxApplication {
-
 	private static final Logger LOG = LoggerFactory.getLogger(VertxApplication.class);
 
-	public static <T> void start(final boolean isSpringVerticle, T... verticles) {
+    private static final String FILE_PROPERTIES = "local.properties";
+    private static final HazelcastConfigurator clusterManagerConfigurator = new HazelcastConfigurator();
+
+    public static <T> void start(final boolean isSpringVerticle, T... verticles) {
 
 		if (verticles == null) {
 			throw new IllegalArgumentException("verticleToDeploy cannot be null");
@@ -36,14 +36,10 @@ public final class VertxApplication {
 
 		try {
             final Properties properties = loadProperties();
-
-			final VertxOptions options = new VertxEventBusSSLConfigurator()
-					.setKeyStoreFilePath(properties.get("keystore.path").toString())
-					.setTrustStoreFilePath(properties.get("truststore.path").toString())
-					.setPwdKeyStore(properties.get("keystore.pwd").toString())
-					.setPwdTrustStore(properties.get("truststore.pwd").toString()).execute()
-                    .setClusterManager(new HazelcastClusterManager());
-//                    .setClusterManager(new HazelcastConfigurator().configure(properties));
+		    final VertxOptions options = new ClusterOptionsConfigurator(configureVertxOptions(properties))
+                    .configure(properties.get("cluster.default.ip").toString(),null,
+                            null, null)
+                    .getVertxOptions();
 
             Vertx.clusteredVertx(options, res -> {
                 if (res.succeeded()) {
@@ -62,9 +58,21 @@ public final class VertxApplication {
 		}
 	}
 
+    private static VertxOptions configureVertxOptions(final Properties properties) {
+        return new VertxEventBusSSLConfigurator()
+                .setKeyStoreFilePath(properties.get("keystore.path").toString())
+                .setTrustStoreFilePath(properties.get("truststore.path").toString())
+                .setPwdKeyStore(properties.get("keystore.pwd").toString())
+                .setPwdTrustStore(properties.get("truststore.pwd").toString())
+                .execute()
+                .setClusterManager(clusterManagerConfigurator.configureDefault(properties));
+                //.setClusterManager(new HazelcastConfigurator().configureNoMulticast(properties));
+
+    }
+
     private static Properties loadProperties() throws IOException {
         final Properties properties = new Properties();
-        properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("local.properties"));
+        properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(FILE_PROPERTIES));
 
         return properties;
     }

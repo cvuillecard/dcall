@@ -11,12 +11,17 @@ public final class HazelcastConfigurator {
     private static final Logger LOG = LoggerFactory.getLogger(HazelcastConfigurator.class);
     private Config config = new Config();
 
-    public HazelcastClusterManager configure(final Properties properties) {
-        configureTcp(properties.get("hazelcast.join.ip").toString());
-//        this.configureMultiCast(false);
+    public HazelcastClusterManager configureNoMulticast(final Properties properties) {
+        configureTcp(properties.get("cluster.default.ip").toString());
+        this.configureMultiCast(false);
 
         return getClusterManager();
     }
+
+    public HazelcastClusterManager configureDefault(final Properties properties) {
+        return new HazelcastClusterManager();
+    }
+
 
     private HazelcastClusterManager getClusterManager() {
         return new HazelcastClusterManager(this.config);
