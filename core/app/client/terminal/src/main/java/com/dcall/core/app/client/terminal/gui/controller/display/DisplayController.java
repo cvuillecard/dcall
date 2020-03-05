@@ -160,9 +160,9 @@ public final class DisplayController {
     }
 
     public static void drawCurrentInputLine(final InputEntry<String> entry, final ScreenMetrics metrics) {
-        if (metrics.posY() == 0 && metrics.posX() < PROMPT.length()) {
+        if (metrics.posY() == 0 && metrics.posX() < TermAttributes.getPrompt().length()) {
             TextDrawer.drawPrompt(metrics);
-            metrics.currX = metrics.screenPosX(PROMPT.length());
+            metrics.currX = metrics.screenPosX(TermAttributes.getPrompt().length());
         }
 
         TextDrawer.drawInputString(metrics.currX, metrics.currY, entry.getBuffer().get(metrics.posY()).toString().substring(metrics.posX()));
@@ -220,7 +220,7 @@ public final class DisplayController {
                 metrics.currX = metrics.screenPosX(entry.posX());
                 metrics.currY =  metrics.screenPosY(entry.posY());
                 drawBlankFromPos(entry, metrics);
-                entry.setX(PROMPT.length());
+                entry.setX(TermAttributes.getPrompt().length());
                 drawInputEntryFromPos(entry, metrics);
                 entry.setX(entryPosX);
                 metrics.currX = metrics.screenPosX(entryPosX);
@@ -280,7 +280,7 @@ public final class DisplayController {
     public static void addPrompt(final IOHandler bus) {
         ScreenMetrics metrics = ScreenController.metrics();
 
-        bus.input().addEntry(PROMPT);
+        bus.input().addEntry(TermAttributes.getPrompt());
 
         CursorController.moveAt(metrics);
         DisplayController.displayPrompt(metrics);

@@ -1,9 +1,13 @@
 package com.dcall.core.app.client.terminal.gui.configuration;
 
+import com.dcall.core.configuration.exception.TechnicalException;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TextColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class TermAttributes {
     private static final Logger LOG = LoggerFactory.getLogger(TermAttributes.class);
@@ -30,7 +34,7 @@ public class TermAttributes {
     public static final TextColor PROMPT_BACKGROUND = TextColor.ANSI.BLACK;
     public static final TextColor PROMPT_FOREGROUND = TextColor.ANSI.CYAN;
     public static final SGR[] PROMPT_STYLE = new SGR[] { SGR.BOLD };
-    public static final String PROMPT = "DCall > ";
+    public static final String PROMPT = "DCall ~ ";
 
     // INPUT
     public static final int DEF_INPUT_NB_LINE = 255;
@@ -43,6 +47,16 @@ public class TermAttributes {
     public static final int SCROLL_PADDING_DOWN = -1;
 
     // UTILS
+    public static String getPrompt() {
+        try {
+            return InetAddress.getLocalHost().getHostName() + "@" + PROMPT;
+        } catch (UnknownHostException e) {
+            new TechnicalException(e).log();
+        }
+
+        return PROMPT;
+    }
+
     public static int getMinScreenWidth() {
         return DEF_FRAME_NB_COLS / MIN_SIZE_COEF;
     }
@@ -64,11 +78,11 @@ public class TermAttributes {
     }
 
     public static int getPromptStartIdx() {
-        return MARGIN_LEFT + TermAttributes.PROMPT.length();
+        return MARGIN_LEFT + TermAttributes.getPrompt().length();
     }
 
     public static boolean onFirstLinePos(final int x, final int y) {
-        return y == 0 && x == PROMPT.length();
+        return y == 0 && x == getPrompt().length();
     }
 
     public static int getNbLines(int length) {

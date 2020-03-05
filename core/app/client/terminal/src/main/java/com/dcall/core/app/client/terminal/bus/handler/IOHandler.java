@@ -1,5 +1,6 @@
 package com.dcall.core.app.client.terminal.bus.handler;
 
+import com.dcall.core.app.client.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.client.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.client.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.client.terminal.vertx.constant.URIConfig;
@@ -40,7 +41,7 @@ public final class IOHandler {
     }
 
     public boolean handleInput() {
-        lastInput = StringUtils.epur(inputHandler.current().toString().substring(PROMPT.length()));
+        lastInput = StringUtils.epur(inputHandler.current().toString().substring(TermAttributes.getPrompt().length()));
 
         if (!lastInput.isEmpty() && !close()) {
             sendLastInput();

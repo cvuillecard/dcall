@@ -15,10 +15,7 @@ import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 import static com.dcall.core.app.client.terminal.gui.configuration.TermAttributes.MARGIN_TOP;
-import static com.dcall.core.app.client.terminal.gui.configuration.TermAttributes.PROMPT;
 
 public final class GUIProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(GUIProcessor.class);
@@ -46,7 +43,7 @@ public final class GUIProcessor {
     private static void prompt(final ScreenMetrics metrics) {
         metrics.currY = metrics.minY;
 
-        bus.input().addEntry(TermAttributes.PROMPT);
+        bus.input().addEntry(TermAttributes.getPrompt());
 
         DisplayController.displayPrompt(metrics);
     }
@@ -91,10 +88,10 @@ public final class GUIProcessor {
         }
 
         final ScreenMetrics oldMetrics = new ScreenMetrics(metrics);
-        oldMetrics.currX = metrics.screenPosX(PROMPT.length());
+        oldMetrics.currX = metrics.screenPosX(TermAttributes.getPrompt().length());
         oldMetrics.currY = oldMetrics.minY;
 
-        bus.input().current().setX(PROMPT.length());
+        bus.input().current().setX(TermAttributes.getPrompt().length());
         bus.input().current().setY(0);
 
         DisplayController.drawBlankEntry(bus.input().current(), oldMetrics);

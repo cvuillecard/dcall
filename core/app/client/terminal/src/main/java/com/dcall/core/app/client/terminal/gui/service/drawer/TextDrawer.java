@@ -10,6 +10,7 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.graphics.TextGraphics;
 
+import static com.dcall.core.app.client.terminal.gui.configuration.TermAttributes.HEADER_BACKGROUND;
 import static com.dcall.core.app.client.terminal.gui.configuration.TermAttributes.MARGIN;
 
 public final class TextDrawer {
@@ -30,10 +31,23 @@ public final class TextDrawer {
     }
 
     public static void drawPrompt(final ScreenMetrics metrics) {
-        TextDrawer.textGraphics().drawLine(TermAttributes.MARGIN_LEFT, metrics.currY, TermAttributes.PROMPT.length() - 1, metrics.currY, new TextCharacter(' ')
+        final String prompt = TermAttributes.getPrompt();
+        final int separatorIdx = prompt.indexOf('@');
+        final String user = prompt.substring(0, separatorIdx);
+        final String host = prompt.substring(separatorIdx + 1, prompt.length() - 2);
+        final String suffix = prompt.substring(user.length() + 1 + host.length(), prompt.length());
+
+        TextDrawer.textGraphics().drawLine(TermAttributes.MARGIN_LEFT, metrics.currY, prompt.length() - 1, metrics.currY, new TextCharacter(' ')
                 .withBackgroundColor(TermAttributes.PROMPT_BACKGROUND));
 
-        TextDrawer.promptTextGraphics().putString(TermAttributes.MARGIN_LEFT, metrics.currY, TermAttributes.PROMPT, SGR.BOLD);
+        TextDrawer.promptTextGraphics().putString(TermAttributes.MARGIN_LEFT, metrics.currY, user, SGR.BOLD);
+
+        TextDrawer.textGraphics().putString(TermAttributes.MARGIN_LEFT + user.length(), metrics.currY, "@", SGR.BOLD);
+
+        TextDrawer.promptTextGraphics().putString(TermAttributes.MARGIN_LEFT + user.length() + 1, metrics.currY, host, SGR.BOLD);
+
+        TextDrawer.textGraphics().setForegroundColor(HEADER_BACKGROUND)
+                .putString(TermAttributes.MARGIN_LEFT + user.length() + 1 + host.length(), metrics.currY, suffix, SGR.BOLD);
     }
 
     public static void drawBlank(final int startX, final int startY, final int endX, final int endY) {

@@ -3,7 +3,6 @@ package com.dcall.core.app.client.terminal.gui.controller.keyboard;
 import com.dcall.core.app.client.terminal.bus.handler.IOHandler;
 import com.dcall.core.app.client.terminal.bus.input.InputEntry;
 import com.dcall.core.app.client.terminal.gui.configuration.TermAttributes;
-import com.dcall.core.app.client.terminal.gui.controller.cursor.CursorController;
 import com.dcall.core.app.client.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.client.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.client.terminal.gui.controller.screen.ScreenMetrics;
@@ -18,7 +17,6 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static com.dcall.core.app.client.terminal.gui.configuration.TermAttributes.MARGIN_TOP;
-import static com.dcall.core.app.client.terminal.gui.configuration.TermAttributes.PROMPT;
 import static com.dcall.core.app.client.terminal.gui.configuration.TermAttributes.onFirstLinePos;
 
 public final class KeyboardController {
@@ -124,8 +122,8 @@ public final class KeyboardController {
 
         handleScrollDown(metrics, entry);
 
-        if (entry.posX() <= PROMPT.length() && entry.posY() == 0)
-            entry.setX(PROMPT.length());
+        if (entry.posX() <= TermAttributes.getPrompt().length() && entry.posY() == 0)
+            entry.setX(TermAttributes.getPrompt().length());
 
         metrics.currX = metrics.screenPosX(entry.posX());
         metrics.currY = metrics.screenPosY(entry.posY());
@@ -137,7 +135,7 @@ public final class KeyboardController {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
 
-        entry.setX(PROMPT.length());
+        entry.setX(TermAttributes.getPrompt().length());
         entry.setY(0);
 
         handleScrollDown(metrics, entry);
@@ -177,7 +175,7 @@ public final class KeyboardController {
             final int newY = entry.posY() - 1;
 
             entry.setY(newY);
-            entry.setX(newY == 0 && entry.posX() < PROMPT.length() ? PROMPT.length() : entry.posX());
+            entry.setX(newY == 0 && entry.posX() < TermAttributes.getPrompt().length() ? TermAttributes.getPrompt().length() : entry.posX());
 
             handleScrollDown(metrics, entry);
 
@@ -246,7 +244,7 @@ public final class KeyboardController {
         if (prevEntry != null) {
             if (bus.input().lastInput().getBuffer().get(0) == entry.getBuffer().get(0))
                 bus.input().setLastInput(entry);
-            entry.setX(PROMPT.length());
+            entry.setX(TermAttributes.getPrompt().length());
             entry.setY(0);
             metrics.currX = metrics.screenPosX(entry.posX());
             metrics.currY = metrics.screenPosY(entry.posY());
@@ -308,7 +306,7 @@ public final class KeyboardController {
         final int posX = bus.input().current().posX();
         final int posY = bus.input().current().posY();
 
-        if (posY > 0 || (posY == 0 && posX > PROMPT.length())) {
+        if (posY > 0 || (posY == 0 && posX > TermAttributes.getPrompt().length())) {
             bus.input().current().remove();
             DisplayController.deleteCharacter(bus.input().current(), ScreenController.metrics());
         }
