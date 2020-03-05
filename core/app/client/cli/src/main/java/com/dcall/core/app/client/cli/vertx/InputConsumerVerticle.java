@@ -16,9 +16,9 @@ public class InputConsumerVerticle extends AbstractVerticle {
     @Override
     public void start()  {
         vertx.eventBus().consumer(InputConsumerVerticle.class.getName(), handler -> {
-            LOG.info(" > data received : \n" + handler.body().toString());
+            LOG.info(" CLI > data received : \n" + handler.body().toString());
 
-            handler.reply(" > data consumed.");
+            handler.reply(" CLI > data consumed.");
         });
     }
 }

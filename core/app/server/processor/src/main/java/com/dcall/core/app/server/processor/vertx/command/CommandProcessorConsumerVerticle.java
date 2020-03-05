@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -31,7 +32,7 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
                 final Process process = processBuilder.redirectErrorStream(true)
                         .command(handler.body().toString().split(" "))
                         .start();
-                inputStreamReader = new InputStreamReader(process.getInputStream());
+                inputStreamReader = new InputStreamReader(process.getInputStream(), "UTF-8");
                 handleProcess(handler);
             } catch (IOException e) {
                 handleError(handler, e.getMessage());

@@ -1,4 +1,4 @@
-package com.dcall.core.app.server;
+package com.dcall.core.app.server.processor;
 
 import com.dcall.core.app.server.processor.vertx.command.CommandProcessorConsumerVerticle;
 import com.dcall.core.configuration.vertx.VertxApplication;

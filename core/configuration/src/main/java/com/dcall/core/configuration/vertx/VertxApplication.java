@@ -2,6 +2,7 @@ package com.dcall.core.configuration.vertx;
 
 import com.dcall.core.configuration.exception.TechnicalException;
 import com.dcall.core.configuration.spring.JpaConfig;
+import com.dcall.core.configuration.vertx.cluster.HazelcastConfigurator;
 import com.dcall.core.configuration.vertx.ssl.VertxEventBusSSLConfigurator;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Verticle;
@@ -34,14 +35,15 @@ public final class VertxApplication {
 		}
 
 		try {
-			final Properties properties = new Properties();
-			properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("local.properties"));
-			final ClusterManager mgr = new HazelcastClusterManager();
+            final Properties properties = loadProperties();
+
 			final VertxOptions options = new VertxEventBusSSLConfigurator()
 					.setKeyStoreFilePath(properties.get("keystore.path").toString())
 					.setTrustStoreFilePath(properties.get("truststore.path").toString())
 					.setPwdKeyStore(properties.get("keystore.pwd").toString())
-					.setPwdTrustStore(properties.get("truststore.pwd").toString()).execute().setClusterManager(mgr);
+					.setPwdTrustStore(properties.get("truststore.pwd").toString()).execute()
+                    .setClusterManager(new HazelcastClusterManager());
+//                    .setClusterManager(new HazelcastConfigurator().configure(properties));
 
             Vertx.clusteredVertx(options, res -> {
                 if (res.succeeded()) {
@@ -59,6 +61,13 @@ public final class VertxApplication {
 			new TechnicalException(e).log();
 		}
 	}
+
+    private static Properties loadProperties() throws IOException {
+        final Properties properties = new Properties();
+        properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("local.properties"));
+
+        return properties;
+    }
 
     private static VerticleFactory initSptring(Vertx vertx) {
         final ApplicationContext context = new AnnotationConfigApplicationContext(JpaConfig.class);
