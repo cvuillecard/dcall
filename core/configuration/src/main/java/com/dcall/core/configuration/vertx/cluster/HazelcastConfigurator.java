@@ -12,7 +12,7 @@ public final class HazelcastConfigurator {
     private Config config = new Config();
 
     public HazelcastClusterManager configureNoMulticast(final Properties properties) {
-        configureTcp(properties.get("cluster.default.ip").toString());
+        configureTcp(properties.get("cluster.host.ip").toString());
         this.configureMultiCast(false);
 
         return getClusterManager();

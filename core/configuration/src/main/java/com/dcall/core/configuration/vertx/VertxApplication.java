@@ -2,6 +2,7 @@ package com.dcall.core.configuration.vertx;
 
 import com.dcall.core.configuration.exception.TechnicalException;
 import com.dcall.core.configuration.spring.JpaConfig;
+import com.dcall.core.configuration.vertx.cluster.ClusterOptionsConfigurator;
 import com.dcall.core.configuration.vertx.cluster.HazelcastConfigurator;
 import com.dcall.core.configuration.vertx.ssl.VertxEventBusSSLConfigurator;
 import io.vertx.core.DeploymentOptions;
@@ -24,39 +25,44 @@ import java.util.Properties;
  */
 public final class VertxApplication {
 	private static final Logger LOG = LoggerFactory.getLogger(VertxApplication.class);
-
+    private static VertxOptions options;
     private static final String FILE_PROPERTIES = "local.properties";
     private static final HazelcastConfigurator clusterManagerConfigurator = new HazelcastConfigurator();
 
+    static {
+        try {
+            final Properties properties = loadProperties();
+            options = new ClusterOptionsConfigurator(configureVertxOptions(properties))
+                    .configure(properties.get("cluster.host.ip").toString(),
+                            properties.get("cluster.public.ip").toString(),
+                            Integer.valueOf(properties.get("cluster.host.port").toString()),
+                            Integer.valueOf(properties.get("cluster.public.port").toString()))
+                    .getVertxOptions();
+        }
+        catch (IOException e) {
+            new TechnicalException(e).log();
+        }
+    }
+
     public static <T> void start(final boolean isSpringVerticle, T... verticles) {
 
-		if (verticles == null) {
-			throw new IllegalArgumentException("verticleToDeploy cannot be null");
-		}
+        if (verticles == null) {
+            throw new IllegalArgumentException("verticleToDeploy cannot be null");
+        }
 
-		try {
-            final Properties properties = loadProperties();
-		    final VertxOptions options = new ClusterOptionsConfigurator(configureVertxOptions(properties))
-                    .configure(properties.get("cluster.default.ip").toString(),null,
-                            null, null)
-                    .getVertxOptions();
+        Vertx.clusteredVertx(options, res -> {
+            if (res.succeeded()) {
+                final Vertx vertx = res.result();
+                final DeploymentOptions opts = new DeploymentOptions();
+                final VerticleFactory verticleFactory = isSpringVerticle ? initSptring(vertx) : null;
 
-            Vertx.clusteredVertx(options, res -> {
-                if (res.succeeded()) {
-                    final Vertx vertx = res.result();
-                    final DeploymentOptions opts = new DeploymentOptions();
-                    final VerticleFactory verticleFactory = isSpringVerticle ? initSptring(vertx) : null;
-
-                    if (verticles instanceof Class[])
-                        deployClasses(vertx, verticleFactory, opts, (Class<? extends Verticle>[]) verticles);
-                    else if (verticles instanceof Verticle[])
-                        deployInstances(vertx, opts, (Verticle[]) verticles);
-                }
-            });
-		} catch (IOException e) {
-			new TechnicalException(e).log();
-		}
-	}
+                if (verticles instanceof Class[])
+                    deployClasses(vertx, verticleFactory, opts, (Class<? extends Verticle>[]) verticles);
+                else if (verticles instanceof Verticle[])
+                    deployInstances(vertx, opts, (Verticle[]) verticles);
+            }
+        });
+    }
 
     private static VertxOptions configureVertxOptions(final Properties properties) {
         return new VertxEventBusSSLConfigurator()
@@ -68,6 +74,15 @@ public final class VertxApplication {
                 .setClusterManager(clusterManagerConfigurator.configureDefault(properties));
                 //.setClusterManager(new HazelcastConfigurator().configureNoMulticast(properties));
 
+    }
+
+    public static void setHost(final String host, final String publicAddress) {
+        final String publicHost = publicAddress == null || publicAddress.isEmpty() ? host : publicAddress;
+
+        options.getEventBusOptions().setHost(host);
+        options.getEventBusOptions().setClusterPublicHost(publicHost);
+        options.setClusterHost(host);
+        options.setClusterPublicHost(publicHost);
     }
 
     private static Properties loadProperties() throws IOException {

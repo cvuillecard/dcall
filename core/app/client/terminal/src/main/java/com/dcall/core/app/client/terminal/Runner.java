@@ -10,6 +10,7 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
+import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,12 @@ public class Runner {
     private static final Logger LOG = LoggerFactory.getLogger(Runner.class);
 
     public static void main(final String[] args) {
+        if (args.length != 1) {
+            LOG.error("<usage> : java -jar terminal-x.x.x.jar cluster_adress");
+            return;
+        }
+
+        VertxApplication.setHost(args[0], args[0]);
         VertxApplication.start(
                 false,
                 new InputConsumerVerticle(),

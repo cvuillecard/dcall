@@ -1,4 +1,4 @@
-package com.dcall.core.configuration.vertx;
+package com.dcall.core.configuration.vertx.cluster;
 
 import com.dcall.core.configuration.utils.HostUtils;
 import io.vertx.core.VertxOptions;
@@ -17,28 +17,28 @@ public final class ClusterOptionsConfigurator {
         this.eventBusOptions = vertxOptions.getEventBusOptions();
     }
 
-    public ClusterOptionsConfigurator configure(final String localIp, final String publicIp, final Integer localPort, final String publicPort) {
-        final String host = localIp != null && !localIp.isEmpty() ? localIp : HostUtils.getLocalHostIp();
+    public ClusterOptionsConfigurator configure(final String hostIp, final String publicIp, final Integer eventBusPort, final Integer clusterPort) {
+        final String host = hostIp != null && !hostIp.isEmpty() ? hostIp : HostUtils.getLocalHostIp();
         final String publicHost = publicIp != null && !publicIp.isEmpty() ? publicIp : host;
 
-        return setEventBusHost(host, publicHost).setVertxBusHost(host, publicHost)
-                .configurePort(localPort, publicPort);
+        return setEventBusHost(host, publicHost).setClusterHost(host, publicHost)
+                .configurePort(eventBusPort, clusterPort);
     }
 
-    private ClusterOptionsConfigurator configurePort(final Integer port, final String publicPort) {
-        if (port != null) {
-            vertxOptions.setClusterPort(port);
+    private ClusterOptionsConfigurator configurePort(final Integer eventBusPort, final Integer clusterPort) {
+        if (eventBusPort != null) {
+            eventBusOptions.setPort(eventBusPort);
         }
-        if (publicPort != null && !publicPort.isEmpty()) {
-            if (Integer.valueOf(publicPort).equals(port))
-                throw new IllegalArgumentException(this.getClass().getName() + " ERROR > localPort must be different of publicPort");
-            vertxOptions.setClusterPublicHost(publicPort);
+        if (clusterPort != null) {
+            if (clusterPort.equals(eventBusPort))
+                throw new IllegalArgumentException(this.getClass().getName() + " ERROR > eventBusPort must be different of publicPort");
+            vertxOptions.setClusterPort(clusterPort);
         }
 
         return this;
     }
 
-    private ClusterOptionsConfigurator setVertxBusHost(final String clusterHostIp, final String publicHostIp) {
+    private ClusterOptionsConfigurator setClusterHost(final String clusterHostIp, final String publicHostIp) {
         vertxOptions.setClusterHost(clusterHostIp);
         vertxOptions.setClusterPublicHost(publicHostIp);
 
