@@ -10,7 +10,7 @@
         <groupId>com.dcall</groupId>
         <artifactId>parent</artifactId>
         <version>1.0.0</version>
-        <relativePath>../../parent</relativePath>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <name>Configuration</name>
