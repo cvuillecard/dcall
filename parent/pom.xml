@@ -23,7 +23,6 @@
         <!--General directories used -->
         <project.main.resources>src/main/resources</project.main.resources>
         <project.test.resources>src/test/resources</project.test.resources>
-        <project.extern.resources.directory>/var/lib/dcall</project.extern.resources.directory>
 
         <!--Dependencies-->
         <lanterna.version>3.0.2</lanterna.version>
@@ -50,6 +49,11 @@
         <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
         <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version>
+
+        <!--default configuration-->
+        <jar.classpath.layout>repository</jar.classpath.layout>
+        <extern.global.properties>${project.extern.resources.directory}/env/local.properties</extern.global.properties>
+        <extern.base.directory></extern.base.directory>
 
     </properties>
 
@@ -318,23 +322,22 @@
 
     <profiles>
 
+        <!--LINUX : MODIFY WITH YOUR PREFERENCE OR BY PASSING PARAMETER IN CLI WITH MAVEN -->
         <profile>
-            <id>DEV</id>
+            <id>DEV-LINUX</id>
 
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
 
             <properties>
-                <jar.classpath.layout>repository</jar.classpath.layout>
-                <extern.base.directory></extern.base.directory>
+                <project.extern.resources.directory>/var/lib/dcall</project.extern.resources.directory>
                 <extern.lib.repository>/home/worker/.m2/repository</extern.lib.repository>
-                <extern.global.properties>${project.extern.resources.directory}/env/local.properties</extern.global.properties>
             </properties>
         </profile>
 
         <profile>
-            <id>ENV</id>
+            <id>DEPLOY-LINUX</id>
 
             <activation>
                 <activeByDefault>false</activeByDefault>
@@ -346,6 +349,36 @@
                 <extern.base.directory>${project.extern.resources.directory}/build/${project.version}</extern.base.directory>
                 <extern.lib.repository>${extern.base.directory}/configuration</extern.lib.repository>
                 <extern.global.properties>${project.extern.resources.directory}/env/local.properties</extern.global.properties>
+            </properties>
+        </profile>
+
+        <!--WINDOWS : MODIFY WITH YOUR PREFERENCE OR BY PASSING PARAMETER IN CLI WITH MAVEN -->
+        <profile>
+            <id>DEV-WINDOWS</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
+            <properties>
+                <project.extern.resources.directory>C:\Users\Super\dcall</project.extern.resources.directory>
+                <extern.lib.repository>C:\Users\Super\.m2\repository</extern.lib.repository>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>DEPLOY-WINDOWS</id>
+
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
+            <properties>
+                <generate.zip>true</generate.zip>
+                <jar.classpath.layout>simple</jar.classpath.layout>
+                <project.extern.resources.directory>C:\Users\Super\dcall</project.extern.resources.directory>
+                <extern.base.directory>${project.extern.resources.directory}\build\${project.version}</extern.base.directory>
+                <extern.lib.repository>${extern.base.directory}\configuration</extern.lib.repository>
+                <extern.global.properties>${project.extern.resources.directory}\env\local.properties</extern.global.properties>
             </properties>
         </profile>
 

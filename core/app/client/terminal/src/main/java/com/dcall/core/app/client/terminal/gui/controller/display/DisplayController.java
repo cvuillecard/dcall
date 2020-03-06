@@ -11,7 +11,6 @@ import com.dcall.core.app.client.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.client.terminal.gui.service.drawer.TextDrawer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.awt.X11.Screen;
 
 import java.util.stream.IntStream;
 
