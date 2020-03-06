@@ -334,7 +334,7 @@
         </profile>
 
         <profile>
-            <id>CONF-LINUX</id>
+            <id>DEPLOY-LINUX</id>
 
             <activation>
                 <activeByDefault>false</activeByDefault>
