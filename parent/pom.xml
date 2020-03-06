@@ -361,7 +361,6 @@
 
             <properties>
                 <jar.classpath.layout>repository</jar.classpath.layout>
-                <extern.base.directory></extern.base.directory>
                 <project.extern.resources.directory>C:\Users\Super\dcall</project.extern.resources.directory>
                 <extern.lib.repository>C:\Users\Super\.m2\repository</extern.lib.repository>
                 <extern.global.properties>${project.extern.resources.directory}\env\local.properties</extern.global.properties>
