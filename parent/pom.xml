@@ -327,6 +327,7 @@
 
             <properties>
                 <jar.classpath.layout>repository</jar.classpath.layout>
+                <extern.base.directory></extern.base.directory>
                 <extern.lib.repository>/home/worker/.m2/repository</extern.lib.repository>
                 <extern.global.properties>${project.extern.resources.directory}/env/local.properties</extern.global.properties>
             </properties>
