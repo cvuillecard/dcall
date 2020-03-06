@@ -10,7 +10,6 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
-import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,8 @@ public class Runner {
             return;
         }
 
-        VertxApplication.setHost(args[0], args[0]);
+        VertxApplication.setEventBusHost("0.0.0.0");
+        VertxApplication.setClusterHost(args[0]);
         VertxApplication.start(
                 false,
                 new InputConsumerVerticle(),

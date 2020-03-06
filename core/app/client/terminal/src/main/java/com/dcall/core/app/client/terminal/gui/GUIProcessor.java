@@ -24,7 +24,6 @@ public final class GUIProcessor {
     private static Screen screen;
 
     public static void start() {
-        bus.init();
         GUIProcessor.init();
         GUIProcessor.loop();
     }

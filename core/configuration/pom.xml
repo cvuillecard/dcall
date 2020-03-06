@@ -84,6 +84,12 @@
             <artifactId>vertx-auth-jwt</artifactId>
         </dependency>
 
+        <!--TERMINAL-->
+        <dependency>
+            <groupId>com.googlecode.lanterna</groupId>
+            <artifactId>lanterna</artifactId>
+        </dependency>
+
         <!--LOGGING-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -118,5 +124,76 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>ZIP-CONFIG</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>generate.zip</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <finalName>${project.build.finalName}</finalName>
+                            <descriptors>
+                                <descriptor>${project.main.resources}/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!--PAS INDISPENSABLE MAIS TANT QU'AFFAIRE SI MAVEN POUVAIT DEPLOYER A MA PLACE...JE SAIS C'EST PAS SON BUT-->
+        <!--ON VA ME DIRE, FAIS DU ANSIBLE, ET JE REPONDRAI, FAIS DU SCRIPT SHELL CA VA PLUS VITE.. -->
+        <profile>
+            <id>UNZIP-CONFIG</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>generate.zip</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <configuration>
+                                    <tasks>
+                                        <echo message="unzipping configuration in ${extern.lib.repository}" />
+                                        <unzip src="${project.build.directory}/${project.build.finalName}-pack.zip" dest="${extern.lib.repository}" />
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

@@ -17,28 +17,7 @@ public final class IOHandler {
     private static final Logger LOG = LoggerFactory.getLogger(IOHandler.class);
     private final InputHandler inputHandler = new InputHandler();
     private final OutputHandler outputHandler = new OutputHandler();
-    private final ProcessBuilder processBuilder = new ProcessBuilder();
-    private final File pipe = new File("pipe");
     private String lastInput = null;
-
-    public void init() {
-        initOutputFile();
-        initRedirect();
-    }
-
-    private void initRedirect() {
-        processBuilder.redirectOutput(pipe).redirectError(pipe);
-    }
-
-    private void initOutputFile() {
-        if (pipe.exists())
-            pipe.delete();
-        try {
-            pipe.createNewFile();
-        } catch (IOException e) {
-            LOG.error(this.getClass().getName() + " > ERROR < " + e.getMessage());
-        }
-    }
 
     public boolean handleInput() {
         lastInput = StringUtils.epur(inputHandler.current().toString().substring(TermAttributes.getPrompt().length()));
@@ -82,7 +61,4 @@ public final class IOHandler {
     // GETTERS
     public final InputHandler input() { return this.inputHandler; }
     public final OutputHandler output() { return this.outputHandler; }
-    public final String getLastInput() { return this.lastInput; }
-
-    public final void setLastInput(final String lastInput) { this.lastInput = lastInput; }
 }

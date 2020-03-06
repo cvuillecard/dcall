@@ -26,11 +26,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.googlecode.lanterna</groupId>
-            <artifactId>lanterna</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -57,6 +52,7 @@
                                     <directory>${project.main.resources}</directory>
                                     <includes>
                                         <include>*.sh</include>
+                                        <include>*.bat</include>
                                     </includes>
                                     <filtering>true</filtering>
                                 </resource>
@@ -67,4 +63,47 @@
             </plugin>
         </plugins>
     </build>
+
+    <!--TOO MUCH MEME INUTILE POUR COPIER UN OU QUELQUES FICHIERS MAIS BON..-->
+    <!--PAS INDISPENSABLE MAIS TANT QU'AFFAIRE SI MAVEN POUVAIT DEPLOYER A MA PLACE...JE SAIS C'EST PAS SON BUT-->
+    <!--ON VA ME DIRE, FAIS DU ANSIBLE, ET JE REPONDRAI, FAIS DU SCRIPT SHELL CA VA PLUS VITE.. -->
+    <profiles>
+        <profile>
+            <id>UNPACK-TERMINAL-SCRIPT</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>dcall-run-script</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${extern.base.directory}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.main.resources}</directory>
+                                            <includes>
+                                                <include>*.sh</include>
+                                                <include>*.bat</include>
+                                            </includes>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

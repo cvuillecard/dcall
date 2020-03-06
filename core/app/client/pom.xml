@@ -19,31 +19,13 @@
 
     <description>Dcall client applications</description>
 
+    <properties>
+        <runner.class>com.dcall.core.app.client.${project.artifactId}.Runner</runner.class>
+    </properties>
+
     <modules>
         <module>cli</module>
         <module>terminal</module>
     </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <addMavenDescriptor>false</addMavenDescriptor>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>${maven.local.repository}</classpathPrefix>
-                            <classpathLayoutType>repository</classpathLayoutType>
-                            <mainClass>com.dcall.core.app.client.${project.artifactId}.Runner</mainClass>
-                        </manifest>
-                        <manifestEntries>
-                            <Built-By>Crea-Technologie (Charles Vuillecard)</Built-By>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

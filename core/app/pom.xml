@@ -19,9 +19,95 @@
 
     <description>Dcall applications</description>
 
+    <properties>
+        <runner.class></runner.class>
+    </properties>
+
     <modules>
         <module>server</module>
         <module>client</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>${extern.lib.repository}</classpathPrefix>
+                            <classpathLayoutType>${jar.classpath.layout}</classpathLayoutType>
+                            <mainClass>${runner.class}</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <Built-By>Crea-Technologie (Charles Vuillecard)</Built-By>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!--PAS INDISPENSABLE MAIS TANT QU'AFFAIRE SI MAVEN POUVAIT DEPLOYER A MA PLACE...JE SAIS C'EST PAS SON BUT-->
+    <!--ON VA ME DIRE, FAIS DU ANSIBLE, ET JE REPONDRAI, FAIS DU SCRIPT SHELL CA VA PLUS VITE.. -->
+    <profiles>
+        <profile>
+            <id>UNPACK-SERVICE</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-services</id>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <phase>install</phase>
+                                <configuration>
+                                    <outputDirectory>${extern.base.directory}</outputDirectory>
+                                    <overWriteReleases>true</overWriteReleases>
+                                    <overWriteSnapshots>true</overWriteSnapshots>
+                                    <overWriteIfNewer>true</overWriteIfNewer>
+                                    <artifactItems>
+
+                                        <artifactItem>
+                                            <groupId>com.dcall.core.app.server</groupId>
+                                            <artifactId>processor</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+
+                                        <artifactItem>
+                                            <groupId>com.dcall.core.app.client</groupId>
+                                            <artifactId>terminal</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+
+                                        <artifactItem>
+                                            <groupId>com.dcall.core.app.client</groupId>
+                                            <artifactId>cli</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

@@ -23,6 +23,12 @@
         <dependency>
             <groupId>com.dcall.core</groupId>
             <artifactId>configuration</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.googlecode.lanterna</groupId>
+                    <artifactId>lanterna</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

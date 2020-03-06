@@ -38,16 +38,20 @@ public final class ClusterOptionsConfigurator {
         return this;
     }
 
-    private ClusterOptionsConfigurator setClusterHost(final String clusterHostIp, final String publicHostIp) {
-        vertxOptions.setClusterHost(clusterHostIp);
-        vertxOptions.setClusterPublicHost(publicHostIp);
+    private ClusterOptionsConfigurator setClusterHost(final String host, final String publicHost) {
+        if (host != null && !host.isEmpty())
+            vertxOptions.setClusterHost(host);
+        if (publicHost != null && !publicHost.isEmpty())
+            vertxOptions.setClusterPublicHost(publicHost);
 
         return this;
     }
 
     private ClusterOptionsConfigurator setEventBusHost(final String host, final String publicHost) {
-        eventBusOptions.setHost(host);
-        eventBusOptions.setClusterPublicHost(publicHost);
+        if (host != null && !host.isEmpty())
+            eventBusOptions.setHost(host);
+        if (publicHost != null && !publicHost.isEmpty())
+            eventBusOptions.setClusterPublicHost(publicHost);
 
         return this;
     }

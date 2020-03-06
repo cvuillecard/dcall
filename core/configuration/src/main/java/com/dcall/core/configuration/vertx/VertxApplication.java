@@ -25,6 +25,7 @@ import java.util.Properties;
  */
 public final class VertxApplication {
 	private static final Logger LOG = LoggerFactory.getLogger(VertxApplication.class);
+	private static ClusterOptionsConfigurator clusterOptionsConfigurator;
     private static VertxOptions options;
     private static final String FILE_PROPERTIES = "local.properties";
     private static final HazelcastConfigurator clusterManagerConfigurator = new HazelcastConfigurator();
@@ -32,12 +33,14 @@ public final class VertxApplication {
     static {
         try {
             final Properties properties = loadProperties();
-            options = new ClusterOptionsConfigurator(configureVertxOptions(properties))
+
+            clusterOptionsConfigurator = new ClusterOptionsConfigurator(configureVertxOptions(properties))
                     .configure(properties.get("cluster.host.ip").toString(),
                             properties.get("cluster.public.ip").toString(),
                             Integer.valueOf(properties.get("cluster.host.port").toString()),
-                            Integer.valueOf(properties.get("cluster.public.port").toString()))
-                    .getVertxOptions();
+                            Integer.valueOf(properties.get("cluster.public.port").toString()));
+
+            options = clusterOptionsConfigurator.getVertxOptions();
         }
         catch (IOException e) {
             new TechnicalException(e).log();
@@ -76,13 +79,27 @@ public final class VertxApplication {
 
     }
 
-    public static void setHost(final String host, final String publicAddress) {
-        final String publicHost = publicAddress == null || publicAddress.isEmpty() ? host : publicAddress;
+//    public static void setHost(final String host, final String publicAddress) {
+//        final String publicHost = publicAddress == null || publicAddress.isEmpty() ? host : publicAddress;
+//
+//        options.getEventBusOptions().setEventBusHost(host);
+//        options.getEventBusOptions().setClusterPublicHost(publicHost);
+//        options.setClusterHost(host);
+//        options.setClusterPublicHost(publicHost);
+//    }
 
-        options.getEventBusOptions().setHost(host);
-        options.getEventBusOptions().setClusterPublicHost(publicHost);
-        options.setClusterHost(host);
-        options.setClusterPublicHost(publicHost);
+    public static void setEventBusHost(final String host) {
+        if (host != null && !host.isEmpty()) {
+            options.getEventBusOptions().setHost(host);
+            options.getEventBusOptions().setClusterPublicHost(host);
+        }
+    }
+
+    public static void setClusterHost(final String host) {
+        if (host != null && !host.isEmpty()) {
+            options.setClusterHost(host);
+            options.setClusterPublicHost(host);
+        }
     }
 
     private static Properties loadProperties() throws IOException {
