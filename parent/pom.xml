@@ -53,6 +53,7 @@
         <!--defaut configuration-->
         <project.extern.resources.directory>/var/lib/dcall</project.extern.resources.directory>
         <extern.base.directory></extern.base.directory>
+        <extern.unzip.destination></extern.unzip.destination>
 
     </properties>
 
@@ -348,6 +349,7 @@
                 <jar.classpath.layout>simple</jar.classpath.layout>
                 <extern.base.directory>${project.extern.resources.directory}/build/${project.version}</extern.base.directory>
                 <extern.lib.repository>${extern.base.directory}/configuration</extern.lib.repository>
+                <extern.unzip.destination>${extern.lib.repository}</extern.unzip.destination>
                 <extern.global.properties>${project.extern.resources.directory}/env/local.properties</extern.global.properties>
             </properties>
         </profile>
@@ -380,6 +382,7 @@
                 <project.extern.resources.directory>C:\Users\Super\dcall</project.extern.resources.directory>
                 <extern.base.directory>${project.extern.resources.directory}\build\${project.version}</extern.base.directory>
                 <extern.lib.repository>configuration</extern.lib.repository>
+                <extern.unzip.destination>${extern.base.directory}\configuration</extern.unzip.destination>
                 <extern.global.properties>${project.extern.resources.directory}\env\local.properties</extern.global.properties>
             </properties>
         </profile>

@@ -180,7 +180,7 @@
                                 <configuration>
                                     <tasks>
                                         <echo message="unzipping configuration in ${extern.lib.repository}" />
-                                        <unzip src="${project.build.directory}/${project.build.finalName}-pack.zip" dest="${extern.lib.repository}" />
+                                        <unzip src="${project.build.directory}/${project.build.finalName}-pack.zip" dest="${extern.unzip.destination}" />
                                     </tasks>
                                 </configuration>
                                 <goals>
