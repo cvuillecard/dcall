@@ -4,9 +4,8 @@
 target
 out
 gen
-*.png
-*.pem
-*.p12
 .vertx/
 a.out
-core/configuration/src/test/resources/
+core/configuration/src/test/resources/*.pem
+core/configuration/src/test/resources/*.p12
+core/configuration/src/test/resources/*.png
