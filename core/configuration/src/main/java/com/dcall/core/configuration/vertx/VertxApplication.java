@@ -162,9 +162,5 @@ public final class VertxApplication {
         Vertx.currentContext().owner().close();
         LOG.debug("Local vertx context closed.");
     }
-
-     // Cluster configuration
-    public static void addClusterPeers(final String... ipList) {
-        hazelcastConfigurator.addTCPMembers(ipList);
-    }
+    
 }
