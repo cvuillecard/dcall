@@ -1,7 +1,7 @@
 @echo off
 
 set PWD=%~dp0
-set JAVA_BIN=%JAVA_HOME%\bin\java.exe
+set JAVA_BIN=%JAVA_HOME%\bin\javaw.exe
 
 echo _____________________________________________________________
 echo Working directory : %PWD%
