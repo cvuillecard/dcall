@@ -19,15 +19,9 @@ public class Runner {
     private static final Logger LOG = LoggerFactory.getLogger(Runner.class);
 
     public static void main(final String[] args) {
-        if (args.length != 1) {
-            LOG.error("<usage> : java -jar terminal-x.x.x.jar cluster_adress");
-            return;
-        }
-
-        VertxApplication.setEventBusHost("0.0.0.0");
-        VertxApplication.setClusterHost(args[0]);
-        VertxApplication.start(
+        VertxApplication.startOnCluster(
                 false,
+                args,
                 new InputConsumerVerticle(),
                 new TerminalApplicationVerticle()
         );

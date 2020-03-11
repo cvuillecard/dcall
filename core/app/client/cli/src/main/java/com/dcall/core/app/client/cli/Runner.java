@@ -9,8 +9,9 @@ import com.dcall.core.app.client.cli.vertx.OutputConsumerVerticle;
 public final class Runner {
 
     public static void main(final String[] args) {
-            VertxApplication.start(
+            VertxApplication.startOnCluster(
                     true,
+                    args,
                     InputConsumerVerticle.class,
                     OutputConsumerVerticle.class,
                     InputProducerVerticle.class

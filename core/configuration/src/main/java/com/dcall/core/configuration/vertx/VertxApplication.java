@@ -28,23 +28,35 @@ public final class VertxApplication {
 	private static ClusterOptionsConfigurator clusterOptionsConfigurator;
     private static VertxOptions options;
     private static final String FILE_PROPERTIES = "local.properties";
-    private static final HazelcastConfigurator clusterManagerConfigurator = new HazelcastConfigurator();
+    private static HazelcastConfigurator hazelcastConfigurator;
 
     static {
         try {
             final Properties properties = loadProperties();
 
+            hazelcastConfigurator = new HazelcastConfigurator();
             clusterOptionsConfigurator = new ClusterOptionsConfigurator(configureVertxOptions(properties))
                     .configure(properties.get("cluster.host.ip").toString(),
-                            properties.get("cluster.public.ip").toString(),
-                            Integer.valueOf(properties.get("cluster.host.port").toString()),
-                            Integer.valueOf(properties.get("cluster.public.port").toString()));
+                            Integer.valueOf(properties.get("cluster.host.port").toString()));
 
             options = clusterOptionsConfigurator.getVertxOptions();
         }
         catch (IOException e) {
             new TechnicalException(e).log();
         }
+    }
+
+    public static <T> void startOnCluster(final boolean isSpringVerticle, final String[] peers, T... verticles) {
+        if (verticles == null) {
+            throw new IllegalArgumentException("verticleToDeploy cannot be null");
+        }
+
+        if (peers.length < 1) {
+            throw new IllegalArgumentException("Bad usage of 'peers' parameter : Need at least one peer endpoint to join the cluster where peer is a string as \"ip:port\" ");
+        }
+
+        hazelcastConfigurator.addTCPMembers(peers);
+        start(isSpringVerticle, verticles);
     }
 
     public static <T> void start(final boolean isSpringVerticle, T... verticles) {
@@ -74,32 +86,7 @@ public final class VertxApplication {
                 .setPwdKeyStore(properties.get("keystore.pwd").toString())
                 .setPwdTrustStore(properties.get("truststore.pwd").toString())
                 .execute()
-                .setClusterManager(clusterManagerConfigurator.configureDefault(properties));
-                //.setClusterManager(new HazelcastConfigurator().configureNoMulticast(properties));
-
-    }
-
-//    public static void setHost(final String host, final String publicAddress) {
-//        final String publicHost = publicAddress == null || publicAddress.isEmpty() ? host : publicAddress;
-//
-//        options.getEventBusOptions().setEventBusHost(host);
-//        options.getEventBusOptions().setClusterPublicHost(publicHost);
-//        options.setClusterHost(host);
-//        options.setClusterPublicHost(publicHost);
-//    }
-
-    public static void setEventBusHost(final String host) {
-        if (host != null && !host.isEmpty()) {
-            options.getEventBusOptions().setHost(host);
-            options.getEventBusOptions().setClusterPublicHost(host);
-        }
-    }
-
-    public static void setClusterHost(final String host) {
-        if (host != null && !host.isEmpty()) {
-            options.setClusterHost(host);
-            options.setClusterPublicHost(host);
-        }
+                .setClusterManager(hazelcastConfigurator.configureNoMulticast());
     }
 
     private static Properties loadProperties() throws IOException {
@@ -174,5 +161,10 @@ public final class VertxApplication {
     public static void shutdown() {
         Vertx.currentContext().owner().close();
         LOG.debug("Local vertx context closed.");
+    }
+
+     // Cluster configuration
+    public static void addClusterPeers(final String... ipList) {
+        hazelcastConfigurator.addTCPMembers(ipList);
     }
 }
