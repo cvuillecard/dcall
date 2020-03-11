@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ $# -ne 1 ]
+if [ $# -lt 1 ]
     then
     echo "<usage> : ./dcall.sh <peer1_host_address:peer1_host_port> <peer2_host_address:peer2_host_port> <etc..>";
     echo "<OR> sh dcall.sh <peer1_host_address:peer1_host_port>";
