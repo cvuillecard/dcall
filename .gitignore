@@ -4,3 +4,6 @@
 target
 out
 gen
+core/configuration/src/test/resources/*.png
+core/configuration/src/test/resources/*.pem
+core/configuration/src/test/resources/*.p12
