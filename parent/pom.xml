@@ -379,7 +379,7 @@
                 <jar.classpath.layout>simple</jar.classpath.layout>
                 <project.extern.resources.directory>C:\Users\Super\dcall</project.extern.resources.directory>
                 <extern.base.directory>${project.extern.resources.directory}\build\${project.version}</extern.base.directory>
-                <extern.lib.repository>${extern.base.directory}\configuration</extern.lib.repository>
+                <extern.lib.repository>configuration</extern.lib.repository>
                 <extern.global.properties>${project.extern.resources.directory}\env\local.properties</extern.global.properties>
             </properties>
         </profile>

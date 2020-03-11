@@ -11,4 +11,4 @@ echo * Starting DCall in silent mode (detashed from current tty) *
 echo *      > Trying to connect to [ %* ]                        *
 echo *************************************************************
 
-"%JAVA_BIN% -jar ${project.artifactId}-${project.version}.${project.packaging} %*"
+"%JAVA_BIN%" -jar ${project.artifactId}-${project.version}.${project.packaging} %*
