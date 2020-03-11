@@ -82,7 +82,7 @@ public final class HazelcastConfigurator {
      */
     public HazelcastConfigurator addTCPMembers(final String... ipList) {
         Arrays.stream(ipList).forEach(ip -> {
-            String[] address = ip.split(":");
+            final String[] address = ip.split(":");
             config.getNetworkConfig().getJoin().getTcpIpConfig().addMember(ip);
             config.getNetworkConfig().getJoin().getTcpIpConfig().addMember(address[0] + ":5701");
         });
