@@ -34,6 +34,7 @@
         <hibernate.version>5.4.10.Final</hibernate.version>
         <spring.version>5.2.3.RELEASE</spring.version>
         <spring.data.version>2.2.5.RELEASE</spring.data.version>
+        <jedis.version>3.2.0</jedis.version>
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
         <!--Utils-->
@@ -111,6 +112,13 @@
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-redis</artifactId>
                 <version>${spring.data.version}</version>
+            </dependency>
+
+            <!--JEDIS-->
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
             </dependency>
 
             <!--GUI Terminal-->
