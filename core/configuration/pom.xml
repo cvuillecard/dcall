@@ -56,6 +56,13 @@
             <artifactId>spring-data-redis</artifactId>
         </dependency>
 
+        <!-- Spring Data Neo4j -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-neo4j</artifactId>
+        </dependency>
+
+        <!-- REDIS -->
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>

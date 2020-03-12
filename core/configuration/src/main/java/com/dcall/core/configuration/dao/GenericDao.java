@@ -3,73 +3,86 @@ package com.dcall.core.configuration.dao;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Abstract Data Access Object methods definition
+ *
+ * @param <T>  Interface contract
+ * @param <ID> Primary key type
+ */
 public interface GenericDao<T, ID extends Serializable>
 {
    /**
-    * Recherche par ID
+    * find an entity by its id
     * 
-    * @param id Id de l'objet
-    * @return Object
+    * @param id
+    * @return entity
     */
-   T findById(ID id) throws Exception;
+   T findById(final ID id) throws Exception;
 
     /**
-     * Recherche toutes les entités d'un même type
+     * find all entities of entity's table definition
      *
-     * @return
+     * @return iterable entities
      * @throws Exception
      */
-   List<T> findAll() throws Exception;
+   Iterable<T> findAll() throws Exception;
 
    /**
-    * Compte le nombre d'objet
+    * Count the number of entries in table for this entity
     * 
-    * @return le nombre d'objet
+    * @return number of entries in table
     */
    long countAll() throws Exception;
 
    /**
-    * Creation d'un objet
+    * Save a new entity in database
     * 
-    * @param bo l'objet à créer
-    * @return l'objet crée
+    * @param bo
+    * @return saved entity
     */
-   T save(T bo) throws Exception;
+   T save(final T bo) throws Exception;
    
    /**
-    * Modification d'un objet
+    * Merge the object with id and update the value in database
     * 
-    * @param bo l'objet à modifier
-    * @return l'objet persisté
+    * @param bo
+    * @return persisted entity
     */
-   T merge(T bo) throws Exception;
+   T merge(final T bo) throws Exception;
    
    /**
-    * Supression d'un objet
+    * delete the entry for the object id in table
     * 
-    * @param bo objet à supprimer
+    * @param bo
     */
-   void delete(T bo) throws Exception;
+   void delete(final T bo) throws Exception;
 
-    /**
-     * Suppression de tous les objets - equivaut a 'delete from objet_table;'
-     *
-     * @throws Exception
-     */
+   /**
+    * delete all entries in table entity
+    *
+    * @throws Exception
+    */
    void purgeTable() throws Exception;
 
    /**
-    * Permet de détacher un objet
-    * 
-    * @param bo objet à initialiser
+    * Clear session
+    *
+    * @throws Exception
     */
-   void detach(T bo) throws Exception;
+   void clear() throws  Exception;
+
+   /**
+    * detach an entity from session cache
+    * 
+    * @param bo
+    */
+   void detach(final T bo) throws Exception;
 
    /**
     * Vérifie si un object est détaché
     *
-    * @param bo objet à vérifier
-    * @return true si l'objet est détaché
+    * @param bo
+    * @return true if object is attached to session cache
     */
-   boolean isDetached(T bo) throws Exception;
+   boolean isDetached(final T bo) throws Exception;
 }

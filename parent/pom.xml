@@ -34,6 +34,7 @@
         <hibernate.version>5.4.10.Final</hibernate.version>
         <spring.version>5.2.3.RELEASE</spring.version>
         <spring.data.version>2.2.5.RELEASE</spring.data.version>
+        <spring.data.neo4j.version>5.0.7.RELEASE</spring.data.neo4j.version>
         <jedis.version>3.2.0</jedis.version>
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
@@ -112,6 +113,13 @@
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-redis</artifactId>
                 <version>${spring.data.version}</version>
+            </dependency>
+
+            <!-- Spring Data Neo4j -->
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-neo4j</artifactId>
+                <version>${spring.data.neo4j.version}</version>
             </dependency>
 
             <!--JEDIS-->
@@ -403,4 +411,13 @@
 
     </profiles>
 
+    <repositories>
+        <repository>
+            <id>neo4j</id>
+            <url>http://m2.neo4j.org/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
 </project>

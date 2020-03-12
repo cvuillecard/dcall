@@ -1,8 +1,5 @@
 package com.dcall.core.configuration.dao;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.net.NetServer;
-import io.vertx.core.net.NetServerOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -15,11 +12,11 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 /**
- * Description de l'interface : Description des fonctions générique Hibernate
+ * Abstract Data Access Object
  *
- * @param <T>  ClassePersistante
- * @param <ID> Type de la clé primaire
- * @param <B>  ClassBean
+ * @param <T>  Interface contract
+ * @param <ID> Primary key type
+ * @param <B>  bean implementation of T interface
  */
 public abstract class AbstractJpaDao<B, T, ID extends Serializable> implements GenericDao<T, ID> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractJpaDao.class);
@@ -29,10 +26,6 @@ public abstract class AbstractJpaDao<B, T, ID extends Serializable> implements G
 
     @PersistenceContext
     EntityManager entityManager;
-
-    public void test() {
-//        NetServer server = Vertx.vertx().getOrCreateContext().owner().eventBus().
-    }
 
     public AbstractJpaDao() {
         this.type = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -54,7 +47,7 @@ public abstract class AbstractJpaDao<B, T, ID extends Serializable> implements G
         }
     }
 
-    public List<T> findAll() throws Exception {
+    public List<T> findAll() {
         return entityManager.createQuery("from " + type.getName()).getResultList();
     }
 
