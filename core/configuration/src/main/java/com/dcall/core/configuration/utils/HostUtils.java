@@ -36,7 +36,22 @@ public final class HostUtils {
         return localhost;
     }
 
-    public static int getAvailablePort(int firstPort, int lastPort) {
+    /**
+     * Try to find an available port in the range of ports given as parameters.
+     *
+     * Note : If bad arguments given,the default ephemeral ports range for dynamic or private ports
+     * is used to find one as suggested by the Internet Assigned Numbers Authority (IANA).
+     *
+     * @param firstPort
+     * @param lastPort
+     * @return port <OR> -1 if no port is assignable for use
+     */
+    public static int getAvailablePort(Integer firstPort, Integer lastPort) {
+        if (firstPort == null || firstPort <= 0)
+            firstPort = 49152;
+        if (lastPort == null || lastPort <= 0)
+            lastPort = 65535;
+
         for (int port = firstPort; port <= lastPort; port++) {
             try {
                 ServerSocket sock = new ServerSocket(port);
