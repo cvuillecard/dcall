@@ -15,7 +15,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <name>Client</name>
+    <name>Client Applications</name>
 
     <description>Dcall client applications</description>
 

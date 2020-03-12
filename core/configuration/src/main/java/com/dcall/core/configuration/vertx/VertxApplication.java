@@ -1,7 +1,9 @@
 package com.dcall.core.configuration.vertx;
 
+import com.dcall.core.configuration.constant.ConstantResource;
 import com.dcall.core.configuration.exception.TechnicalException;
 import com.dcall.core.configuration.spring.JpaConfig;
+import com.dcall.core.configuration.utils.ResourceUtils;
 import com.dcall.core.configuration.vertx.cluster.ClusterOptionsConfigurator;
 import com.dcall.core.configuration.vertx.cluster.HazelcastConfigurator;
 import com.dcall.core.configuration.vertx.ssl.VertxEventBusSSLConfigurator;
@@ -27,23 +29,14 @@ public final class VertxApplication {
 	private static final Logger LOG = LoggerFactory.getLogger(VertxApplication.class);
 	private static ClusterOptionsConfigurator clusterOptionsConfigurator;
     private static VertxOptions options;
-    private static final String FILE_PROPERTIES = "local.properties";
     private static HazelcastConfigurator hazelcastConfigurator;
 
     static {
-        try {
-            final Properties properties = loadProperties();
+        hazelcastConfigurator = new HazelcastConfigurator();
+        clusterOptionsConfigurator = new ClusterOptionsConfigurator(configureVertxOptions(ResourceUtils.localProperties()))
+                .configure(ResourceUtils.getString("cluster.host.ip"), ResourceUtils.getInt("cluster.host.port"));
 
-            hazelcastConfigurator = new HazelcastConfigurator();
-            clusterOptionsConfigurator = new ClusterOptionsConfigurator(configureVertxOptions(properties))
-                    .configure(properties.get("cluster.host.ip").toString(),
-                            Integer.valueOf(properties.get("cluster.host.port").toString()));
-
-            options = clusterOptionsConfigurator.getVertxOptions();
-        }
-        catch (IOException e) {
-            new TechnicalException(e).log();
-        }
+        options = clusterOptionsConfigurator.getVertxOptions();
     }
 
     public static <T> void startOnCluster(final boolean isSpringVerticle, final String[] peers, T... verticles) {
@@ -91,7 +84,7 @@ public final class VertxApplication {
 
     private static Properties loadProperties() throws IOException {
         final Properties properties = new Properties();
-        properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(FILE_PROPERTIES));
+        properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(ConstantResource.LOCAL_PROPERTIES));
 
         return properties;
     }
@@ -162,5 +155,5 @@ public final class VertxApplication {
         Vertx.currentContext().owner().close();
         LOG.debug("Local vertx context closed.");
     }
-    
+
 }

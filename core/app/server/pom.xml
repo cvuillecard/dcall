@@ -15,7 +15,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <name>Server</name>
+    <name>Server Applications</name>
 
     <description>Dcall server applications</description>
 
@@ -24,6 +24,7 @@
     </properties>
 
     <modules>
+        <module>authority</module>
         <module>processor</module>
     </modules>
 
