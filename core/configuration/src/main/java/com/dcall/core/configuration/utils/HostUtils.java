@@ -36,8 +36,8 @@ public final class HostUtils {
         return localhost;
     }
 
-    public static int getAvailablePort(int startPort, int endPort) {
-        for (int port = startPort; port <= endPort; port++) {
+    public static int getAvailablePort(int firstPort, int lastPort) {
+        for (int port = firstPort; port <= lastPort; port++) {
             try {
                 ServerSocket sock = new ServerSocket(port);
                 sock.close();
