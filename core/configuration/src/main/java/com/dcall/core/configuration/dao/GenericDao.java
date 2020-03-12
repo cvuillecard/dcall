@@ -1,5 +1,7 @@
 package com.dcall.core.configuration.dao;
 
+import com.dcall.core.configuration.exception.TechnicalException;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -17,7 +19,7 @@ public interface GenericDao<T, ID extends Serializable>
     * @param id
     * @return entity
     */
-   T findById(final ID id) throws Exception;
+   T findById(final ID id) throws TechnicalException;
 
     /**
      * find all entities of entity's table definition
@@ -25,14 +27,14 @@ public interface GenericDao<T, ID extends Serializable>
      * @return iterable entities
      * @throws Exception
      */
-   Iterable<T> findAll() throws Exception;
+   Iterable<T> findAll();
 
    /**
     * Count the number of entries in table for this entity
     * 
     * @return number of entries in table
     */
-   long countAll() throws Exception;
+   long countAll() throws TechnicalException;
 
    /**
     * Save a new entity in database
@@ -40,7 +42,7 @@ public interface GenericDao<T, ID extends Serializable>
     * @param bo
     * @return saved entity
     */
-   T save(final T bo) throws Exception;
+   T save(final T bo) throws TechnicalException;
    
    /**
     * Merge the object with id and update the value in database
@@ -48,14 +50,14 @@ public interface GenericDao<T, ID extends Serializable>
     * @param bo
     * @return persisted entity
     */
-   T merge(final T bo) throws Exception;
+   T merge(final T bo) throws TechnicalException;
    
    /**
     * delete the entry for the object id in table
     * 
     * @param bo
     */
-   void delete(final T bo) throws Exception;
+   void delete(final T bo) throws TechnicalException;
 
    /**
     * delete all entries in table entity

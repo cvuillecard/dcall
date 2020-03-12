@@ -1,5 +1,7 @@
 package com.dcall.core.configuration.dao;
 
+import com.dcall.core.configuration.bo.Entity;
+import com.dcall.core.configuration.exception.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -18,7 +20,7 @@ import java.util.List;
  * @param <ID> Primary key type
  * @param <B>  bean implementation of T interface
  */
-public abstract class AbstractJpaDao<B, T, ID extends Serializable> implements GenericDao<T, ID> {
+public abstract class AbstractJpaDao<B extends T, T extends Entity<ID>, ID extends Serializable> implements GenericDao<T, ID> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractJpaDao.class);
 
     private final Class<T> type;
@@ -36,200 +38,103 @@ public abstract class AbstractJpaDao<B, T, ID extends Serializable> implements G
         return type;
     }
 
-
-    public T findById(ID id) throws Exception {
+    public T findById(ID id) throws TechnicalException {
         try {
-            final T bo = (T) entityManager.find(getPersistentClass(), id);
-            return bo;
+            return entityManager.find(getPersistentClass(), id);
         } catch (final Exception e) {
-            LOG.error("Erreur DAO (findById) :\r\n", e);
-            throw new Exception("[DAO] Erreur (findById)", e);
+            throw new TechnicalException("[DAO] Erreur - findById()", e);
         }
     }
 
+    @Override
     public List<T> findAll() {
         return entityManager.createQuery("from " + type.getName()).getResultList();
     }
 
-    /**
-     * Recherche de tous les objets
-     *
-     * @return le nombre d'objet
-     * @throws Exception Exception DAO
-     */
-    public long countAll() throws Exception {
+    @Override
+    public long countAll() throws TechnicalException {
         try {
             return (Long) entityManager.createQuery("select count(*) from " + mPersistentClassName).getSingleResult();
         } catch (final Exception e) {
-            LOG.error("Erreur DAO (countAll) :\r\n", e);
-            throw new Exception("[DAO] Erreur (countAll)", e);
+            throw new TechnicalException("[DAO] - countAll()", e);
         }
     }
 
-    /**
-     * Nbr résultat recherche partielle paginée sur un champ
-     *
-     * @param fieldName nom de la propriété objet de la recherche
-     * @param search    objet de la recherche
-     * @return Une liste d'objet
-     * @throws Exception Exception DAO
-     */
-    public long countByLike(String fieldName, String search) throws Exception {
+    @Override
+    public T merge(T bo) throws TechnicalException {
         try {
-            final String hqlQuery = "select count(*) from " + mPersistentClassName + " where " + fieldName + " like :search";
-
-            final Query query = entityManager.createQuery(hqlQuery);
-            query.setParameter("search", search);
-
-            return (Long) query.getSingleResult();
+            return entityManager.merge((B) bo);
         } catch (final Exception e) {
-            LOG.error("Erreur DAO (countByLike) :\r\n", e);
-            throw new Exception("[DAO] Erreur (countByLike)", e);
+            throw new TechnicalException("[DAO] - merge()", e);
         }
     }
 
-    /**
-     * Recherche partielle paginée sur un champ
-     *
-     * @param firstResult index premier resultat
-     * @param maxResult   nombre d'enregistrement max
-     * @param fieldName   nom de la propriété objet de la recherche
-     * @param search      objet de la recherche
-     * @param orderBy     Liste des propriétés pour determiner le tri
-     * @return Une liste d'objet
-     * @throws Exception Exception DAO
-     */
-    public List<T> findByLike(int firstResult, int maxResult, String fieldName, String search, String orderBy) throws Exception {
-        try {
-            String hqlQuery = "from " + mPersistentClassName + " where " + fieldName + " like :search";
-            if (orderBy != null && !StringUtils.isEmpty(orderBy)) {
-                hqlQuery += " order by " + orderBy;
-            }
-            final Query query = entityManager.createQuery(hqlQuery);
-            query.setParameter("search", search);
-
-            if (firstResult >= 0) {
-                query.setFirstResult(firstResult);
-            }
-
-            if (maxResult > 0) {
-                query.setMaxResults(maxResult);
-            }
-
-            return query.getResultList();
-        } catch (final Exception e) {
-            LOG.error("Erreur DAO (findByLike) :\r\n", e);
-            throw new Exception("[DAO] Erreur (findByLike)", e);
-        }
-    }
-
-    /**
-     * Modification d'un objet
-     *
-     * @param bo l'objet à modifier
-     * @return l'objet persisté
-     * @throws Exception Exception DAO
-     */
-
-    @SuppressWarnings({"unchecked", "cast"})
-    public T merge(T bo) throws Exception {
-        try {
-            return (T) entityManager.merge((B) bo);
-        } catch (final Exception e) {
-            LOG.error("Erreur DAO (merge) :\r\n", e);
-            throw new Exception("[DAO] Erreur (merge)", e);
-        }
-    }
-
-    /**
-     * Creation d'un objet, l'objet passé en argument est re-détaché, celui retourné est persistent
-     *
-     * @param bo l'objet à créer
-     * @return l'objet crée persistent
-     * @throws Exception Exception DAO
-     */
-    public T save(T bo) throws Exception {
+    @Override
+    public T save(T bo) throws TechnicalException {
         try {
             entityManager.persist((B) bo);
             return bo;
         } catch (final Exception e) {
-            LOG.error("Erreur DAO (save) :\r\n", e);
-            throw new Exception("[DAO] Erreur (save)", e);
+            throw new TechnicalException("[DAO] - save()", e);
         }
     }
 
-    /**
-     * Suppression d'un objet
-     *
-     * @param bo Objet
-     * @throws Exception Exception DAO
-     */
-
-    public void delete(T bo) throws Exception {
+    @Override
+    public void delete(final T bo) throws TechnicalException {
         try {
             entityManager.remove((B) bo);
             entityManager.flush();
         } catch (final Exception e) {
-            LOG.error("Erreur DAO (delete) :\r\n", e);
-            throw new Exception("[DAO] Erreur (delete)", e);
+            throw new TechnicalException("[DAO] - delete()", e);
         }
     }
 
-    /**
-     * Supprime tous les objets de la table 'obj'
-     *
-     * @throws Exception
-     */
-    public void purgeTable() throws Exception {
+    @Override
+    public void purgeTable() {
         entityManager.createQuery("DELETE FROM " + type.getName()).executeUpdate();
     }
 
     /**
      * Flush de la session hibernate
      *
-     * @throws Exception Exception DAO
+     * @throws TechnicalException Exception DAO
      */
-    public void flush() throws Exception {
+    public void flush() throws TechnicalException {
         try {
             entityManager.flush();
         } catch (final Exception e) {
-            LOG.error("Erreur DAO (flush) :\r\n", e);
-            throw new Exception("[DAO] Erreur (flush)", e);
+            throw new TechnicalException("[DAO] - flush()", e);
         }
     }
 
     /**
      * Clear de la session
      *
-     * @throws Exception Exception DAO
+     * @throws TechnicalException Exception DAO
      */
-    public void clear() throws Exception {
+    public void clear() throws TechnicalException {
         try {
             entityManager.clear();
         } catch (final Exception e) {
-            LOG.error("Erreur DAO (clear) :\r\n", e);
-            throw new Exception("[DAO] Erreur (clear)", e);
+            throw new TechnicalException("[DAO] - clear()", e);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void detach(T bo) throws Exception {
+    @Override
+    public void detach(final T bo) throws TechnicalException {
         try {
             entityManager.detach(bo);
         } catch (final Exception e) {
-            LOG.error("Erreur DAO (detache) :\r\n", e);
-            throw new Exception("[DAO] Erreur (detache)", e);
+            throw new TechnicalException("[DAO] - detach()", e);
         }
     }
 
-    public boolean isDetached(T bo) throws Exception {
+    @Override
+    public boolean isDetached(final T bo) throws TechnicalException {
         try {
             return !entityManager.contains(bo);
         } catch (final Exception e) {
-            LOG.error("Erreur DAO (isDetache) :\r\n", e);
-            throw new Exception("[DAO] Erreur (isDetache)", e);
+            throw new TechnicalException("[DAO] - isDetache()", e);
         }
     }
 }
