@@ -47,8 +47,13 @@ public abstract class AbstractJpaDao<B extends T, T extends Entity<ID>, ID exten
     }
 
     @Override
-    public List<T> findAll() {
-        return entityManager.createQuery("from " + type.getName()).getResultList();
+    public List<T> findAll() throws TechnicalException {
+        try {
+            return entityManager.createQuery("from " + type.getName()).getResultList();
+        }
+        catch (Exception e) {
+            throw new TechnicalException("[DAO] - findAll()", e);
+        }
     }
 
     @Override

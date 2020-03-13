@@ -27,7 +27,7 @@ public interface GenericDao<T, ID extends Serializable>
      * @return iterable entities
      * @throws Exception
      */
-   Iterable<T> findAll();
+   Iterable<T> findAll() throws TechnicalException;
 
    /**
     * Count the number of entries in table for this entity
