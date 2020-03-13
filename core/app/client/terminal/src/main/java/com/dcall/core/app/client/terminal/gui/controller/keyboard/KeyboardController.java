@@ -7,6 +7,7 @@ import com.dcall.core.app.client.terminal.gui.controller.screen.ScreenController
 import com.dcall.core.app.client.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.client.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.client.terminal.gui.service.drawer.TextDrawer;
+import com.dcall.core.configuration.constant.IOConstant;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.Terminal;
 import org.slf4j.Logger;
@@ -48,14 +49,34 @@ public final class KeyboardController {
         }
     }
 
-    public static void handleKeyboard() {
+    public static int handleKeyboard(final boolean displayInputLocked) {
         readInput();
         lock = false;
+
         if (keyPressed != null) {
-            Stream.of(KeyboardAction.values())
-                    .filter(k -> !lock && k.getKeyType().equals(KeyboardController.keyPressed.getKeyType()))
-                    .forEach(KeyboardController::handleKeys);
+            if (!displayInputLocked)
+                Stream.of(KeyboardAction.values())
+                        .filter(k -> !lock && k.getKeyType().equals(KeyboardController.keyPressed.getKeyType()))
+                        .forEach(KeyboardController::handleKeys);
+            else
+                return handleCurrentTaskKeyboardActions();
         }
+
+        return IOConstant.EXIT_SUCCESS;
+    }
+
+    private static int handleCurrentTaskKeyboardActions() {
+        if (KeyboardController.keyPressed.isCtrlDown()) {
+            if (KeyboardController.keyPressed.getKeyType().equals(KeyboardAction.CTRL_EXIT.getKeyType())
+                && equalsActionChar(KeyboardAction.CTRL_EXIT)) {
+
+                DisplayController.unlock();
+
+                return IOConstant.EXIT_FAILURE;
+            }
+        }
+
+        return IOConstant.EXIT_SUCCESS;
     }
 
     private static void handleKeys(final KeyboardAction action) {
@@ -71,19 +92,22 @@ public final class KeyboardController {
 
     private static void handleCTRLKey(final KeyboardAction action) {
         if (KeyboardController.keyPressed.isCtrlDown()) {
-            if (KeyboardController.keyPressed.getCharacter() != null &&
-                    (
-                            ((int) KeyboardController.keyPressed.getCharacter()) == action.intValue()
-                                    ||
-                            ((int) KeyboardController.keyPressed.getCharacter()) == (action.intValue() + 32)
-                    )
-                )
+            if (equalsActionChar(action))
                 KeyboardController.runAction(action);
             else
                 Arrays.stream(noKeyActions)
                         .filter(a -> a.equals(action)).findFirst()
                         .ifPresent(KeyboardController::runAction);
         }
+    }
+
+    private static boolean equalsActionChar(final KeyboardAction action) {
+        return KeyboardController.keyPressed.getCharacter() != null &&
+                (
+                        ((int) KeyboardController.keyPressed.getCharacter()) == action.intValue()
+                                ||
+                        ((int) KeyboardController.keyPressed.getCharacter()) == (action.intValue() + 32)
+                );
     }
 
     private static void runAction(final KeyboardAction action) {
@@ -331,13 +355,18 @@ public final class KeyboardController {
             DisplayController.addPrompt(bus);
     }
 
-    public static void handleNextInput() {
-        if (bus.output().size() > 0 && bus.output().getLastIdx() < bus.output().current().nbLine()) {
-            DisplayController.drawOutputEntry(bus, ScreenController.metrics());
+    public static void handleNextInput(final boolean displayInputLocked) {
+        if (handleKeyboard(displayInputLocked) == IOConstant.EXIT_SUCCESS) {
+            if (bus.output().size() > 0 && bus.output().getLastIdx() < bus.output().current().nbLine()) {
+                DisplayController.drawOutputEntry(bus, ScreenController.metrics());
+            } else {
+                if (bus.output().current().getBuffer().size() > 0)
+                    DisplayController.displayPromptOnReady(bus);
+            }
         }
         else {
-            if (bus.output().current().getBuffer().size() > 0)
-                DisplayController.displayPromptOnReady(bus);
+            DisplayController.setDataReady(true);
+            DisplayController.displayPromptOnReady(bus);
         }
     }
 
