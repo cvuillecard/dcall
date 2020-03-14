@@ -133,7 +133,7 @@ public final class AESProvider {
      *
      * @param filePath
      * @param cipher
-     * @return
+     * @return bytes decrypted
      * @throws IOException
      */
     public static byte[] decryptFileBytes(final Path filePath, final Cipher cipher) throws IOException {
