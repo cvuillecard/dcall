@@ -10,7 +10,7 @@ import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -136,8 +136,8 @@ public final class AESProvider {
      * @return
      * @throws IOException
      */
-    public static byte[] decryptFileBytes(final String filePath, final Cipher cipher) throws IOException {
-        try (SeekableByteChannel sbc = Files.newByteChannel(Paths.get(filePath));
+    public static byte[] decryptFileBytes(final Path filePath, final Cipher cipher) throws IOException {
+        try (SeekableByteChannel sbc = Files.newByteChannel(filePath);
              final InputStream in = Channels.newInputStream(sbc)) {
             final long size = sbc.size();
             if (size > (long)MAX_BUFFER_SIZE)

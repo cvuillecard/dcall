@@ -143,7 +143,7 @@ public class AESProviderTest {
 
         // when : we read all bytes of the decrypted file and the same file encrypted with our method
         final byte[] allBytes = Files.readAllBytes(Paths.get(decryptedFile));
-        final byte[] decryptedAllBytes = AESProvider.decryptFileBytes(encryptedFile, outCipher);
+        final byte[] decryptedAllBytes = AESProvider.decryptFileBytes(Paths.get(encryptedFile), outCipher);
 
         // then : the buffers must be equals, means we rode the file decrypting all encrypted bytes
         Assert.assertEquals(new String(allBytes), new String(decryptedAllBytes));
