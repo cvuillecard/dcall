@@ -49,7 +49,7 @@ public class AESProviderTest {
         final Cipher dec = AESProvider.initCipherWithIV(Cipher.DECRYPT_MODE, _secret, _iv);
 
         final byte[] cryptedMsg = AESProvider.encryptString(msg, enc);
-        final byte[] decryptedMsg = AESProvider.decryptString(cryptedMsg, dec);
+        final byte[] decryptedMsg = AESProvider.decryptBytes(cryptedMsg, dec);
 
         Assert.assertNotEquals(msg, new String(cryptedMsg));
         Assert.assertEquals(msg, new String(decryptedMsg));
@@ -65,7 +65,7 @@ public class AESProviderTest {
         Cipher dec = AESProvider.initCipher(Cipher.DECRYPT_MODE, _secret);
 
         byte[] cryptedMsg = AESProvider.encryptString(msg, enc);
-        byte[] decryptedMsg = AESProvider.decryptString(cryptedMsg, dec);
+        byte[] decryptedMsg = AESProvider.decryptBytes(cryptedMsg, dec);
 
         Assert.assertNotEquals(msg, new String(cryptedMsg));
         Assert.assertEquals(msg, new String(decryptedMsg));
@@ -75,7 +75,7 @@ public class AESProviderTest {
         dec = AESProvider.initCipher(Cipher.DECRYPT_MODE, new SecretKeySpec(_secret.getEncoded(), "AES"));
 
         cryptedMsg = AESProvider.encryptString(msg, enc);
-        decryptedMsg = AESProvider.decryptString(cryptedMsg, dec);
+        decryptedMsg = AESProvider.decryptBytes(cryptedMsg, dec);
 
         Assert.assertNotEquals(msg, new String(cryptedMsg));
         Assert.assertEquals(msg, new String(decryptedMsg));

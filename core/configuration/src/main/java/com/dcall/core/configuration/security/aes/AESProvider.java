@@ -26,7 +26,7 @@ public final class AESProvider {
     private static final int _ITERATE_SIZE = 10000;
 
     public static SecretKey generateSecretKey() throws Exception {
-        KeyGenerator gen = KeyGenerator.getInstance("AES");
+        final KeyGenerator gen = KeyGenerator.getInstance("AES");
         gen.init(_KEY_LENGTH);
 
         return gen.generateKey();
@@ -66,7 +66,7 @@ public final class AESProvider {
         return cipher.doFinal(message.getBytes(DEFAULT_CHARSET));
     }
 
-    public static byte[] decryptString(final byte[] bytes, final Cipher cipher) throws BadPaddingException, IllegalBlockSizeException {
+    public static byte[] decryptBytes(final byte[] bytes, final Cipher cipher) throws BadPaddingException, IllegalBlockSizeException {
         return cipher.doFinal(bytes);
     }
 
