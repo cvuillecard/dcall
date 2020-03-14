@@ -79,6 +79,16 @@ public class AESProviderTest {
 
         Assert.assertNotEquals(msg, new String(cryptedMsg));
         Assert.assertEquals(msg, new String(decryptedMsg));
+
+        // using SecretKeySpec from password and salt
+        enc = AESProvider.initCipher(Cipher.ENCRYPT_MODE, AESProvider.getSecretKey(password, salt));
+        dec = AESProvider.initCipher(Cipher.DECRYPT_MODE, AESProvider.getSecretKey(password, salt));
+
+        cryptedMsg = AESProvider.encryptString(msg, enc);
+        decryptedMsg = AESProvider.decryptBytes(cryptedMsg, dec);
+
+        Assert.assertNotEquals(msg, new String(cryptedMsg));
+        Assert.assertEquals(msg, new String(decryptedMsg));
     }
 
     @Test
