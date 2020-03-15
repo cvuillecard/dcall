@@ -128,7 +128,7 @@ public final class AESProvider {
         }
     }
 
-    public static void encryptDirectoryContent(final String filePath, final Cipher enc, String prefix) {
+    public static void encryptDirectory(final String filePath, final Cipher enc, String prefix) {
 
         try {
             final File target = new File(filePath);
@@ -143,7 +143,7 @@ public final class AESProvider {
 
             if (target.isDirectory()) {
                 for (final String subFile : target.list())
-                    encryptDirectoryContent(filePath + File.separator + subFile, enc, prefix);
+                    encryptDirectory(filePath + File.separator + subFile, enc, prefix);
             }
             else {
                 encryptFile(filePath, pwd + File.separator + prefix + pathArray[pathArray.length - 1], enc);
@@ -154,7 +154,7 @@ public final class AESProvider {
         }
     }
 
-    public static void decryptDirectoryContent(final String filePath, final Cipher dec, String prefix) {
+    public static void decryptDirectory(final String filePath, final Cipher dec, String prefix) {
 
         try {
             final File target = new File(filePath);
@@ -169,7 +169,7 @@ public final class AESProvider {
 
             if (target.isDirectory()) {
                 for (final String subFile : target.list())
-                    decryptDirectoryContent(filePath + File.separator + subFile, dec, prefix);
+                    decryptDirectory(filePath + File.separator + subFile, dec, prefix);
             }
             else {
                 decryptFile(filePath, pwd + File.separator + prefix + pathArray[pathArray.length - 1], dec);
