@@ -1,6 +1,8 @@
 package com.dcall.core.configuration.security.aes;
 
 import com.dcall.core.configuration.security.rsa.RSAProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
@@ -19,6 +21,8 @@ import java.util.Arrays;
 import java.util.Base64;
 
 public final class AESProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(AESProvider.class);
+
     private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
     private static final String DEFAULT_CHARSET = "UTF-8";
     private static final int _KEY_LENGTH = 128; // 256 needs JCE
@@ -74,19 +78,42 @@ public final class AESProvider {
         return Base64.getEncoder().encodeToString(bytes);
     }
 
+    /**
+     * Encrypt a file using cipher AES.
+     *
+     * Important - When destination full path is the same than the source full path only :
+     *
+     * File().renameTo() doesn't produce what we expect (the behaviour of cmd 'mv' on linux).
+     * If we just use output.renameTo(input) instead of using a copy of the source, the new file replaced is corrupted.
+     * I didn't search the explicit reason..(deleting the old file after encryption or other classic ways don't work)
+     * So, to keep the integrity of the new file when the file destination's full path is the same than the source, we copy the source
+     * file with a different file name and use it directly as the new source to encrypt for the destination file.
+     * At the end we delete the copy and rename the new file with the source file not copied to have the good filename.
+     * I agree, it's strange...
+     *
+     * @param inputFilePath
+     * @param outputFilePath
+     * @param cipher
+     * @throws Exception
+     */
     public static void encryptFile(final String inputFilePath, final String outputFilePath, final Cipher cipher) throws Exception {
+        final boolean isReplaceSource = inputFilePath.equals(outputFilePath);
+        final String default_suffix = "_encrypted";
         final File input = new File(inputFilePath);
-        final File output = new File(outputFilePath);
+        final File copyInput = new File(inputFilePath + "_copy");
+        final File output = new File(isReplaceSource ? outputFilePath + default_suffix : outputFilePath);
         int nread;
         final byte[] buffer = new byte[_BUFFER_SIZE];
 
         if (!input.exists())
             throw new FileNotFoundException(RSAProvider.class.getName() + " encryptFile() : Failed to find path " + inputFilePath + " or bad rights.");
 
-        if (output.exists())
+        if (output.exists() && !isReplaceSource)
             output.delete();
+        else
+            input.renameTo(copyInput);
 
-        final InputStream cin = new DataInputStream(new FileInputStream(input));
+        final InputStream cin = new DataInputStream(new FileInputStream(isReplaceSource ? copyInput : input));
         final CipherOutputStream cout = new CipherOutputStream(new FileOutputStream(outputFilePath), cipher);
 
         while ((nread = cin.read(buffer)) > 0)
@@ -94,6 +121,63 @@ public final class AESProvider {
 
         cin.close();
         cout.close();
+
+        if (isReplaceSource) {
+            output.renameTo(new File(inputFilePath));
+            copyInput.delete();
+        }
+    }
+
+    public static void encryptDirectoryContent(final String filePath, final Cipher enc, String prefix) {
+
+        try {
+            final File target = new File(filePath);
+            final String[] pathArray = filePath.split(File.separator);
+            final String[] pwdArray = Arrays.copyOfRange(pathArray, 0, pathArray.length - 1);
+            final String pwd = String.join(File.separator, pwdArray);
+
+            prefix = prefix != null && !prefix.isEmpty() ? prefix : "";
+
+            if (!target.exists())
+                throw new FileNotFoundException(filePath);
+
+            if (target.isDirectory()) {
+                for (final String subFile : target.list())
+                    encryptDirectoryContent(filePath + File.separator + subFile, enc, prefix);
+            }
+            else {
+                encryptFile(filePath, pwd + File.separator + prefix + pathArray[pathArray.length - 1], enc);
+            }
+
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    public static void decryptDirectoryContent(final String filePath, final Cipher dec, String prefix) {
+
+        try {
+            final File target = new File(filePath);
+            final String[] pathArray = filePath.split(File.separator);
+            final String[] pwdArray = Arrays.copyOfRange(pathArray, 0, pathArray.length - 1);
+            final String pwd = String.join(File.separator, pwdArray);
+
+            prefix = prefix != null && !prefix.isEmpty() ? prefix : "";
+
+            if (!target.exists())
+                throw new FileNotFoundException(filePath);
+
+            if (target.isDirectory()) {
+                for (final String subFile : target.list())
+                    decryptDirectoryContent(filePath + File.separator + subFile, dec, prefix);
+            }
+            else {
+                decryptFile(filePath, pwd + File.separator + prefix + pathArray[pathArray.length - 1], dec);
+            }
+
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
     }
 
     /**
@@ -101,24 +185,40 @@ public final class AESProvider {
      *  -> Average : 100mb / 1sec with (13 iterations) | 1000 mb (1GB) -> ~10sec with (130 iterations)
      *  | 1000000mb (1000GB) 1TB -> 10000 sec (130000 iterations) : 166 minutes ! (2h46 min WTF !)
      *  \ 4TB -> 166min * 4 = 11h04min LOL...cipher buffer size length seems to be fixed to 512
+     *
+     * Important - When destination full path is the same than the source full path only :
+     *
+     * File().renameTo() doesn't produce what we expect (the behaviour of cmd 'mv' on linux).
+     * If we just use output.renameTo(input) instead of using a copy of the source, the new file replaced is corrupted.
+     * I didn't search the explicit reason..(deleting the old file after encryption or other classic ways don't work)
+     * So, to keep the integrity of the new file when the file destination's full path is the same than the source, we copy the source
+     * file with a different file name and use it directly as the new source to decrypt for the destination file.
+     * At the end we delete the copy and rename the new file with the source file not copied to have the good filename.
+     * I agree, it's strange...
+     *
      * @param inputFilePath
      * @param outputFilePath
      * @param cipher
      * @throws Exception
      */
     public static void decryptFile(final String inputFilePath, final String outputFilePath, final Cipher cipher) throws Exception {
+        final boolean isReplaceSource = inputFilePath.equals(outputFilePath);
+        final String default_suffix = "_decrypted";
         final File input = new File(inputFilePath);
-        final File output = new File(outputFilePath);
+        final File copyInput = new File(inputFilePath + "_copy");
+        final File output = new File(isReplaceSource ? outputFilePath + default_suffix : outputFilePath);
         int nread;
         final byte[] buffer = new byte[_BUFFER_SIZE];
 
         if (!input.exists())
             throw new FileNotFoundException(RSAProvider.class.getName() + " encryptFile() : Failed to find path " + inputFilePath + " or bad rights.");
 
-        if (output.exists())
+        if (output.exists() && !isReplaceSource)
             output.delete();
+        else
+            input.renameTo(copyInput);
 
-        final CipherInputStream cin = new CipherInputStream(new DataInputStream(new FileInputStream(input)), cipher);
+        final CipherInputStream cin = new CipherInputStream(new DataInputStream(new FileInputStream(isReplaceSource ? copyInput : input)), cipher);
         final OutputStream cout = new FileOutputStream(outputFilePath);
 
         while ((nread = cin.read(buffer)) > 0)
@@ -126,6 +226,11 @@ public final class AESProvider {
 
         cin.close();
         cout.close();
+
+        if (isReplaceSource) {
+            output.renameTo(new File(inputFilePath));
+            copyInput.delete();
+        }
     }
 
     /**
@@ -133,7 +238,7 @@ public final class AESProvider {
      *
      * @param filePath
      * @param cipher
-     * @return bytes decrypted
+     * @return
      * @throws IOException
      */
     public static byte[] decryptFileBytes(final Path filePath, final Cipher cipher) throws IOException {
