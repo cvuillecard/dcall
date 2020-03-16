@@ -110,7 +110,7 @@ public final class AESProvider {
 
         if (output.exists() && !isReplaceSource)
             output.delete();
-        else
+        if (isReplaceSource)
             input.renameTo(copyInput);
 
         final InputStream cin = new DataInputStream(new FileInputStream(isReplaceSource ? copyInput : input));
@@ -215,7 +215,7 @@ public final class AESProvider {
 
         if (output.exists() && !isReplaceSource)
             output.delete();
-        else
+        if (isReplaceSource)
             input.renameTo(copyInput);
 
         final CipherInputStream cin = new CipherInputStream(new DataInputStream(new FileInputStream(isReplaceSource ? copyInput : input)), cipher);
