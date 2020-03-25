@@ -81,7 +81,7 @@
 
                                         <artifactItem>
                                             <groupId>com.dcall.core.app.server</groupId>
-                                            <artifactId>processor</artifactId>
+                                            <artifactId>server-processor</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
                                         </artifactItem>
