@@ -81,9 +81,11 @@
 
                                         <artifactItem>
                                             <groupId>com.dcall.core.app.server</groupId>
-                                            <artifactId>server-processor</artifactId>
+                                            <artifactId>processor</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <destFileName>server-processor-${project.version}.jar</destFileName>
                                         </artifactItem>
 
                                         <artifactItem>
@@ -91,6 +93,8 @@
                                             <artifactId>terminal</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <destFileName>client-terminal-${project.version}.jar</destFileName>
                                         </artifactItem>
 
                                         <artifactItem>
@@ -98,6 +102,8 @@
                                             <artifactId>cli</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <destFileName>client-cli-${project.version}.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>
