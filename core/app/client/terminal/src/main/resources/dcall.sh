@@ -12,5 +12,5 @@ fi
 echo "Starting DCall in silent mode (detashed from current tty)"
 echo "       > Trying to connect to [ $@ ]"
 
-java -jar ${project.build.finalName}.${project.packaging} $@ < /dev/null &> /dev/null &
+java -jar ${project.artifactId}-${project.version}.${project.packaging} $@ < /dev/null &> /dev/null &
 exit 0;
