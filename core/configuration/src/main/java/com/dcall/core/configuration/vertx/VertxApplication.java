@@ -31,10 +31,13 @@ public final class VertxApplication {
     private static VertxOptions options;
     private static HazelcastConfigurator hazelcastConfigurator;
 
-    static {
+    public static void init(final String host, final Integer port) {
+        final String hostName = host != null && !host.isEmpty() ? host : ResourceUtils.getString("cluster.host.ip");
+        final int hostPort = port != null && port > 0 ? port : ResourceUtils.getInt("cluster.host.port");
+
         hazelcastConfigurator = new HazelcastConfigurator();
         clusterOptionsConfigurator = new ClusterOptionsConfigurator(configureVertxOptions(ResourceUtils.localProperties()))
-                .configure(ResourceUtils.getString("cluster.host.ip"), ResourceUtils.getInt("cluster.host.port"));
+                .configure(hostName, hostPort);
 
         options = clusterOptionsConfigurator.getVertxOptions();
     }
@@ -43,6 +46,9 @@ public final class VertxApplication {
         if (verticles == null) {
             throw new IllegalArgumentException("verticleToDeploy cannot be null");
         }
+
+        if (hazelcastConfigurator == null)
+            init(null, null);
 
         if (peers.length < 1) {
             throw new IllegalArgumentException("Bad usage of 'peers' parameter : Need at least one peer endpoint to join the cluster where peer is a string as \"ip:port\" ");
@@ -57,6 +63,9 @@ public final class VertxApplication {
         if (verticles == null) {
             throw new IllegalArgumentException("verticleToDeploy cannot be null");
         }
+
+        if (hazelcastConfigurator == null)
+            init(null, null);
 
         Vertx.clusteredVertx(options, res -> {
             if (res.succeeded()) {

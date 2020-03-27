@@ -1,6 +1,5 @@
 package com.dcall.core.configuration.security.aes;
 
-import com.dcall.core.configuration.security.rsa.RSAProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.function.Predicate;
 
 public final class AESProvider {
     private static final Logger LOG = LoggerFactory.getLogger(AESProvider.class);
@@ -106,7 +106,7 @@ public final class AESProvider {
         final byte[] buffer = new byte[_BUFFER_SIZE];
 
         if (!input.exists())
-            throw new FileNotFoundException(RSAProvider.class.getName() + " encryptFile() : Failed to find path " + inputFilePath + " or bad rights.");
+            throw new FileNotFoundException(AESProvider.class.getName() + " encryptFile() : Failed to find path " + inputFilePath + " or bad rights.");
 
         if (output.exists() && !isReplaceSource)
             output.delete();
@@ -128,33 +128,34 @@ public final class AESProvider {
         }
     }
 
-    public static void encryptDirectory(final String filePath, final Cipher enc, String prefix) {
+    public static void encryptDirectory(final String filePath, final Cipher enc, String prefix, final Predicate<String> fileNameCond) {
 
-        try {
-            final File target = new File(filePath);
-            final String[] pathArray = filePath.split(File.separator);
-            final String[] pwdArray = Arrays.copyOfRange(pathArray, 0, pathArray.length - 1);
-            final String pwd = String.join(File.separator, pwdArray);
+            try {
+                final File target = new File(filePath);
+                final String[] pathArray = filePath.split(File.separator);
+                final String[] pwdArray = Arrays.copyOfRange(pathArray, 0, pathArray.length - 1);
+                final String pwd = String.join(File.separator, pwdArray);
 
-            prefix = prefix != null && !prefix.isEmpty() ? prefix : "";
+                prefix = prefix != null && !prefix.isEmpty() ? prefix : "";
 
-            if (!target.exists())
-                throw new FileNotFoundException(filePath);
+                if (!target.exists())
+                    throw new FileNotFoundException(filePath);
 
-            if (target.isDirectory()) {
-                for (final String subFile : target.list())
-                    encryptDirectory(filePath + File.separator + subFile, enc, prefix);
+                if (fileNameCond == null || fileNameCond.test(pathArray[pathArray.length - 1])) {
+                    if (target.isDirectory()) {
+                        for (final String subFile : target.list())
+                            encryptDirectory(filePath + File.separator + subFile, enc, prefix, fileNameCond);
+                    } else {
+                        encryptFile(filePath, pwd + File.separator + prefix + pathArray[pathArray.length - 1], enc);
+                    }
+                }
+
+            } catch (Exception e) {
+                LOG.error(e.getMessage());
             }
-            else {
-                encryptFile(filePath, pwd + File.separator + prefix + pathArray[pathArray.length - 1], enc);
-            }
-
-        } catch (Exception e) {
-            LOG.error(e.getMessage());
-        }
     }
 
-    public static void decryptDirectory(final String filePath, final Cipher dec, String prefix) {
+    public static void decryptDirectory(final String filePath, final Cipher dec, String prefix, final Predicate<String> fileNameCond) {
 
         try {
             final File target = new File(filePath);
@@ -167,12 +168,13 @@ public final class AESProvider {
             if (!target.exists())
                 throw new FileNotFoundException(filePath);
 
-            if (target.isDirectory()) {
-                for (final String subFile : target.list())
-                    decryptDirectory(filePath + File.separator + subFile, dec, prefix);
-            }
-            else {
-                decryptFile(filePath, pwd + File.separator + prefix + pathArray[pathArray.length - 1], dec);
+            if (fileNameCond == null || fileNameCond.test(pathArray[pathArray.length - 1])) {
+                if (target.isDirectory()) {
+                    for (final String subFile : target.list())
+                        decryptDirectory(filePath + File.separator + subFile, dec, prefix, fileNameCond);
+                } else {
+                    decryptFile(filePath, pwd + File.separator + prefix + pathArray[pathArray.length - 1], dec);
+                }
             }
 
         } catch (Exception e) {
@@ -211,7 +213,7 @@ public final class AESProvider {
         final byte[] buffer = new byte[_BUFFER_SIZE];
 
         if (!input.exists())
-            throw new FileNotFoundException(RSAProvider.class.getName() + " encryptFile() : Failed to find path " + inputFilePath + " or bad rights.");
+            throw new FileNotFoundException(AESProvider.class.getName() + " encryptFile() : Failed to find path " + inputFilePath + " or bad rights.");
 
         if (output.exists() && !isReplaceSource)
             output.delete();
@@ -253,7 +255,7 @@ public final class AESProvider {
         }
     }
 
-    private static byte[] read(InputStream cin, int initialSize) throws IOException {
+    private static byte[] read(final InputStream cin, final int initialSize) throws IOException {
         int capacity = initialSize;
         byte[] buf = new byte[capacity];
         int nread = 0;
