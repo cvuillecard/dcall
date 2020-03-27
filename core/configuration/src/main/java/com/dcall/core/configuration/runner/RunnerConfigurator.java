@@ -46,7 +46,8 @@ public final class RunnerConfigurator {
         boolean parse = true;
 
         for(int i = 0; parse && i < args.length; i++) {
-            parse = parseHost(i, args) || parsePort(i, args) || parsePeers(i, args) ;
+            if (parse = parseHost(i, args) || parsePort(i, args) || parsePeers(i, args))
+                i++;
         }
 
         return this;
