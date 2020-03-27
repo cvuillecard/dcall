@@ -28,8 +28,4 @@
         <module>terminal</module>
     </modules>
 
-    <build>
-        <finalName>client-${project.artifactId}-${project.version}</finalName>
-    </build>
-
 </project>

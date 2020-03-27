@@ -28,8 +28,4 @@
         <module>processor</module>
     </modules>
 
-    <build>
-        <finalName>server-${project.artifactId}-${project.version}</finalName>
-    </build>
-
 </project>
