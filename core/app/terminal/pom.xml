@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<project
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.dcall.core.app</groupId>
+    <artifactId>terminal</artifactId>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>com.dcall.core</groupId>
+        <artifactId>app</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <name>Terminal</name>
+
+    <description>Future GUI acting as a terminal client</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.dcall.core</groupId>
+            <artifactId>configuration</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>dcall-run-script</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.main.resources}</directory>
+                                    <includes>
+                                        <include>*.sh</include>
+                                        <include>*.bat</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!--TOO MUCH MEME INUTILE POUR COPIER UN OU QUELQUES FICHIERS MAIS BON..-->
+    <!--PAS INDISPENSABLE MAIS TANT QU'AFFAIRE SI MAVEN POUVAIT DEPLOYER A MA PLACE...JE SAIS C'EST PAS SON BUT-->
+    <!--ON VA ME DIRE, FAIS DU ANSIBLE, ET JE REPONDRAI, FAIS DU SCRIPT SHELL CA VA PLUS VITE.. -->
+    <profiles>
+        <profile>
+            <id>UNPACK-TERMINAL-SCRIPT</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>dcall-run-script</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${extern.base.directory}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.main.resources}</directory>
+                                            <includes>
+                                                <include>*.sh</include>
+                                                <include>*.bat</include>
+                                            </includes>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

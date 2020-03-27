@@ -19,13 +19,11 @@
 
     <description>Dcall applications</description>
 
-    <properties>
-        <runner.class></runner.class>
-    </properties>
-
     <modules>
-        <module>server</module>
-        <module>client</module>
+        <module>authority</module>
+        <module>processor</module>
+        <module>cli</module>
+        <module>terminal</module>
     </modules>
 
     <build>
@@ -40,7 +38,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>${extern.lib.repository}</classpathPrefix>
                             <classpathLayoutType>${jar.classpath.layout}</classpathLayoutType>
-                            <mainClass>${runner.class}</mainClass>
+                            <mainClass>com.dcall.core.app.${project.artifactId}.Runner</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Built-By>Crea-Technologie (Charles Vuillecard)</Built-By>
@@ -80,24 +78,27 @@
                                     <artifactItems>
 
                                         <artifactItem>
-                                            <groupId>com.dcall.core.app.server</groupId>
+                                            <groupId>com.dcall.core.app</groupId>
                                             <artifactId>processor</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
+                                            <overWrite>true</overWrite>
                                         </artifactItem>
 
                                         <artifactItem>
-                                            <groupId>com.dcall.core.app.client</groupId>
+                                            <groupId>com.dcall.core.app</groupId>
                                             <artifactId>terminal</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
+                                            <overWrite>true</overWrite>
                                         </artifactItem>
 
                                         <artifactItem>
-                                            <groupId>com.dcall.core.app.client</groupId>
+                                            <groupId>com.dcall.core.app</groupId>
                                             <artifactId>cli</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
+                                            <overWrite>true</overWrite>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>
