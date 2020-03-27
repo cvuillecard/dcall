@@ -8,9 +8,73 @@
 
     <name>Core</name>
 
+    <parent>
+        <groupId>com.dcall</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../parent/pom.xml</relativePath>
+    </parent>
+
     <modules>
         <module>configuration</module>
         <module>app</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>UNPACK-SERVICE</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-services</id>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <phase>install</phase>
+                                <configuration>
+                                    <outputDirectory>${extern.base.directory}</outputDirectory>
+                                    <overWriteReleases>true</overWriteReleases>
+                                    <overWriteSnapshots>true</overWriteSnapshots>
+                                    <overWriteIfNewer>true</overWriteIfNewer>
+                                    <artifactItems>
+
+                                        <artifactItem>
+                                            <groupId>com.dcall.core.app</groupId>
+                                            <artifactId>processor</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+
+                                        <artifactItem>
+                                            <groupId>com.dcall.core.app</groupId>
+                                            <artifactId>terminal</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+
+                                        <artifactItem>
+                                            <groupId>com.dcall.core.app</groupId>
+                                            <artifactId>cli</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
