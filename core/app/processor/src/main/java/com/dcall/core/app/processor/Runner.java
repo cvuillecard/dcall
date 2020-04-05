@@ -1,6 +1,6 @@
 package com.dcall.core.app.processor;
 
-import com.dcall.core.app.processor.vertx.command.CommandProcessorConsumerVerticle;
+import com.dcall.core.app.processor.vertx.command.local.LocalCommandProcessorConsumerVerticle;
 import com.dcall.core.configuration.runner.RunnerConfigurator;
 import com.dcall.core.configuration.vertx.VertxApplication;
 import org.slf4j.Logger;
@@ -17,8 +17,9 @@ public final class Runner {
         VertxApplication.init(configurator.getHost(), configurator.getPort());
         VertxApplication.startOnCluster(
                 true,
-                 configurator.getPeers().toArray(new String[configurator.getPeers().size()]),
-                 CommandProcessorConsumerVerticle.class
+                configurator.getPeers().toArray(new String[configurator.getPeers().size()]),
+                new LocalCommandProcessorConsumerVerticle()
+//                 CommandProcessorConsumerVerticle.class
         );
     }
 }

@@ -94,9 +94,9 @@ public final class DisplayController {
         if (!entry.isAppend()) {
             for (int y = bus.output().getLastIdx(), i = 0; y < entry.nbLine(); y++) {
                 if ((metrics.currY + 1) > metrics.maxY - 1) {
-                    ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.maxY, 2);
-                    metrics.minY -= 2;
-                    ScreenController.refresh();
+                    ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.maxY, TermAttributes.DEFAULT_SCROLL_PADDING);
+                    metrics.minY -= TermAttributes.DEFAULT_SCROLL_PADDING;
+//                    ScreenController.refresh();
                 }
                 metrics.currY = metrics.screenPosY(i++);
                 TextDrawer.drawOutputString(metrics.screenPosX(0), metrics.currY, entry.getBuffer().get(y).toString());

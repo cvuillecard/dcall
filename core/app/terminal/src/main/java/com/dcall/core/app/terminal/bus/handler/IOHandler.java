@@ -30,7 +30,7 @@ public final class IOHandler {
         DisplayController.setDataReady(false);
         output().addEntry();
         Vertx.currentContext().owner().eventBus()
-                .send(URIConfig.CMD_PROCESSOR_CONSUMER, lastInput, res -> {
+                .send(URIConfig.CMD_LOCAL_PROCESSOR_CONSUMER, lastInput, res -> {
                     if (res.succeeded()) {
                         LOG.debug(" > GUI command traited by remote processor : replied > " + res.result());
                     } else {

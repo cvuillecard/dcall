@@ -1,0 +1,53 @@
+*******************************************
+* DCall - beta version ${project.version} *
+*******************************************
+
+Note : All commands and futur applications must hold a 'help' file which generally is used as 'help <command_name>'
+
+- Commands available -
+
+[ General ]
+
+pwd         - display local path working directory
+cd          - change the path working directory
+cwn         - display current working network on which you are connected
+env         - display all current global environment variables
+workspace   - list all local workspaces registered
+apps        - list all available applications from '$PUB_APPS' and 'PRIV_APPS' environment variables
+interface   - list all network interfaces/devices used by dcall
+users       - list all local users known on this workstation
+cmd         - list all commands availables from '$PUB_CMD' and '$PRIV_CMD' environment variables
+info        - base command (can be configured) to list different things [ workspace, apps, interface, users, cmd, [...] ]
+find        - base command to search things on the current network or another network [ network, app, user, group ]
+              (example : find app chat)
+
+
+[ Configuration ]
+
+id          - display informations about the public identification of current user
+set         - assign explicitly values to global environment variables like [ pwd, workspace, interface, [...] ]
+add         - add a specific value to an environment array variable (ex : add cmd <path_to_cmd_directory> )
+snapshot    - take a snapshot of global environment variables state and save it as configuration in $SNAPSHOT_DIR
+              (example : snapshot <snapshot_id_or_null>) - Alternatively can be used with 'set' (example : set <snapshot_id>)
+load        - load a directory or file as command depending of available operations
+
+
+[ Application ]
+
+create      - base command to create a new application skeleton
+package     - package an application
+fingerprint - fingerprint an application
+deploy      - deploy the application on a network (current by default)
+publish     - publish an update version of an application on the network
+signal      - signal an application as suspicious : maybe not trustable, or not respecting user/share/integrity rules
+              (can be used with users using 'signal <user_id> <optionable_app_id>')
+checkout    - checkout the last version of an application
+
+
+[ Credentials ] // in conceptual reflexion state because of many different ways
+
+subscribe   - ask a subscription to be identified on a network
+break       - ask a breaking contract or de-subscription on an app/network
+renew       - ask a renewal credentials for an app/network
+gen         - base command to generate public/private certificates depending on context [ app, user, network ]
+              (gen [ rsa, aes ] [ app_id, user_id ]) - see the help command..
