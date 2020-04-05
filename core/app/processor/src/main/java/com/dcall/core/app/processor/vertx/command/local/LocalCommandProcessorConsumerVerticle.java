@@ -39,16 +39,15 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         vertx.executeBlocking(future -> {
             try {
                 final byte[] result = commandController.execute(handler.body().toString());
-                final char[] array = new String(result).toCharArray();
-                final int nbReq = array.length / BUF_SIZE;
-                final int rest = array.length % BUF_SIZE;
+                final int nbReq = result.length / BUF_SIZE;
+                final int rest = result.length % BUF_SIZE;
                 final int totalReq = nbReq + (rest > 0 ? 1 : 0);
 
                 for (int i = 0; i < totalReq; i++) {
                     final int startIdx = i * BUF_SIZE;
                     final int endIdx = startIdx + BUF_SIZE;
                     vertx.eventBus().send(URIConfig.URI_CLIENT_TERMINAL_CONSUMER,
-                            new String(Arrays.copyOfRange(array, startIdx, endIdx > array.length ? array.length : endIdx)), r -> {
+                            new String(Arrays.copyOfRange(result, startIdx, endIdx > result.length ? result.length : endIdx)), r -> {
                                 if (r.succeeded())
                                     LOG.info(r.result().body().toString());
                                 else

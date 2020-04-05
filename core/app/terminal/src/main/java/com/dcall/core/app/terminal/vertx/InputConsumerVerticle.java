@@ -2,6 +2,7 @@ package com.dcall.core.app.terminal.vertx;
 
 import com.dcall.core.app.terminal.gui.GUIProcessor;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
+import com.dcall.core.app.terminal.vertx.constant.URIConfig;
 import io.vertx.core.AbstractVerticle;
 
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ public final class InputConsumerVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        vertx.eventBus().consumer(InputConsumerVerticle.class.getName(), handler -> {
+        vertx.eventBus().consumer(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, handler -> {
             LOG.info(" Terminal > data received : \n" + handler.body().toString());
             GUIProcessor.bus().output().addToEntry(handler.body().toString());
             handler.reply(" Terminal > data consumed.");
