@@ -82,9 +82,9 @@ public final class ScreenController {
                     super.onResized(terminal, newSize);
                     LOG.debug(" *** Window resized to : " + terminal.getTerminalSize().getColumns() + " x " + terminal.getTerminalSize().getRows());
 
+                    setScreenSize(terminal.getTerminalSize().getColumns(), terminal.getTerminalSize().getRows());
                     ((SwingTerminalFrame)ScreenController.terminal).setTitle(TermAttributes.FRAME_TITLE + " (" + metrics.width + 'x' + metrics.height + ')');
 
-                    setScreenSize(terminal.getTerminalSize().getColumns(), terminal.getTerminalSize().getRows());
                     DisplayController.resize(ScreenController.metrics());
 //                    if (terminal.getTerminalSize().getColumns() < getMinScreenWidth())
 //                        ((SwingTerminalFrame)ScreenController.terminal).setSize(((SwingTerminalFrame) ScreenController.terminal).getMinimumSize());

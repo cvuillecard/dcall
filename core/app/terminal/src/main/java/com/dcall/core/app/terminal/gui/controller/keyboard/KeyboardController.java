@@ -117,7 +117,7 @@ public final class KeyboardController {
             lock = true;
         }
         else
-            LOG.debug("Key Pressed - not handled " + "[ type = " + action.getTypeAction() + " ]");
+            LOG.debug("Key Pressed - not handled '" + action.name() + "' [ key = " + action.getKeyType().name() + ", type = " + action.getTypeAction() + " ]");
     }
 
     public static void moveAfter() {

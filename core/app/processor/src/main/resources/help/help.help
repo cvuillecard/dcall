@@ -49,5 +49,5 @@ checkout    - checkout the last version of an application
 subscribe   - ask a subscription to be identified on a network
 break       - ask a breaking contract or de-subscription on an app/network
 renew       - ask a renewal credentials for an app/network
-gen         - base command to generate public/private certificates depending on context [ app, user, network ]
+keygen      - base command to generate public/private certificates depending on context [ app, user, network ]
               (gen [ rsa, aes ] [ app_id, user_id ]) - see the help command..
