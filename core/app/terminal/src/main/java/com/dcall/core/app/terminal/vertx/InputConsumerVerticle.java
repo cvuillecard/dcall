@@ -5,6 +5,8 @@ import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.vertx.constant.URIConfig;
 import com.dcall.core.configuration.bo.Message;
 import com.dcall.core.configuration.entity.MessageBean;
+import com.dcall.core.configuration.utils.URIUtils;
+import com.dcall.core.configuration.vertx.cluster.HazelcastCluster;
 import io.vertx.core.AbstractVerticle;
 
 import io.vertx.core.buffer.Buffer;
@@ -19,7 +21,7 @@ public final class InputConsumerVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        vertx.eventBus().consumer(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, handler -> {
+        vertx.eventBus().consumer(URIUtils.getUri(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, HazelcastCluster.getLocalUuid()), handler -> {
             LOG.info(" Terminal > data received : \n" + handler.body().toString());
             final Message<String> resp = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
             GUIProcessor.bus().output().addToEntry(new String(resp.getMessage()));
