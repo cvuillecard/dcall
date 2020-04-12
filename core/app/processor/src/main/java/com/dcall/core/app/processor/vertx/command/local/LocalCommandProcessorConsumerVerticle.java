@@ -15,7 +15,6 @@ import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +28,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(LocalCommandProcessorConsumerVerticle.class);
 
     private final int BUF_SIZE = 8192;
-    @Autowired LocalCommandController commandController = new LocalCommandController();
+    private final LocalCommandController commandController = new LocalCommandController();
 
     private void execute(final Message<Object> handler, final com.dcall.core.configuration.bo.Message<String> msg) {
         if (handler != null) {
@@ -49,11 +48,13 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
                 final int rest = result.length % BUF_SIZE;
                 final int totalReq = nbReq + (rest > 0 ? 1 : 0);
 
+                final com.dcall.core.configuration.bo.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
+
                 for (int i = 0; i < totalReq; i++) {
                     final int startIdx = i * BUF_SIZE;
                     final int idx = startIdx + BUF_SIZE;
                     final int endIdx = (idx > result.length) ? result.length : idx;
-                    final com.dcall.core.configuration.bo.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), Arrays.copyOfRange(result, startIdx, endIdx), endIdx - startIdx);
+                    resp.setMessage(Arrays.copyOfRange(result, startIdx, endIdx)).setLength(endIdx - startIdx);
                     vertx.eventBus().send(URIUtils.getUri(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, msg.getId()), Json.encodeToBuffer(resp), r -> {
                                 if (r.succeeded())
                                     LOG.info(r.result().body().toString());
