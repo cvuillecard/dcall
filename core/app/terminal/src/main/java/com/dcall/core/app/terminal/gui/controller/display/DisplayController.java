@@ -195,12 +195,20 @@ public final class DisplayController {
             entry.setY(0);
             metrics.minY = MARGIN_TOP;
             metrics.currY = metrics.screenPosY(entry.posY());
-
-            TextDrawer.drawPrompt(metrics);
+            //TODO : refacto car c'est un peu confus. revoir les metrics
+            final int currX = metrics.currX;
+            final int currY = metrics.currY;
+            metrics.currX = 0;
+            metrics.currY = metrics.minY;
+//            TextDrawer.drawPrompt(metrics);
 //            drawInputEntry(entry, metrics);
+            drawInputEntryFromPos(entry, metrics);
 
             scrollMetrics.currEntry = null;
             DisplayController.initScrollMetrics(bus, metrics, scrollMetrics);
+
+            metrics.currX = currX;
+            metrics.currY = currY;
 
             moveAt(metrics);
         }
