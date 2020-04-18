@@ -23,7 +23,7 @@ public class TermAttributes {
     public static int MARGIN_RIGHT = 1;
     public static int MARGIN_TOP = 2;
     public static int MIN_SIZE_COEF = 2;
-    public static int DEFAULT_SCROLL_PADDING = 2;
+    public static int DEFAULT_SCROLL_PADDING = 4;
 
     // HEADER
     public static final TextColor HEADER_BACKGROUND = new TextColor.RGB(230, 230, 0); // YELLOW
@@ -93,5 +93,9 @@ public class TermAttributes {
         }
 
         return 0;
+    }
+
+    public static int getScrollPadding() {
+        return FRAME_NB_ROWS / DEFAULT_SCROLL_PADDING;
     }
 }

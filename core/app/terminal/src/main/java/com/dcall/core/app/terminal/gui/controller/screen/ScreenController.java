@@ -25,6 +25,7 @@ public final class ScreenController {
 
     private static volatile boolean up = true;
     private static volatile ScreenMetrics metrics = new ScreenMetrics();
+    private static volatile ScrollMetrics scrollMetrics = new ScrollMetrics();
     private static Screen screen;
     private static Terminal terminal;
 
@@ -151,9 +152,14 @@ public final class ScreenController {
         metrics.minY = TermAttributes.MARGIN_TOP;
     }
 
+    public static void hideCursor() {
+        screen.setCursorPosition(null);
+    }
+
     // GETTERS
     public static boolean isUp() { return up; }
     public static ScreenMetrics metrics() { return metrics; }
+    public static ScrollMetrics scrollMetrics() { return scrollMetrics; }
 
     public static Screen getScreen() { return screen; }
     public static Terminal getTerminal() { return terminal; }

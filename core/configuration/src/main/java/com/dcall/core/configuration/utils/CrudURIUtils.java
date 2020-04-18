@@ -1,14 +1,14 @@
-package com.dcall.core.configuration.vertx;
+package com.dcall.core.configuration.utils;
 
-public class CrudUriConfig {
+public class CrudURIUtils {
     private final String _CREATE = "/POST";
     private final String _READ = "/GET";
     private final String _UPDATE = "/PUT";
     private final String _DELETE = "/DELETE";
     private String uri;
 
-    private CrudUriConfig() {}
-    public CrudUriConfig(final String uri) { this.uri = uri; }
+    private CrudURIUtils() {}
+    public CrudURIUtils(final String uri) { this.uri = uri; }
 
     public String create() { return uri + _CREATE; }
     public String read() { return uri + _READ; }

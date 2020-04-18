@@ -1,8 +1,6 @@
-package com.dcall.core.app.terminal.gui.controller.cursor;
+package com.dcall.core.app.terminal.gui.controller.screen;
 
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
-import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
-import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.screen.Screen;
 import org.slf4j.Logger;

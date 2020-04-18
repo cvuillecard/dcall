@@ -5,13 +5,17 @@ import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.bus.input.InputLine;
 import com.dcall.core.app.terminal.gui.GUIProcessor;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
-import com.dcall.core.app.terminal.gui.controller.cursor.CursorController;
+import com.dcall.core.app.terminal.gui.controller.screen.CursorController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
+import com.dcall.core.app.terminal.gui.controller.screen.ScrollMetrics;
 import com.dcall.core.app.terminal.gui.service.drawer.TextDrawer;
+import com.dcall.core.configuration.exception.TechnicalException;
+import com.googlecode.lanterna.TerminalPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.stream.IntStream;
 
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.*;
@@ -181,8 +185,9 @@ public final class DisplayController {
         moveAt(metrics);
     }
 
-    public static void clearScreen(final InputEntry<String> entry, final ScreenMetrics metrics) {
+    public static void clearScreen(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics) {
         if (metrics.minY > MARGIN_TOP) {
+            final InputEntry<String> entry = bus.input().current();
             final int distance = metrics.minY - MARGIN_TOP;
             ScreenController.getScreen().scrollLines(MARGIN_TOP, metrics.maxY, distance);
             ScreenController.refresh();
@@ -190,6 +195,12 @@ public final class DisplayController {
             entry.setY(0);
             metrics.minY = MARGIN_TOP;
             metrics.currY = metrics.screenPosY(entry.posY());
+
+            TextDrawer.drawPrompt(metrics);
+//            drawInputEntry(entry, metrics);
+
+            scrollMetrics.currEntry = null;
+            DisplayController.initScrollMetrics(bus, metrics, scrollMetrics);
 
             moveAt(metrics);
         }
@@ -277,11 +288,87 @@ public final class DisplayController {
     }
 
     public static void addPrompt(final IOHandler bus) {
-        ScreenMetrics metrics = ScreenController.metrics();
+        final ScreenMetrics metrics = ScreenController.metrics();
 
         bus.input().addEntry(TermAttributes.getPrompt());
 
         CursorController.moveAt(metrics);
         DisplayController.displayPrompt(metrics);
+    }
+
+    /** SCROLL UP **/
+    public static void scrollUp(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, int scrollPadding) {
+        initScrollMetrics(bus, metrics, scrollMetrics);
+
+        final int newBuffIdx = scrollMetrics.currBufferIdx - scrollPadding;
+        scrollPadding = newBuffIdx >= 0 ? scrollPadding : scrollPadding + newBuffIdx;
+
+        metrics.minY += scrollPadding;
+        metrics.currY += scrollPadding;
+
+        ScreenController.getScreen().scrollLines(MARGIN_TOP, metrics.maxY, scrollPadding * -1);
+
+        drawUpEntryRange(metrics, scrollMetrics, newBuffIdx);
+
+        scrollMetrics.currBufferIdx = newBuffIdx;
+
+        scrollUpCursor(metrics);
+
+        ScreenController.refresh();
+
+        updateScrollUpMetrics(bus, metrics, scrollMetrics, newBuffIdx);
+    }
+
+    private static void updateScrollUpMetrics(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, final int newBuffIdx) {
+        if (scrollMetrics.currBufferIdx <= 0) {
+            scrollMetrics.isInput = !scrollMetrics.isInput;
+
+            if (scrollMetrics.getEntryIdx() - 1 >= 0) {
+                scrollMetrics.decrementEntryIdx();
+                scrollMetrics.currEntry = scrollMetrics.isInput ? bus.input().entries().get(scrollMetrics.getEntryIdx()) : bus.output().entries().get(scrollMetrics.getEntryIdx());
+                scrollMetrics.currBufferIdx = scrollMetrics.currEntry.getBuffer().size();
+                if (newBuffIdx < 0)
+                    scrollUp(bus, metrics, scrollMetrics, newBuffIdx * -1);
+            }
+        }
+    }
+
+    private static void scrollUpCursor(ScreenMetrics metrics) {
+        if (metrics.currY > metrics.maxY)
+            ScreenController.hideCursor();
+        else
+            CursorController.moveAt(metrics);
+    }
+
+    private static void drawUpEntryRange(final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, int newBuffIdx) {
+        for (int i = newBuffIdx < 0 ? 0 : newBuffIdx, y = MARGIN_TOP; i < scrollMetrics.currBufferIdx; i++) {
+            String line = scrollMetrics.currEntry.getBuffer().get(i).toString();
+            int x = TermAttributes.MARGIN_LEFT;
+            if (scrollMetrics.isInput) {
+                if (i == 0) {
+                    ScreenMetrics copyMetrics = new ScreenMetrics(metrics);
+                    metrics.currY = y;
+                    TextDrawer.drawPrompt(metrics);
+                    metrics.currY = copyMetrics.currY;
+                    x += TermAttributes.getPrompt().length();
+                    line = line.substring(TermAttributes.getPrompt().length());
+                }
+                TextDrawer.drawInputString(x, y++, line);
+            }
+            else
+                TextDrawer.drawOutputString(x, y++, line);
+        }
+    }
+
+    private static void initScrollMetrics(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics) {
+        if (scrollMetrics.currEntry == null) {
+            final int topDistance = metrics.currY - MARGIN_TOP;
+
+            scrollMetrics.isInput = false;
+            scrollMetrics.currEntry = bus.output().current();
+            scrollMetrics.inputEntryIdx = bus.input().size() - 1;
+            scrollMetrics.outputEntryIdx = bus.output().size() - 1;
+            scrollMetrics.currBufferIdx = scrollMetrics.currEntry.getBuffer().size() - topDistance;
+        }
     }
 }

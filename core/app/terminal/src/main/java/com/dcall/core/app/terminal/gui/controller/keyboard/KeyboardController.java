@@ -6,6 +6,7 @@ import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
+import com.dcall.core.app.terminal.gui.controller.screen.ScrollMetrics;
 import com.dcall.core.app.terminal.gui.service.drawer.TextDrawer;
 import com.dcall.core.configuration.constant.IOConstant;
 import com.googlecode.lanterna.input.KeyStroke;
@@ -191,6 +192,15 @@ public final class KeyboardController {
         DisplayController.moveAt(metrics);
     }
 
+    public static void scrollUp() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final ScrollMetrics scrollMetrics = ScreenController.scrollMetrics();
+
+        if (bus.output().entries().size() > 0 && scrollMetrics.currBufferIdx >= 0) {
+            DisplayController.scrollUp(bus, metrics, scrollMetrics, TermAttributes.getScrollPadding());
+        }
+    }
+
     public static void moveUp() {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
@@ -249,7 +259,7 @@ public final class KeyboardController {
     }
 
     public static void clearScreen() {
-        DisplayController.clearScreen(bus.input().current(), ScreenController.metrics());
+        DisplayController.clearScreen(bus, ScreenController.metrics(), ScreenController.scrollMetrics());
     }
 
     public static void stop() {
@@ -264,8 +274,8 @@ public final class KeyboardController {
         switchInput(ScreenController.metrics(), bus.input().current(), bus.input().nextEntry());
     }
 
-    private static void switchInput(ScreenMetrics metrics, InputEntry<String> entry, InputEntry<String> prevEntry) {
-        if (prevEntry != null) {
+    private static void switchInput(ScreenMetrics metrics, InputEntry<String> entry, InputEntry<String> switchEntry) {
+        if (switchEntry != null) {
             if (bus.input().lastInput().getBuffer().get(0) == entry.getBuffer().get(0))
                 bus.input().setLastInput(entry);
             entry.setX(TermAttributes.getPrompt().length());
@@ -276,7 +286,7 @@ public final class KeyboardController {
             DisplayController.drawBlankFromPos(entry, metrics);
 
             entry.getBuffer().clear();
-            entry.getBuffer().addAll(prevEntry.getBuffer());
+            entry.getBuffer().addAll(switchEntry.getBuffer());
 
             DisplayController.drawBlankFromPos(entry, metrics);
             DisplayController.updateScreenMetrics(entry, metrics);
