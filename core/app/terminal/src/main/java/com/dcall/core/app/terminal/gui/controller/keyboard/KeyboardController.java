@@ -1,6 +1,7 @@
 package com.dcall.core.app.terminal.gui.controller.keyboard;
 
 import com.dcall.core.app.terminal.bus.handler.IOHandler;
+import com.dcall.core.app.terminal.bus.handler.InputHandler;
 import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGIN_TOP;
@@ -274,7 +276,7 @@ public final class KeyboardController {
         switchInput(ScreenController.metrics(), bus.input().current(), bus.input().nextEntry());
     }
 
-    private static void switchInput(ScreenMetrics metrics, InputEntry<String> entry, InputEntry<String> switchEntry) {
+    private static void switchInput(final ScreenMetrics metrics, final InputEntry<String> entry, final InputEntry<String> switchEntry) {
         if (switchEntry != null) {
             if (bus.input().lastInput().getBuffer().get(0) == entry.getBuffer().get(0))
                 bus.input().setLastInput(entry);
@@ -285,8 +287,7 @@ public final class KeyboardController {
 
             DisplayController.drawBlankFromPos(entry, metrics);
 
-            entry.getBuffer().clear();
-            entry.getBuffer().addAll(switchEntry.getBuffer());
+            entry.cloneBuffer(switchEntry.getBuffer());
 
             DisplayController.drawBlankFromPos(entry, metrics);
             DisplayController.updateScreenMetrics(entry, metrics);

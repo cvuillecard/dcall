@@ -21,4 +21,14 @@ public final class ScrollMetrics {
 
         return getEntryIdx();
     }
+
+    public ScrollMetrics reset() {
+        isInput = true;
+        currEntry = null;
+        inputEntryIdx = 0;
+        outputEntryIdx = 0;
+        currBufferIdx = 0;
+
+        return this;
+    }
 }

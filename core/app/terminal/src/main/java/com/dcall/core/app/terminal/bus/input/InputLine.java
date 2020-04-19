@@ -4,6 +4,7 @@ import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class InputLine<T> {
     private List<T> buffer;
@@ -52,4 +53,16 @@ public class InputLine<T> {
         this.buffer.clear();
         this.buffer = null;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof InputLine)) return false;
+        final InputLine<?> inputLine = (InputLine<?>) o;
+
+        return Objects.equals(getBuffer(), inputLine.getBuffer());
+    }
+
+    @Override
+    public int hashCode() { return Objects.hash(getBuffer()); }
 }

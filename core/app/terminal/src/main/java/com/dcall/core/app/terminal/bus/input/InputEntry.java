@@ -3,7 +3,10 @@ package com.dcall.core.app.terminal.bus.input;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collector;
 
 public class InputEntry<T> {
     private List<InputLine<T>> buffer = null;
@@ -278,4 +281,27 @@ public class InputEntry<T> {
         this.buffer.clear();
         this.buffer = null;
     }
+
+    public void cloneBuffer(final List<InputLine<T>> src) {
+        this.reset();
+
+        for (int i = 0; i < src.size(); i++) {
+            final InputLine<T> e = src.get(i);
+            for (int j = 0; j < e.getBuffer().size(); j++)
+                this.add(e.getBuffer().get(j));
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof InputEntry)) return false;
+        final InputEntry<?> intputEntry = (InputEntry<?>) o;
+
+        return x == intputEntry.x && y == intputEntry.y && Objects.equals(getBuffer(), intputEntry.getBuffer());
+    }
+
+    @Override
+    public int hashCode() { return Objects.hash(getBuffer(), x, y); }
+
 }

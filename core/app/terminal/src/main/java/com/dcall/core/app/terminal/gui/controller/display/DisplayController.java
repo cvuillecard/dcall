@@ -209,8 +209,7 @@ public final class DisplayController {
             metrics.currX = metrics.screenPosX(entry.posX());
             metrics.currY = metrics.screenPosY(entry.posY());
 
-            scrollMetrics.currEntry = null;
-            DisplayController.initScrollMetrics(bus, metrics, scrollMetrics);
+            scrollMetrics.reset();
 
             moveAt(metrics);
         }
