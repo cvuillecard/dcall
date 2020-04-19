@@ -168,7 +168,8 @@ public final class DisplayController {
             metrics.currX = metrics.screenPosX(TermAttributes.getPrompt().length());
         }
 
-        TextDrawer.drawInputString(metrics.currX, metrics.currY, entry.getBuffer().get(metrics.posY()).toString().substring(metrics.posX()));
+        if (metrics.posY() <= entry.maxNbLine())
+            TextDrawer.drawInputString(metrics.currX, metrics.currY, entry.getBuffer().get(metrics.posY()).toString().substring(metrics.posX()));
     }
 
     public static void paste(final InputEntry<String> entry, final int length, final ScreenMetrics metrics) {
@@ -188,27 +189,28 @@ public final class DisplayController {
     public static void clearScreen(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics) {
         if (metrics.minY > MARGIN_TOP) {
             final InputEntry<String> entry = bus.input().current();
+            final int posX = metrics.posX();
+            final int posY = metrics.posY();
             final int distance = metrics.minY - MARGIN_TOP;
             ScreenController.getScreen().scrollLines(MARGIN_TOP, metrics.maxY, distance);
             ScreenController.refresh();
-            entry.setX(metrics.posX());
+
+            entry.setX(0);
             entry.setY(0);
+
             metrics.minY = MARGIN_TOP;
+            metrics.currY = MARGIN_TOP;
+            metrics.currX = MARGIN_LEFT;
+
+            DisplayController.drawInputEntryFromPos(entry, metrics);
+
+            entry.setX(posX);
+            entry.setY(posY);
+            metrics.currX = metrics.screenPosX(entry.posX());
             metrics.currY = metrics.screenPosY(entry.posY());
-            //TODO : refacto car c'est un peu confus. revoir les metrics
-            final int currX = metrics.currX;
-            final int currY = metrics.currY;
-            metrics.currX = 0;
-            metrics.currY = metrics.minY;
-//            TextDrawer.drawPrompt(metrics);
-//            drawInputEntry(entry, metrics);
-            drawInputEntryFromPos(entry, metrics);
 
             scrollMetrics.currEntry = null;
             DisplayController.initScrollMetrics(bus, metrics, scrollMetrics);
-
-            metrics.currX = currX;
-            metrics.currY = currY;
 
             moveAt(metrics);
         }

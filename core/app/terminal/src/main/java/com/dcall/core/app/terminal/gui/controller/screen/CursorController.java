@@ -15,10 +15,7 @@ public final class CursorController {
     }
 
     public static void moveAt(final ScreenMetrics metrics) {
-        LOG.debug(" cursor X = " + metrics.currX);
-        LOG.debug(" cursor Y = " + metrics.currY);
-
-        if (metrics.currX == metrics.maxX && metrics.currY == metrics.maxY) {
+        if (metrics.currX == metrics.maxX) {
             metrics.currX = metrics.minX;
             metrics.currY++;
         }
@@ -31,6 +28,9 @@ public final class CursorController {
                 ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.maxY, distance);
             }
         }
+
+        LOG.debug(" cursor X = " + metrics.currX);
+        LOG.debug(" cursor Y = " + metrics.currY);
 
         CursorController.screen.setCursorPosition(new TerminalPosition(metrics.currX, metrics.currY));
     }
