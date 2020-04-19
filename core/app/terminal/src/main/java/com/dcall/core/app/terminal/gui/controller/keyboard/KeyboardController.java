@@ -333,6 +333,8 @@ public final class KeyboardController {
 
             bus.input().current().add(character);
 
+            handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
+
             DisplayController.displayCharacter(bus.input().current(), ScreenController.metrics(), character);
         }
     }
@@ -340,6 +342,8 @@ public final class KeyboardController {
     public static void deleteCharacter() {
         final int posX = bus.input().current().posX();
         final int posY = bus.input().current().posY();
+
+        handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
 
         if (posY > 0 || (posY == 0 && posX > TermAttributes.getPrompt().length())) {
             bus.input().current().remove();
@@ -349,7 +353,10 @@ public final class KeyboardController {
 
     public static void enter() {
         final ScreenMetrics metrics = ScreenController.metrics();
+        final ScrollMetrics scrollMetrics = ScreenController.scrollMetrics();
         final InputEntry<String> entry = bus.input().current();
+
+        handleScrollOnKeyPress(metrics, scrollMetrics);
 
         entry.setX(entry.getBuffer().get(entry.maxNbLine()).size());
         entry.setY(entry.maxNbLine());
@@ -364,6 +371,11 @@ public final class KeyboardController {
 
         if (!bus.handleInput())
             DisplayController.addPrompt(bus);
+    }
+
+    private static void handleScrollOnKeyPress(ScreenMetrics metrics, ScrollMetrics scrollMetrics) {
+        if (scrollMetrics.currEntry != null && metrics.currY > metrics.maxY)
+            clearScreen();
     }
 
     public static void handleNextInput(final boolean displayInputLocked) {
