@@ -128,6 +128,9 @@ public final class KeyboardController {
         final InputEntry<String> entry = bus.input().current();
 
         if (!entry.isAppend()) {
+
+            handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
+
             entry.moveAfter(" ");
 
             handleScrollUp(metrics, entry);
@@ -141,6 +144,8 @@ public final class KeyboardController {
     public static void moveBefore() {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
+
+        handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
 
         if (onFirstLinePos(entry.posX(), entry.posY()))
             return;
@@ -162,6 +167,8 @@ public final class KeyboardController {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
 
+        handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
+
         entry.setX(TermAttributes.getPrompt().length());
         entry.setY(0);
 
@@ -176,6 +183,8 @@ public final class KeyboardController {
     public static void moveEnd() {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
+
+        handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
 
         entry.setX(entry.getBuffer().get(entry.maxNbLine()).size());
         entry.setY(entry.maxNbLine());
@@ -210,6 +219,8 @@ public final class KeyboardController {
         if (entry.posY() > 0) {
             final int newY = entry.posY() - 1;
 
+            handleScrollOnKeyPress(metrics, ScreenController.scrollMetrics());
+
             entry.setY(newY);
             entry.setX(newY == 0 && entry.posX() < TermAttributes.getPrompt().length() ? TermAttributes.getPrompt().length() : entry.posX());
 
@@ -228,6 +239,8 @@ public final class KeyboardController {
 
         if (entry.posY() < entry.maxNbLine()) {
             final int newY = entry.posY() + 1;
+
+            handleScrollOnKeyPress(metrics, ScreenController.scrollMetrics());
 
             entry.setY(newY);
             entry.setX(entry.posX() > entry.getBuffer().get(newY).size() ? entry.getBuffer().get(newY).size() : entry.posX());
@@ -278,6 +291,9 @@ public final class KeyboardController {
 
     private static void switchInput(final ScreenMetrics metrics, final InputEntry<String> entry, final InputEntry<String> switchEntry) {
         if (switchEntry != null) {
+
+            handleScrollOnKeyPress(metrics, ScreenController.scrollMetrics());
+
             if (bus.input().lastInput().getBuffer().get(0) == entry.getBuffer().get(0))
                 bus.input().setLastInput(entry);
             entry.setX(TermAttributes.getPrompt().length());
@@ -300,6 +316,8 @@ public final class KeyboardController {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
 
+        handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
+
         if (entry.posY() == entry.maxNbLine() && entry.posX() == entry.getBuffer().get(entry.posY()).size())
             return;
 
@@ -313,6 +331,8 @@ public final class KeyboardController {
     public static void moveLeft() {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
+
+        handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
 
         if (onFirstLinePos(entry.posX(), entry.posY()))
             return;
