@@ -371,7 +371,7 @@ public final class DisplayController {
 
     private static void initScrollMetrics(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics) {
         if (scrollMetrics.currEntry == null) {
-            final int topDistance = metrics.currY - MARGIN_TOP;
+            final int topDistance = metrics.minY - MARGIN_TOP;
 
             scrollMetrics.isInput = false;
             scrollMetrics.currEntry = bus.output().current();
