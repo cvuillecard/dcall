@@ -40,31 +40,17 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         }
     }
 
-    private void handleLocalCommand(final Message<Object> handler, final com.dcall.core.configuration.bo.Message<String> msg) {
+    private void handleLocalCommand(final Message<Object> handler, final com.dcall.core.configuration.bo.Message<String> sender) {
         vertx.executeBlocking(future -> {
             try {
-                final byte[] result = commandController.execute(new String(msg.getMessage()));
-                final int nbReq = result.length / BUF_SIZE;
-                final int rest = result.length % BUF_SIZE;
-                final int totalReq = nbReq + (rest > 0 ? 1 : 0);
-
                 final com.dcall.core.configuration.bo.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
 
-                for (int i = 0; i < totalReq; i++) {
-                    final int startIdx = i * BUF_SIZE;
-                    final int idx = startIdx + BUF_SIZE;
-                    final int endIdx = (idx > result.length) ? result.length : idx;
-                    resp.setMessage(Arrays.copyOfRange(result, startIdx, endIdx)).setLength(endIdx - startIdx);
-                    vertx.eventBus().send(URIUtils.getUri(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, msg.getId()), Json.encodeToBuffer(resp), r -> {
-                                if (r.succeeded())
-                                    LOG.info(r.result().body().toString());
-                                else
-                                    new TechnicalException(r.cause()).log();
-                            });
-                }
+                final byte[] result = commandController.execute(new String(sender.getMessage()));
+
+                sendChunk(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, sender, result, getNbChunk(result), resp);
             }
             catch (Exception e) {
-                handleError(handler, e.getMessage(), msg);
+                handleError(handler, e.getMessage(), sender);
                 LOG.error(e.getMessage());
             }
             finally {
@@ -84,18 +70,38 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         });
     }
 
-    private void handleError(final Message<Object> handler, final String msgError, final com.dcall.core.configuration.bo.Message<String> msg) {
-        LOG.error(msgError);
-        handler.fail(-1, "");
-        final byte[] bytes = msgError.getBytes();
+    private int getNbChunk(byte[] result) {
+        return (result.length / BUF_SIZE) + ((result.length % BUF_SIZE) > 0 ? 1 : 0);
+    }
+
+    private void sendChunk(final String address, final com.dcall.core.configuration.bo.Message<String> sender, final byte[] bytes, final int nbChunk, final com.dcall.core.configuration.bo.Message<String> resp) {
+        for (int i = 0; i < nbChunk; i++) {
+            final int startIdx = i * BUF_SIZE;
+            final int idx = startIdx + BUF_SIZE;
+            final int endIdx = (idx > bytes.length) ? bytes.length : idx;
+
+            resp.setMessage(Arrays.copyOfRange(bytes, startIdx, endIdx)).setLength(endIdx - startIdx);
+
+            vertx.eventBus().send(URIUtils.getUri(address, sender.getId()), Json.encodeToBuffer(resp), r -> {
+                        if (r.succeeded())
+                            LOG.info(r.result().body().toString());
+                        else
+                            new TechnicalException(r.cause()).log();
+                    });
+        }
+    }
+
+    private void handleError(final Message<Object> handler, final String msgError, final com.dcall.core.configuration.bo.Message<String> sender) {
+        final String error = "Failed to execute '" + new String(sender.getMessage()) + "' - ERROR : " + msgError;
+        final byte[] bytes = error.getBytes();
         final String randId = HashProvider.seed(bytes);
-        final Buffer buffer = Json.encodeToBuffer(new MessageBean(randId, bytes, bytes.length));
-        vertx.eventBus().send(URIUtils.getUri(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, msg.getId()), buffer, r -> {
-            if (r.succeeded())
-                LOG.info(r.result().body().toString());
-            else
-                new TechnicalException(r.cause()).log();
-        });
+        final com.dcall.core.configuration.bo.Message<String> resp = new MessageBean(randId, bytes, bytes.length);
+
+        LOG.error(msgError);
+
+        handler.fail(-1, "");
+
+        sendChunk(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, sender, bytes, getNbChunk(bytes), resp);
     }
 
     @Override
