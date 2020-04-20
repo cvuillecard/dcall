@@ -167,7 +167,7 @@ public final class KeyboardController {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
 
-        handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
+        handleScrollOnKeyPress(metrics, ScreenController.scrollMetrics());
 
         entry.setX(TermAttributes.getPrompt().length());
         entry.setY(0);
@@ -184,7 +184,7 @@ public final class KeyboardController {
         final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
 
-        handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
+        handleScrollOnKeyPress(metrics, ScreenController.scrollMetrics());
 
         entry.setX(entry.getBuffer().get(entry.maxNbLine()).size());
         entry.setY(entry.maxNbLine());
