@@ -24,6 +24,8 @@ public final class IOHandler {
     public boolean handleInput() {
         lastInput = StringUtils.epur(inputHandler.current().toString().substring(TermAttributes.getPrompt().length()));
 
+        output().addEntry();
+
         if (!lastInput.isEmpty() && !close()) {
             sendLastInput();
             return true;
@@ -34,7 +36,6 @@ public final class IOHandler {
     public void sendLastInput() {
         DisplayController.lock();
         DisplayController.setDataReady(false);
-        output().addEntry();
         final byte[] datas = lastInput.getBytes();
         final com.dcall.core.configuration.bo.Message<String> msg = new MessageBean(HazelcastCluster.getLocalUuid(), datas, datas.length);
         Vertx.currentContext().owner().eventBus()

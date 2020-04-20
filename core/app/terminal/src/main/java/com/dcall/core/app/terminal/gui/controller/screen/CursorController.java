@@ -27,6 +27,7 @@ public final class CursorController {
                 metrics.minY -= distance;
                 ScreenController.getScreen().scrollLines(TermAttributes.MARGIN_TOP, metrics.maxY, distance);
             }
+            ScreenController.scrollMetrics().reset();
         }
 
         LOG.debug(" cursor X = " + metrics.currX);
