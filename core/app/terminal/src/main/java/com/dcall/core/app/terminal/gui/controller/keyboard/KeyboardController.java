@@ -209,7 +209,17 @@ public final class KeyboardController {
 
         if (bus.output().entries().size() > 0 && scrollMetrics.currBufferIdx >= 0) {
             DisplayController.scrollUp(bus, metrics, scrollMetrics, TermAttributes.getScrollPadding());
+            LOG.info("screenMetrics => minY = " + metrics.minY);
+            LOG.info("scrollMetrics.accu => currBufferIdx = " + scrollMetrics.accu.currBufferIdx);
         }
+    }
+
+    public static void scrollDown() {
+        final ScreenMetrics metrics = ScreenController.metrics();
+        final ScrollMetrics scrollMetrics = ScreenController.scrollMetrics();
+
+        if (metrics.currY > metrics.maxY)
+            DisplayController.scrollDown(bus, metrics, scrollMetrics, TermAttributes.getScrollPadding());
     }
 
     public static void moveUp() {

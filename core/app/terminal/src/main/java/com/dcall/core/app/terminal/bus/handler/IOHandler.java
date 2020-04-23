@@ -1,5 +1,6 @@
 package com.dcall.core.app.terminal.bus.handler;
 
+import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.List;
 
 public final class IOHandler {
     private static final Logger LOG = LoggerFactory.getLogger(IOHandler.class);
@@ -66,4 +68,5 @@ public final class IOHandler {
     // GETTERS
     public final InputHandler input() { return this.inputHandler; }
     public final OutputHandler output() { return this.outputHandler; }
+    public final List<InputEntry<String>> entries(final boolean isInput) { return isInput ? input().entries() : output().entries(); }
 }

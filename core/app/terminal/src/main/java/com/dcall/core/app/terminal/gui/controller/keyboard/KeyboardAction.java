@@ -22,7 +22,7 @@ public enum KeyboardAction {
 //    SCROLL_UP(KeyType.ArrowUp, TypeAction.SCROLL, null, null),
 //    SCROLL_DOWN(KeyType.ArrowDown, TypeAction.SCROLL, null, null),
     SCROLL_UP(KeyType.PageUp, TypeAction.SCROLL, null, KeyboardController::scrollUp),
-    SCROLL_DOWN(KeyType.PageDown, TypeAction.SCROLL, null, null),
+    SCROLL_DOWN(KeyType.PageDown, TypeAction.SCROLL, null, KeyboardController::scrollDown),
     SHIFT_SELECT_RIGHT(KeyType.ArrowRight, TypeAction.SELECT, null, null),
     SHIFT_SELECT_LEFT(KeyType.ArrowLeft, TypeAction.SELECT, null, null),
     ADD(KeyType.Character, TypeAction.ADD, null, KeyboardController::handleCharacter),

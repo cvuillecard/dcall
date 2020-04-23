@@ -10,12 +10,9 @@ import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.controller.screen.ScrollMetrics;
 import com.dcall.core.app.terminal.gui.service.drawer.TextDrawer;
-import com.dcall.core.configuration.exception.TechnicalException;
-import com.googlecode.lanterna.TerminalPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.stream.IntStream;
 
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.*;
@@ -305,6 +302,87 @@ public final class DisplayController {
         DisplayController.displayPrompt(metrics);
     }
 
+
+    /** COMMON SCROLL **/
+    private static int drawScrollEntryRange(ScreenMetrics metrics, ScrollMetrics scrollMetrics, int i, int y, String line, int x) {
+        if (scrollMetrics.isInput) {
+            if (i == 0) {
+                final int lastY = metrics.currY;
+                metrics.currY = y;
+                TextDrawer.drawPrompt(metrics);
+                metrics.currY = lastY;
+                x += TermAttributes.getPrompt().length();
+                line = line.substring(TermAttributes.getPrompt().length());
+            }
+            TextDrawer.drawInputString(x, y++, line);
+        }
+        else
+            TextDrawer.drawOutputString(x, y++, line);
+        return y;
+    }
+
+    /** SCROLL DOWN **/
+    public static void scrollDown(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, int scrollPadding) {
+        if (scrollMetrics.currEntry != null && scrollPadding > 0) {
+
+            initScrollDownMetrics(bus, scrollMetrics.accu);
+
+            final int currBuffSize = scrollMetrics.accu.currEntry.getBuffer().size();
+            final int newBuffIdx = scrollMetrics.accu.currBufferIdx + scrollPadding;
+            int padding = newBuffIdx > currBuffSize ? currBuffSize - scrollMetrics.accu.currBufferIdx : scrollPadding;
+
+            ScreenController.getScreen().scrollLines(MARGIN_TOP, metrics.maxY, padding);
+
+            metrics.minY -= padding;
+            metrics.currY -= padding;
+
+            drawDownEntryRange(metrics, scrollMetrics.accu, (scrollMetrics.accu.currBufferIdx + padding), padding);
+
+            scrollMetrics.accu.currBufferIdx += padding;
+            scrollMetrics.currBufferIdx += padding;
+
+            scrollCursor(metrics);
+
+            ScreenController.refresh();
+
+            final boolean isEnd = scrollMetrics.currEntry.equals(bus.input().current()) && scrollMetrics.currBufferIdx >= bus.input().current().getBuffer().size();
+            if (!isEnd && padding < scrollPadding) {
+                updateScrollDownMetrics(bus, scrollMetrics.accu, isEnd);
+                scrollDown(bus, metrics, scrollMetrics, scrollPadding - padding);
+            }
+        }
+    }
+
+    private static void updateScrollDownMetrics(final IOHandler bus, final ScrollMetrics scrollMetrics, final boolean isEnd) {
+        if (!isEnd) {
+            scrollMetrics.isInput = !scrollMetrics.isInput;
+            scrollMetrics.currBufferIdx = 0;
+
+            if (scrollMetrics.getEntryIdx() + 1 < bus.entries(scrollMetrics.isInput).size()) {
+                scrollMetrics.incrementEntryIdx();
+                scrollMetrics.currEntry = bus.entries(scrollMetrics.isInput).get(scrollMetrics.getEntryIdx());
+            }
+        }
+    }
+
+    private static void drawDownEntryRange(final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, final int newBuffIdx, final int padding) {
+        for (int i = scrollMetrics.currBufferIdx, y = metrics.height - padding; i < newBuffIdx; i++)
+            y = drawScrollEntryRange(metrics, scrollMetrics, i, y, scrollMetrics.currEntry.getBuffer().get(i).toString(), TermAttributes.MARGIN_LEFT);
+    }
+
+    private static void initScrollDownMetrics(final IOHandler bus, final ScrollMetrics scrollMetrics) {
+        if (scrollMetrics.currBufferIdx < 0) {
+            scrollMetrics.isInput = !scrollMetrics.isInput;
+            if (scrollMetrics.getEntryIdx() - 1 >= 0) {
+                scrollMetrics.decrementEntryIdx();
+                scrollMetrics.currEntry = bus.entries(scrollMetrics.isInput).get(scrollMetrics.getEntryIdx());
+                scrollMetrics.currBufferIdx = scrollMetrics.currEntry.getBuffer().size() + scrollMetrics.currBufferIdx;
+                if (scrollMetrics.currBufferIdx < 0)
+                    initScrollDownMetrics(bus, scrollMetrics);
+            }
+        }
+    }
+
     /** SCROLL UP **/
     public static void scrollUp(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, int scrollPadding) {
         initScrollMetrics(bus, metrics, scrollMetrics);
@@ -320,8 +398,9 @@ public final class DisplayController {
         drawUpEntryRange(metrics, scrollMetrics, newBuffIdx);
 
         scrollMetrics.currBufferIdx = newBuffIdx;
+        scrollMetrics.accu.currBufferIdx = scrollMetrics.accu.currBufferIdx - scrollPadding;
 
-        scrollUpCursor(metrics);
+        scrollCursor(metrics);
 
         ScreenController.refresh();
 
@@ -334,7 +413,7 @@ public final class DisplayController {
 
             if (scrollMetrics.getEntryIdx() - 1 >= 0) {
                 scrollMetrics.decrementEntryIdx();
-                scrollMetrics.currEntry = scrollMetrics.isInput ? bus.input().entries().get(scrollMetrics.getEntryIdx()) : bus.output().entries().get(scrollMetrics.getEntryIdx());
+                scrollMetrics.currEntry = bus.entries(scrollMetrics.isInput).get(scrollMetrics.getEntryIdx());
                 scrollMetrics.currBufferIdx = scrollMetrics.currEntry.getBuffer().size();
                 if (newBuffIdx < 0)
                     scrollUp(bus, metrics, scrollMetrics, newBuffIdx * -1);
@@ -342,7 +421,7 @@ public final class DisplayController {
         }
     }
 
-    private static void scrollUpCursor(ScreenMetrics metrics) {
+    private static void scrollCursor(final ScreenMetrics metrics) {
         if (metrics.currY > metrics.maxY)
             ScreenController.hideCursor();
         else
@@ -350,34 +429,24 @@ public final class DisplayController {
     }
 
     private static void drawUpEntryRange(final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, int newBuffIdx) {
-        for (int i = newBuffIdx < 0 ? 0 : newBuffIdx, y = MARGIN_TOP; i < scrollMetrics.currBufferIdx; i++) {
-            String line = scrollMetrics.currEntry.getBuffer().get(i).toString();
-            int x = TermAttributes.MARGIN_LEFT;
-            if (scrollMetrics.isInput) {
-                if (i == 0) {
-                    ScreenMetrics copyMetrics = new ScreenMetrics(metrics);
-                    metrics.currY = y;
-                    TextDrawer.drawPrompt(metrics);
-                    metrics.currY = copyMetrics.currY;
-                    x += TermAttributes.getPrompt().length();
-                    line = line.substring(TermAttributes.getPrompt().length());
-                }
-                TextDrawer.drawInputString(x, y++, line);
-            }
-            else
-                TextDrawer.drawOutputString(x, y++, line);
-        }
+        for (int i = newBuffIdx < 0 ? 0 : newBuffIdx, y = MARGIN_TOP; i < scrollMetrics.currBufferIdx; i++)
+            y = drawScrollEntryRange(metrics, scrollMetrics, i, y, scrollMetrics.currEntry.getBuffer().get(i).toString(), TermAttributes.MARGIN_LEFT);
     }
 
     private static void initScrollMetrics(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics) {
         if (scrollMetrics.currEntry == null) {
             final int topDistance = metrics.minY - MARGIN_TOP;
+            final int bottomDistance = metrics.minY - metrics.height;
 
             scrollMetrics.isInput = false;
             scrollMetrics.currEntry = bus.output().current();
             scrollMetrics.inputEntryIdx = bus.input().size() - 1;
             scrollMetrics.outputEntryIdx = bus.output().size() - 1;
             scrollMetrics.currBufferIdx = scrollMetrics.currEntry.getBuffer().size() - topDistance;
+
+            scrollMetrics.accu = new ScrollMetrics(scrollMetrics);
+            scrollMetrics.accu.inputEntryIdx -= 1;
+            scrollMetrics.accu.currBufferIdx = scrollMetrics.currEntry.getBuffer().size() - bottomDistance;
         }
     }
 }
