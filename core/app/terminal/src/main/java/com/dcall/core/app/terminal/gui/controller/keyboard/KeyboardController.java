@@ -12,6 +12,7 @@ import com.dcall.core.app.terminal.gui.service.drawer.TextDrawer;
 import com.dcall.core.configuration.constant.IOConstant;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.Terminal;
+import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,10 +208,22 @@ public final class KeyboardController {
         final ScreenMetrics metrics = ScreenController.metrics();
         final ScrollMetrics scrollMetrics = ScreenController.scrollMetrics();
 
-        if (bus.output().entries().size() > 0 && scrollMetrics.currBufferIdx >= 0) {
+        if (bus.output().entries().size() > 0 && (scrollMetrics.currEntry == null || scrollMetrics.inputEntryIdx > 0)) {
             DisplayController.scrollUp(bus, metrics, scrollMetrics, TermAttributes.getScrollPadding());
-            LOG.info("screenMetrics => minY = " + metrics.minY);
-            LOG.info("scrollMetrics.accu => currBufferIdx = " + scrollMetrics.accu.currBufferIdx);
+//            scrollMetrics.currBufferIdx = scrollMetrics.inputEntryIdx == 0 && scrollMetrics.currBufferIdx < 0 ? 0 : scrollMetrics.currBufferIdx;
+//            scrollMetrics.inputEntryIdx = Math.max(scrollMetrics.outputEntryIdx, scrollMetrics.inputEntryIdx);
+            LOG.info("screen metrics -> minY = " + metrics.minY);
+            LOG.info("screen metrics -> currY = " + metrics.currY);
+
+            LOG.info("scroll metrics -> isInput = " + scrollMetrics.isInput);
+            LOG.info("scroll metrics -> inputEntryIdx = " + scrollMetrics.inputEntryIdx);
+            LOG.info("scroll metrics -> outputEntryIdx = " + scrollMetrics.outputEntryIdx);
+            LOG.info("scroll metrics -> currBufferIdx = " + scrollMetrics.currBufferIdx);
+
+            LOG.info("scroll accu metrics -> isInput = " + scrollMetrics.accu.isInput);
+            LOG.info("scroll accu metrics -> inputEntryIdx = " + scrollMetrics.accu.inputEntryIdx);
+            LOG.info("scroll accu metrics -> outputEntryIdx = " + scrollMetrics.accu.outputEntryIdx);
+            LOG.info("scroll accu metrics -> currBufferIdx = " + scrollMetrics.accu.currBufferIdx);
         }
     }
 
@@ -218,8 +231,21 @@ public final class KeyboardController {
         final ScreenMetrics metrics = ScreenController.metrics();
         final ScrollMetrics scrollMetrics = ScreenController.scrollMetrics();
 
-        if (metrics.currY > metrics.maxY)
+        if (metrics.currY > metrics.maxY) {
             DisplayController.scrollDown(bus, metrics, scrollMetrics, TermAttributes.getScrollPadding());
+            LOG.info("screen metrics -> minY = " + metrics.minY);
+            LOG.info("screen metrics -> currY = " + metrics.currY);
+
+            LOG.info("scroll metrics -> isInput = " + scrollMetrics.isInput);
+            LOG.info("scroll metrics -> inputEntryIdx = " + scrollMetrics.inputEntryIdx);
+            LOG.info("scroll metrics -> outputEntryIdx = " + scrollMetrics.outputEntryIdx);
+            LOG.info("scroll metrics -> currBufferIdx = " + scrollMetrics.currBufferIdx);
+
+            LOG.info("scroll accu metrics -> isInput = " + scrollMetrics.accu.isInput);
+            LOG.info("scroll accu metrics -> inputEntryIdx = " + scrollMetrics.accu.inputEntryIdx);
+            LOG.info("scroll accu metrics -> outputEntryIdx = " + scrollMetrics.accu.outputEntryIdx);
+            LOG.info("scroll accu metrics -> currBufferIdx = " + scrollMetrics.accu.currBufferIdx);
+        }
     }
 
     public static void moveUp() {

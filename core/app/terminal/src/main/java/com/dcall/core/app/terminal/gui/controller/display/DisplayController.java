@@ -325,7 +325,7 @@ public final class DisplayController {
     public static void scrollDown(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, int scrollPadding) {
         if (scrollMetrics.currEntry != null && scrollPadding > 0) {
 
-            initScrollDownMetrics(bus, scrollMetrics.accu);
+//            initScrollDownMetrics(bus, scrollMetrics.accu);
 
             final int currBuffSize = scrollMetrics.accu.currEntry.getBuffer().size();
             final int newBuffIdx = scrollMetrics.accu.currBufferIdx + scrollPadding;
@@ -338,32 +338,65 @@ public final class DisplayController {
 
             drawDownEntryRange(metrics, scrollMetrics.accu, (scrollMetrics.accu.currBufferIdx + padding), padding);
 
-            scrollMetrics.accu.currBufferIdx += padding;
-            scrollMetrics.currBufferIdx += padding;
-
             scrollCursor(metrics);
 
             ScreenController.refresh();
 
-            final boolean isEnd = scrollMetrics.currEntry.equals(bus.input().current()) && scrollMetrics.currBufferIdx >= bus.input().current().getBuffer().size();
-            if (!isEnd && padding < scrollPadding) {
-                updateScrollDownMetrics(bus, scrollMetrics.accu, isEnd);
-                scrollDown(bus, metrics, scrollMetrics, scrollPadding - padding);
+            updateScrollMetrics(bus, scrollMetrics, padding);
+
+            if (!isBottomEndScroll(bus, scrollMetrics)) {
+                updateScrollMetrics(bus, scrollMetrics.accu, padding);
+                if (padding < scrollPadding) {
+                    scrollDown(bus, metrics, scrollMetrics, scrollPadding - padding);
+                }
             }
         }
     }
 
-    private static void updateScrollDownMetrics(final IOHandler bus, final ScrollMetrics scrollMetrics, final boolean isEnd) {
-        if (!isEnd) {
-            scrollMetrics.isInput = !scrollMetrics.isInput;
-            scrollMetrics.currBufferIdx = 0;
+    private static boolean isBottomEndScroll(final IOHandler bus, final ScrollMetrics scrollMetrics) {
+        return scrollMetrics.accu.currEntry.equals(bus.input().current()) && scrollMetrics.accu.currBufferIdx >= (bus.input().current().getBuffer().size() - 1);
+    }
 
-            if (scrollMetrics.getEntryIdx() + 1 < bus.entries(scrollMetrics.isInput).size()) {
-                scrollMetrics.incrementEntryIdx();
+    private static void updateScrollMetrics(final IOHandler bus, final ScrollMetrics scrollMetrics, int scrollPadding) {
+        scrollMetrics.currBufferIdx += scrollPadding;
+
+        if (scrollMetrics.currBufferIdx >= scrollMetrics.currEntry.getBuffer().size()) {
+            int rest = scrollMetrics.currBufferIdx - scrollMetrics.currEntry.getBuffer().size();
+            if (!scrollMetrics.isInput) {
+                incrementScrollMetrics(bus, scrollMetrics);
+                scrollMetrics.outputEntryIdx =  scrollMetrics.inputEntryIdx > scrollMetrics.outputEntryIdx ? scrollMetrics.outputEntryIdx + 1 : scrollMetrics.outputEntryIdx;
+            }
+            else {
+                scrollMetrics.isInput = !scrollMetrics.isInput;
                 scrollMetrics.currEntry = bus.entries(scrollMetrics.isInput).get(scrollMetrics.getEntryIdx());
             }
+            scrollMetrics.currBufferIdx = rest;
+            if (scrollMetrics.currBufferIdx >= scrollMetrics.currEntry.getBuffer().size()) {
+//                rest = scrollMetrics.currBufferIdx - scrollMetrics.currEntry.getBuffer().size();
+                scrollMetrics.currBufferIdx = 0;
+//                incrementScrollMetrics(bus, scrollMetrics);
+                updateScrollMetrics(bus, scrollMetrics, rest);
+            }
         }
     }
+
+//    private static void updateScrollMetrics(final IOHandler bus, final ScrollMetrics scrollMetrics, int scrollPadding) {
+//        scrollMetrics.currBufferIdx += scrollPadding;
+//
+//        if (scrollMetrics.currBufferIdx >= scrollMetrics.currEntry.getBuffer().size()) {
+//            final int padding = scrollMetrics.currBufferIdx - scrollMetrics.currEntry.getBuffer().size();
+//                scrollMetrics.isInput = !scrollMetrics.isInput;
+//            if (scrollMetrics.getEntryIdx() + 1 < bus.entries(scrollMetrics.isInput).size()) {
+//                scrollMetrics.incrementEntryIdx();
+//                scrollMetrics.currEntry = bus.entries(scrollMetrics.isInput).get(scrollMetrics.getEntryIdx());
+//                scrollMetrics.currBufferIdx = padding;
+//                if (padding >= scrollMetrics.currEntry.getBuffer().size()) {
+//                    scrollMetrics.currBufferIdx = 0;
+//                    updateScrollMetrics(bus, scrollMetrics, padding - scrollMetrics.currEntry.getBuffer().size());
+//                }
+//            }
+//        }
+//    }
 
     private static void drawDownEntryRange(final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, final int newBuffIdx, final int padding) {
         for (int i = scrollMetrics.currBufferIdx, y = metrics.height - padding; i < newBuffIdx; i++)
@@ -397,18 +430,46 @@ public final class DisplayController {
 
         drawUpEntryRange(metrics, scrollMetrics, newBuffIdx);
 
-        scrollMetrics.currBufferIdx = newBuffIdx;
         scrollMetrics.accu.currBufferIdx = scrollMetrics.accu.currBufferIdx - scrollPadding;
+        initScrollDownMetrics(bus, scrollMetrics.accu);
 
         scrollCursor(metrics);
 
         ScreenController.refresh();
 
         updateScrollUpMetrics(bus, metrics, scrollMetrics, newBuffIdx);
+//        updateScrollUpMetrics(bus, metrics, scrollMetrics, scrollPadding);
     }
 
+//    private static void updateScrollUpMetrics(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, final int scrollPadding) {
+//        scrollMetrics.currBufferIdx -= scrollPadding;
+//
+//        if (scrollMetrics.currBufferIdx < 0 && scrollMetrics.inputEntryIdx > 0) {
+//            int rest = scrollMetrics.currBufferIdx * -1;
+//
+//            if (scrollMetrics.isInput) {
+//                derementScrollMetrics(bus, scrollMetrics);
+//                scrollMetrics.inputEntryIdx =  scrollMetrics.outputEntryIdx;
+//            }
+//            else {
+//                scrollMetrics.isInput = !scrollMetrics.isInput;
+//                scrollMetrics.currEntry = bus.entries(scrollMetrics.isInput).get(scrollMetrics.getEntryIdx());
+//                scrollMetrics.currBufferIdx = scrollMetrics.currEntry.getBuffer().size();
+//            }
+//
+//            scrollMetrics.currBufferIdx -= rest;
+//
+//            if (scrollMetrics.currBufferIdx < 0) {
+//                scrollMetrics.currBufferIdx = scrollMetrics.currEntry.getBuffer().size();
+//                scrollUp(bus, metrics, scrollMetrics, rest * -1);
+//            }
+//        }
+//    }
+
     private static void updateScrollUpMetrics(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, final int newBuffIdx) {
-        if (scrollMetrics.currBufferIdx <= 0) {
+        scrollMetrics.currBufferIdx = newBuffIdx;
+
+        if (scrollMetrics.currBufferIdx < 0 && scrollMetrics.inputEntryIdx > 0) {
             scrollMetrics.isInput = !scrollMetrics.isInput;
 
             if (scrollMetrics.getEntryIdx() - 1 >= 0) {
@@ -434,7 +495,7 @@ public final class DisplayController {
     }
 
     private static void initScrollMetrics(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics) {
-        if (scrollMetrics.currEntry == null) {
+        if (scrollMetrics.currEntry == null || isBottomEndScroll(bus, scrollMetrics)) {
             final int topDistance = metrics.minY - MARGIN_TOP;
             final int bottomDistance = metrics.minY - metrics.height;
 
@@ -447,6 +508,27 @@ public final class DisplayController {
             scrollMetrics.accu = new ScrollMetrics(scrollMetrics);
             scrollMetrics.accu.inputEntryIdx -= 1;
             scrollMetrics.accu.currBufferIdx = scrollMetrics.currEntry.getBuffer().size() - bottomDistance;
+        }
+    }
+
+    // SCROLL UTILS
+    private static void incrementScrollMetrics(final IOHandler bus, final ScrollMetrics scrollMetrics) {
+        scrollMetrics.isInput = !scrollMetrics.isInput;
+
+        if (scrollMetrics.getEntryIdx() + 1 < bus.entries(scrollMetrics.isInput).size()) {
+            scrollMetrics.incrementEntryIdx();
+            scrollMetrics.currEntry = bus.entries(scrollMetrics.isInput).get(scrollMetrics.getEntryIdx());
+            scrollMetrics.currBufferIdx = 0;
+        }
+    }
+
+    private static void derementScrollMetrics(final IOHandler bus, final ScrollMetrics scrollMetrics) {
+        scrollMetrics.isInput = !scrollMetrics.isInput;
+
+        if (scrollMetrics.getEntryIdx() - 1 >= 0) {
+            scrollMetrics.decrementEntryIdx();
+            scrollMetrics.currEntry = bus.entries(scrollMetrics.isInput).get(scrollMetrics.getEntryIdx());
+            scrollMetrics.currBufferIdx = scrollMetrics.currEntry.getBuffer().size();
         }
     }
 }
