@@ -1,24 +1,21 @@
 package com.dcall.core.app.terminal.gui.controller.keyboard;
 
 import com.dcall.core.app.terminal.bus.handler.IOHandler;
-import com.dcall.core.app.terminal.bus.handler.InputHandler;
 import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.controller.screen.ScrollMetrics;
-import com.dcall.core.app.terminal.gui.service.drawer.TextDrawer;
+import com.dcall.core.app.terminal.gui.service.drawer.TextDrawerService;
 import com.dcall.core.configuration.constant.IOConstant;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.Terminal;
-import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.stream.Stream;
 
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGIN_TOP;
@@ -210,8 +207,7 @@ public final class KeyboardController {
 
         if (bus.output().entries().size() > 0 && (scrollMetrics.currEntry == null || scrollMetrics.inputEntryIdx > 0)) {
             DisplayController.scrollUp(bus, metrics, scrollMetrics, TermAttributes.getScrollPadding());
-//            scrollMetrics.currBufferIdx = scrollMetrics.inputEntryIdx == 0 && scrollMetrics.currBufferIdx < 0 ? 0 : scrollMetrics.currBufferIdx;
-//            scrollMetrics.inputEntryIdx = Math.max(scrollMetrics.outputEntryIdx, scrollMetrics.inputEntryIdx);
+            scrollMetrics.currBufferIdx = scrollMetrics.inputEntryIdx == 0 && scrollMetrics.currBufferIdx < 0 ? 0 : scrollMetrics.currBufferIdx;
             LOG.info("screen metrics -> minY = " + metrics.minY);
             LOG.info("screen metrics -> currY = " + metrics.currY);
 
@@ -452,14 +448,14 @@ public final class KeyboardController {
     private static void handleScrollUp(final ScreenMetrics metrics, final InputEntry<String> entry) {
         if (metrics.screenPosY(entry.posY()) > metrics.maxY) {
             DisplayController.updateScreenMetrics(entry, metrics);
-            TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
+            TextDrawerService.drawHeader(TermAttributes.FRAME_NB_COLS);
         }
     }
 
     private static void handleScrollDown(final ScreenMetrics metrics, final InputEntry<String> entry) {
         if (metrics.screenPosY(entry.posY()) < MARGIN_TOP) {
             DisplayController.updateScreenMetrics(entry, metrics);
-            TextDrawer.drawHeader(TermAttributes.FRAME_NB_COLS);
+            TextDrawerService.drawHeader(TermAttributes.FRAME_NB_COLS);
         }
     }
 

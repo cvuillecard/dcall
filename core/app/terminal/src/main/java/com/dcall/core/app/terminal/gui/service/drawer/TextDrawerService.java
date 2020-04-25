@@ -3,7 +3,6 @@ package com.dcall.core.app.terminal.gui.service.drawer;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
-import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
@@ -13,21 +12,21 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.HEADER_BACKGROUND;
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGIN;
 
-public final class TextDrawer {
+public final class TextDrawerService {
 
     public static void drawHeader(final int width) {
         final int startX = (width / 2) - (TermAttributes.HEADER_TITLE.length() / 2);
 
-        TextDrawer.textGraphics().drawLine(0, 0, width, 0, new TextCharacter(' ')
+        TextDrawerService.textGraphics().drawLine(0, 0, width, 0, new TextCharacter(' ')
                 .withBackgroundColor(TermAttributes.HEADER_BACKGROUND));
 
-        TextDrawer.textGraphics()
+        TextDrawerService.textGraphics()
                 .setBackgroundColor(TermAttributes.HEADER_BACKGROUND)
                 .setForegroundColor(TermAttributes.HEADER_FOREGROUND)
                 .putString(startX, 0,
                         TermAttributes.HEADER_TITLE, SGR.BOLD);
 
-        TextDrawer.drawBlank(0, MARGIN, width, MARGIN);
+        TextDrawerService.drawBlank(0, MARGIN, width, MARGIN);
     }
 
     public static void drawPrompt(final ScreenMetrics metrics) {
@@ -37,37 +36,37 @@ public final class TextDrawer {
         final String host = prompt.substring(separatorIdx + 1, prompt.length() - 2);
         final String suffix = prompt.substring(user.length() + 1 + host.length(), prompt.length());
 
-        TextDrawer.textGraphics().drawLine(TermAttributes.MARGIN_LEFT, metrics.currY, prompt.length() - 1, metrics.currY, new TextCharacter(' ')
+        TextDrawerService.textGraphics().drawLine(TermAttributes.MARGIN_LEFT, metrics.currY, prompt.length() - 1, metrics.currY, new TextCharacter(' ')
                 .withBackgroundColor(TermAttributes.PROMPT_BACKGROUND));
 
-        TextDrawer.promptTextGraphics().putString(TermAttributes.MARGIN_LEFT, metrics.currY, user, SGR.BOLD);
+        TextDrawerService.promptTextGraphics().putString(TermAttributes.MARGIN_LEFT, metrics.currY, user, SGR.BOLD);
 
-        TextDrawer.textGraphics().putString(TermAttributes.MARGIN_LEFT + user.length(), metrics.currY, "@", SGR.BOLD);
+        TextDrawerService.textGraphics().putString(TermAttributes.MARGIN_LEFT + user.length(), metrics.currY, "@", SGR.BOLD);
 
-        TextDrawer.promptTextGraphics().putString(TermAttributes.MARGIN_LEFT + user.length() + 1, metrics.currY, host, SGR.BOLD);
+        TextDrawerService.promptTextGraphics().putString(TermAttributes.MARGIN_LEFT + user.length() + 1, metrics.currY, host, SGR.BOLD);
 
-        TextDrawer.textGraphics().setForegroundColor(HEADER_BACKGROUND)
+        TextDrawerService.textGraphics().setForegroundColor(HEADER_BACKGROUND)
                 .putString(TermAttributes.MARGIN_LEFT + user.length() + 1 + host.length(), metrics.currY, suffix, SGR.BOLD);
     }
 
     public static void drawBlank(final int startX, final int startY, final int endX, final int endY) {
-        TextDrawer.inputTextGraphics().drawLine(startX, startY, endX, endY, new TextCharacter(' '));
+        TextDrawerService.inputTextGraphics().drawLine(startX, startY, endX, endY, new TextCharacter(' '));
     }
 
     public static void drawBlankRectangle(final int startX, final int startY, final int nbCols, final int nbRows) {
-        TextDrawer.inputTextGraphics().drawRectangle(new TerminalPosition(startX, startY), new TerminalSize(nbCols, nbRows), new TextCharacter(' '));
+        TextDrawerService.inputTextGraphics().drawRectangle(new TerminalPosition(startX, startY), new TerminalSize(nbCols, nbRows), new TextCharacter(' '));
     }
 
     public static void drawInputString(final int x, final int y, final String s) {
-        TextDrawer.inputTextGraphics().putString(x, y, s, SGR.BOLD);
+        TextDrawerService.inputTextGraphics().putString(x, y, s, SGR.BOLD);
     }
 
     public static void drawOutputString(final int x, final int y, final String s) {
-        TextDrawer.inputTextGraphics().putString(x, y, s);
+        TextDrawerService.inputTextGraphics().putString(x, y, s);
     }
 
     public static void drawCharacter(final int x, final int y, final char c) {
-        TextDrawer.textGraphics().setCharacter(new TerminalPosition(x, y), c);
+        TextDrawerService.textGraphics().setCharacter(new TerminalPosition(x, y), c);
     }
 
     // UTILS
