@@ -2,6 +2,8 @@ package com.dcall.core.app.terminal.bus.handler;
 
 import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.bus.input.InputLine;
+import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
+import com.dcall.core.configuration.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +24,7 @@ public final class InputHandler {
         this.lastInput = null;
         this.entryIdx = 0;
 
-        System.gc();
+//        System.gc();
     }
 
     public final void clear() {
@@ -103,6 +105,10 @@ public final class InputHandler {
         }
 
         return null;
+    }
+
+    public final String currentToString() {
+        return StringUtils.epur(current().toString().substring(TermAttributes.getPrompt().length()));
     }
 
     public final int size() { return entries.size(); }

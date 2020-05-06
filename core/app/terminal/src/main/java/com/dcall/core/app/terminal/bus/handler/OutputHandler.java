@@ -16,15 +16,13 @@ public class OutputHandler {
     private static final Logger LOG = LoggerFactory.getLogger(OutputHandler.class);
 
     private final List<InputEntry<String>> entries = new ArrayList<>();
-    private int entryIdx = 0;
     private int lastIdx = 0;
 
     public final void reset() {
         this.entries.clear();
-        this.entryIdx = 0;
         this.lastIdx = 0;
 
-        System.gc();
+//        System.gc();
     }
 
     public final void clear() {
@@ -33,14 +31,12 @@ public class OutputHandler {
 
     public final OutputHandler addEntry() {
         entries.add(new InputEntry<>());
-        entryIdx = entries.size();
         this.lastIdx = 0;
 
         current().getBuffer().clear();
 
         return this;
     }
-//    private final List<InputLine<String>> entries = new ArrayList<>();
 
     public void addToEntry(final String str) {
         final String[] lines = str.split("\n");

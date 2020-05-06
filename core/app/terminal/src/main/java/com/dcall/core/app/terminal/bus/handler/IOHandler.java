@@ -24,7 +24,7 @@ public final class IOHandler {
     private String lastInput = null;
 
     public boolean handleInput() {
-        lastInput = StringUtils.epur(inputHandler.current().toString().substring(TermAttributes.getPrompt().length()));
+        lastInput = inputHandler.currentToString();
 
         output().addEntry();
 
@@ -32,6 +32,19 @@ public final class IOHandler {
             sendLastInput();
             return true;
         }
+        return false;
+    }
+
+    public boolean reset() {
+        lastInput = inputHandler.currentToString();
+
+        if (lastInput.toLowerCase().equals("reset")) {
+            inputHandler.reset();
+            outputHandler.reset();
+
+            return true;
+        }
+
         return false;
     }
 

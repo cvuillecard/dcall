@@ -421,7 +421,11 @@ public final class KeyboardController {
 
         DisplayController.moveAt(metrics);
 
-        if (!bus.handleInput())
+        if (bus.reset()) {
+            DisplayController.addPrompt(bus);
+            clearScreen();
+        }
+        else if (!bus.handleInput())
             DisplayController.addPrompt(bus);
     }
 
