@@ -114,7 +114,7 @@ public final class ScrollService {
 
     /** SCROLL UP **/
     public static void scrollUp(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, int scrollPadding) {
-        initScrollMetrics(bus, metrics, scrollMetrics);
+        initScrollUpMetrics(bus, metrics, scrollMetrics);
 
         final int newBuffIdx = scrollMetrics.currBufferIdx - scrollPadding;
         scrollPadding = newBuffIdx >= 0 ? scrollPadding : scrollPadding + newBuffIdx;
@@ -138,14 +138,17 @@ public final class ScrollService {
 
     private static void updateScrollUpMetrics(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, final int newBuffIdx) {
         scrollMetrics.currBufferIdx = newBuffIdx;
+        scrollMetrics.inputEntryIdx = !scrollMetrics.isInput && scrollMetrics.outputEntryIdx == 0 && scrollMetrics.currBufferIdx < 0 ? 1 : scrollMetrics.inputEntryIdx;
 
         if (scrollMetrics.currBufferIdx < 0 && scrollMetrics.inputEntryIdx > 0) {
             final boolean noDecrement = !scrollMetrics.isInput && scrollMetrics.inputEntryIdx == scrollMetrics.outputEntryIdx;
             scrollMetrics.isInput = !scrollMetrics.isInput;
 
             if (scrollMetrics.getEntryIdx() - 1 >= 0) {
-                if (!noDecrement)
+                if (!noDecrement) {
                     scrollMetrics.decrementEntryIdx();
+                    scrollMetrics.inputEntryIdx = !scrollMetrics.isInput && scrollMetrics.inputEntryIdx > scrollMetrics.outputEntryIdx ? scrollMetrics.inputEntryIdx - 1 : scrollMetrics.inputEntryIdx;
+                }
                 scrollMetrics.currEntry = bus.entries(scrollMetrics.isInput).get(scrollMetrics.getEntryIdx());
                 scrollMetrics.currBufferIdx = scrollMetrics.currEntry.getBuffer().size();
                 if (newBuffIdx < 0)
@@ -166,7 +169,7 @@ public final class ScrollService {
             y = drawScrollEntryRange(metrics, scrollMetrics, i, y, scrollMetrics.currEntry.getBuffer().get(i).toString(), TermAttributes.MARGIN_LEFT);
     }
 
-    private static void initScrollMetrics(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics) {
+    private static void initScrollUpMetrics(final IOHandler bus, final ScreenMetrics metrics, final ScrollMetrics scrollMetrics) {
         if (scrollMetrics.currEntry == null || isBottomEndScroll(bus, scrollMetrics)) {
             final int topDistance = metrics.minY - MARGIN_TOP;
             final int bottomDistance = metrics.minY - metrics.height;
@@ -181,5 +184,7 @@ public final class ScrollService {
             scrollMetrics.accu.inputEntryIdx -= 1;
             scrollMetrics.accu.currBufferIdx = scrollMetrics.currEntry.getBuffer().size() - bottomDistance;
         }
+        else if (!scrollMetrics.isInput && scrollMetrics.outputEntryIdx == 0 && scrollMetrics.inputEntryIdx > scrollMetrics.outputEntryIdx)
+            scrollMetrics.inputEntryIdx = 0;
     }
 }

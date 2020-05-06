@@ -205,7 +205,7 @@ public final class KeyboardController {
         final ScreenMetrics metrics = ScreenController.metrics();
         final ScrollMetrics scrollMetrics = ScreenController.scrollMetrics();
 
-        if (bus.output().entries().size() > 0 && (scrollMetrics.currEntry == null || scrollMetrics.inputEntryIdx > 0)) {
+        if (bus.output().entries().size() > 0 && (scrollMetrics.currEntry == null || scrollMetrics.inputEntryIdx >= 0)) {
             DisplayController.scrollUp(bus, metrics, scrollMetrics, TermAttributes.getScrollPadding());
             scrollMetrics.currBufferIdx = scrollMetrics.inputEntryIdx == 0 && scrollMetrics.currBufferIdx < 0 ? 0 : scrollMetrics.currBufferIdx;
             LOG.info("screen metrics -> minY = " + metrics.minY);
