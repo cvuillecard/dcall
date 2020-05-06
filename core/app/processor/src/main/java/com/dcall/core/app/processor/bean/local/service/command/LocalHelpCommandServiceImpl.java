@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,10 +17,10 @@ public class LocalHelpCommandServiceImpl implements LocalHelpCommandService {
     @Override
     public byte[] usage() {
         byte[] datas;
-        final Path path = Paths.get(Thread.currentThread().getContextClassLoader().getResource(HELP_FILE).getPath());
         try {
+            final Path path = Paths.get(Thread.currentThread().getContextClassLoader().getResource(HELP_FILE).toURI());
             datas = Files.readAllBytes(path);
-        } catch (IOException e) {
+        } catch (URISyntaxException | IOException e) {
             LOG.error(e.getMessage());
             datas = e.getMessage().getBytes();
         }
