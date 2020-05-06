@@ -13,7 +13,7 @@ import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGI
 public final class ScrollService {
 
     /** COMMON SCROLL **/
-    private static int drawScrollEntryRange(ScreenMetrics metrics, ScrollMetrics scrollMetrics, int i, int y, String line, int x) {
+    private static int drawScrollEntryRange(final ScreenMetrics metrics, final ScrollMetrics scrollMetrics, final int i, int y, String line, int x) {
         if (scrollMetrics.isInput) {
             if (i == 0) {
                 final int lastY = metrics.currY;
@@ -41,7 +41,7 @@ public final class ScrollService {
     }
 
     private static boolean isBottomEndScroll(final IOHandler bus, final ScrollMetrics scrollMetrics) {
-        return scrollMetrics.accu.currEntry.equals(bus.input().current()) && scrollMetrics.accu.currBufferIdx >= (bus.input().current().getBuffer().size() - 1);
+        return scrollMetrics.accu.isInput && scrollMetrics.accu.inputEntryIdx == (bus.input().entries().size() - 1) && scrollMetrics.accu.currBufferIdx >= (bus.input().current().getBuffer().size() - 1);
     }
 
     /** SCROLL DOWN **/
