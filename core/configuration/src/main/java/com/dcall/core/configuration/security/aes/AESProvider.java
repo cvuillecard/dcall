@@ -1,5 +1,8 @@
 package com.dcall.core.configuration.security.aes;
 
+import com.dcall.core.configuration.utils.FileUtils;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -251,37 +254,27 @@ public final class AESProvider {
                 throw new OutOfMemoryError("Required array size too large");
 
             final CipherInputStream cin = new CipherInputStream(in, cipher);
-            return read(cin, (int)size);
+            return FileUtils.read(cin, (int)size);
         }
     }
 
-    private static byte[] read(final InputStream cin, final int initialSize) throws IOException {
-        int capacity = initialSize;
-        byte[] buf = new byte[capacity];
-        int nread = 0;
-        int n;
-        for (;;) {
-            // read to EOF which may read more or less than initialSize (eg: file
-            // is truncated while we are reading)
-            while ((n = cin.read(buf, nread, capacity - nread)) > 0)
-                nread += n;
+    /**
+     * Decrypt all bytes of an inputStream using cipher AES
+     *
+     * @param inputStream
+     * @param cipher
+     * @return
+     * @throws IOException
+     */
+    public static byte[] decryptFileBytes(final InputStream inputStream, final Cipher cipher) throws IOException {
+        try (SeekableByteChannel sbc = new SeekableInMemoryByteChannel(IOUtils.toByteArray(inputStream));
+             final InputStream in = Channels.newInputStream(sbc)) {
+            final long size = sbc.size();
+            if (size > (long)MAX_BUFFER_SIZE)
+                throw new OutOfMemoryError("Required array size too large");
 
-            // if last call to source.read() returned -1, we are done
-            // otherwise, try to read one more byte; if that failed we're done too
-            if (n < 0 || (n = cin.read()) < 0)
-                break;
-
-            // one more byte was read; need to allocate a larger buffer
-            if (capacity <= MAX_BUFFER_SIZE - capacity) {
-                capacity = Math.max(capacity << 1, _BUFFER_SIZE);
-            } else {
-                if (capacity == MAX_BUFFER_SIZE)
-                    throw new OutOfMemoryError("Required array size too large");
-                capacity = MAX_BUFFER_SIZE;
-            }
-            buf = Arrays.copyOf(buf, capacity);
-            buf[nread++] = (byte)n;
+            final CipherInputStream cin = new CipherInputStream(in, cipher);
+            return FileUtils.read(cin, (int)size);
         }
-        return (capacity == nread) ? buf : Arrays.copyOf(buf, nread);
     }
 }

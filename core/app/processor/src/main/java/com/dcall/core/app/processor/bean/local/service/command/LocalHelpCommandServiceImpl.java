@@ -1,9 +1,11 @@
 package com.dcall.core.app.processor.bean.local.service.command;
 
+import com.dcall.core.configuration.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,9 +20,8 @@ public class LocalHelpCommandServiceImpl implements LocalHelpCommandService {
     public byte[] usage() {
         byte[] datas;
         try {
-            final Path path = Paths.get(Thread.currentThread().getContextClassLoader().getResource(HELP_FILE).toURI());
-            datas = Files.readAllBytes(path);
-        } catch (URISyntaxException | IOException e) {
+            datas = FileUtils.readAllBytes(Thread.currentThread().getContextClassLoader().getResourceAsStream(HELP_FILE));
+        } catch (IOException e) {
             LOG.error(e.getMessage());
             datas = e.getMessage().getBytes();
         }
