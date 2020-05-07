@@ -266,7 +266,7 @@ public final class AESProvider {
      * @return
      * @throws IOException
      */
-    public static byte[] decryptFileBytes(final InputStream inputStream, final Cipher cipher) throws IOException {
+    public static byte[] decryptInputStreamBytes(final InputStream inputStream, final Cipher cipher) throws IOException {
         try (SeekableByteChannel sbc = new SeekableInMemoryByteChannel(IOUtils.toByteArray(inputStream));
              final InputStream in = Channels.newInputStream(sbc)) {
             final long size = sbc.size();

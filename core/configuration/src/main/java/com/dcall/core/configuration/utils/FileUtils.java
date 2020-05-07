@@ -16,7 +16,6 @@ public final class FileUtils {
 
     public static byte[] readAllBytes(final InputStream inputStream) throws IOException {
         try (SeekableByteChannel sbc = new SeekableInMemoryByteChannel(IOUtils.toByteArray(inputStream));
-//        try (SeekableByteChannel sbc = Files.newByteChannel(path);
              InputStream in = Channels.newInputStream(sbc)) {
             long size = sbc.size();
             if (size > (long) MAX_BUFFER_SIZE)
