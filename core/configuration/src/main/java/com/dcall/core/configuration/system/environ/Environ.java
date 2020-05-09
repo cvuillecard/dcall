@@ -23,7 +23,7 @@ public final class Environ extends Platform {
         return Environ.Holder.INSTANCE;
     }
 
-    public final void init() {
+    private final void init() {
         initHome();
     }
 

@@ -91,9 +91,27 @@ public final class FileUtils extends Platform {
                 throw new FileNotFoundException("File not found : " + path);
 
             runCmd(
-                    "ATTRIB -s -h " + path,
-                    "chattr -i " + path,
-                    "chflags nouchg " + path);
+                    "ATTRIB +s +h +r " + path + "/s",
+                    "chattr -R +i " + path,
+                    "chflags -R -L uchg hidden uunlnk " + path);
+
+        }
+        catch (FileNotFoundException e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    public void unlockDelete(final String path) {
+        final File file = new File(path);
+
+        try {
+            if (!file.exists())
+                throw new FileNotFoundException("File not found : " + path);
+
+            runCmd(
+                    "ATTRIB -s -h -r " + path + "/s",
+                    "chattr -R -i " + path,
+                    "chflags -R -L nouchg nohidden nouunlnk " + path);
 
         }
         catch (FileNotFoundException e) {
