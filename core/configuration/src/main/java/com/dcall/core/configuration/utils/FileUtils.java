@@ -14,13 +14,23 @@ import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 
-public final class FileUtils {
+public final class FileUtils extends Platform {
     private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
 
-    private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
-    private static final int _BUFFER_SIZE = 8192;
+    private final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
+    private final int _BUFFER_SIZE = 8192;
 
-    public static byte[] readAllBytes(final InputStream inputStream) throws IOException {
+    private FileUtils() {}
+
+    private static class Holder {
+        static final FileUtils INSTANCE = new FileUtils();
+    }
+
+    public static FileUtils getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    public byte[] readAllBytes(final InputStream inputStream) throws IOException {
         try (SeekableByteChannel sbc = new SeekableInMemoryByteChannel(IOUtils.toByteArray(inputStream));
              InputStream in = Channels.newInputStream(sbc)) {
             long size = sbc.size();
@@ -31,7 +41,7 @@ public final class FileUtils {
         }
     }
 
-    public static byte[] read(final InputStream cin, final int initialSize) throws IOException {
+    public byte[] read(final InputStream cin, final int initialSize) throws IOException {
         int capacity = initialSize;
         byte[] buf = new byte[capacity];
         int nread = 0;
@@ -61,7 +71,7 @@ public final class FileUtils {
         return (capacity == nread) ? buf : Arrays.copyOf(buf, nread);
     }
 
-    public static void createDirectory(final String path) {
+    public void createDirectory(final String path) {
         final File dir = new File(path);
 
         if (!dir.exists())
@@ -73,14 +83,14 @@ public final class FileUtils {
         }
     }
 
-    public static void lockDelete(final String path) {
+    public void lockDelete(final String path) {
         final File file = new File(path);
 
         try {
             if (!file.exists())
                 throw new FileNotFoundException("File not found : " + path);
 
-            Platform.runCmd(
+            runCmd(
                     "ATTRIB -s -h " + path,
                     "chattr -i " + path,
                     "chflags nouchg " + path);

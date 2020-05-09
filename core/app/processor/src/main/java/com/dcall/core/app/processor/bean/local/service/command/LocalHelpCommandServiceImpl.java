@@ -20,7 +20,7 @@ public class LocalHelpCommandServiceImpl implements LocalHelpCommandService {
     public byte[] usage() {
         byte[] datas;
         try {
-            datas = FileUtils.readAllBytes(Thread.currentThread().getContextClassLoader().getResourceAsStream(HELP_FILE));
+            datas = FileUtils.getInstance().readAllBytes(Thread.currentThread().getContextClassLoader().getResourceAsStream(HELP_FILE));
         } catch (IOException e) {
             LOG.error(e.getMessage());
             datas = e.getMessage().getBytes();

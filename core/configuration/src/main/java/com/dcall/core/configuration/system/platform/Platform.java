@@ -7,36 +7,32 @@ import java.io.IOException;
 
 import static com.dcall.core.configuration.constant.PlatformConstant.*;
 
-public final class Platform {
+public abstract class Platform {
     private static final Logger LOG = LoggerFactory.getLogger(Platform.class);
 
-    public final static String name;
+    private final String name = System.getProperty(OS_NAME).toLowerCase();
 
-    static {
-        name = System.getProperty(OS_NAME).toLowerCase();
-    }
-
-    public static boolean isLinux() {
+    protected boolean isLinux() {
         return isPlatform(LINUX);
     }
 
-    public static boolean isWin() {
+    protected boolean isWin() {
         return isPlatform(WIN);
     }
 
-    public static boolean isMac() {
+    protected boolean isMac() {
         return isPlatform(MAC);
     }
 
-    public static boolean isSun() {
+    protected boolean isSun() {
         return isPlatform(SUN);
     }
 
-    private static boolean isPlatform(final String platformName) {
+    protected boolean isPlatform(final String platformName) {
         return name.indexOf(platformName) >= 0;
     }
 
-    public static void execute(final Runnable winFunc, final Runnable linuxFunc, final Runnable macFunc) {
+    protected void execute(final Runnable winFunc, final Runnable linuxFunc, final Runnable macFunc) {
         switch (name) {
             case WIN : winFunc.run(); break;
             case LINUX : linuxFunc.run(); break;
@@ -45,7 +41,7 @@ public final class Platform {
         }
     }
 
-    public static void runCmd(final String winCmd, final String linuxCmd, final String macCmd) {
+    protected void runCmd(final String winCmd, final String linuxCmd, final String macCmd) {
         try {
             String cmd;
 

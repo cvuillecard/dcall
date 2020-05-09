@@ -254,7 +254,7 @@ public final class AESProvider {
                 throw new OutOfMemoryError("Required array size too large");
 
             final CipherInputStream cin = new CipherInputStream(in, cipher);
-            return FileUtils.read(cin, (int)size);
+            return FileUtils.getInstance().read(cin, (int)size);
         }
     }
 
@@ -274,7 +274,7 @@ public final class AESProvider {
                 throw new OutOfMemoryError("Required array size too large");
 
             final CipherInputStream cin = new CipherInputStream(in, cipher);
-            return FileUtils.read(cin, (int)size);
+            return FileUtils.getInstance().read(cin, (int)size);
         }
     }
 }
