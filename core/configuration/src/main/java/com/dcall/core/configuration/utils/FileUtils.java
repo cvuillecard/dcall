@@ -1,8 +1,13 @@
 package com.dcall.core.configuration.utils;
 
+import com.dcall.core.configuration.system.platform.Platform;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
@@ -10,6 +15,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 
 public final class FileUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
 
     private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
     private static final int _BUFFER_SIZE = 8192;
@@ -53,5 +59,35 @@ public final class FileUtils {
             buf[nread++] = (byte)n;
         }
         return (capacity == nread) ? buf : Arrays.copyOf(buf, nread);
+    }
+
+    public static void createDirectory(final String path) {
+        final File dir = new File(path);
+
+        if (!dir.exists())
+            dir.mkdirs();
+
+        if (!dir.isDirectory()) {
+            dir.delete();
+            createDirectory(path);
+        }
+    }
+
+    public static void lockDelete(final String path) {
+        final File file = new File(path);
+
+        try {
+            if (!file.exists())
+                throw new FileNotFoundException("File not found : " + path);
+
+            Platform.runCmd(
+                    "ATTRIB -s -h " + path,
+                    "chattr -i " + path,
+                    "chflags nouchg " + path);
+
+        }
+        catch (FileNotFoundException e) {
+            LOG.error(e.getMessage());
+        }
     }
 }
