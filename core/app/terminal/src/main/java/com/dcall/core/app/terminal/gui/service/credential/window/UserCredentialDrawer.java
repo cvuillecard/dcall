@@ -1,9 +1,11 @@
 package com.dcall.core.app.terminal.gui.service.credential.window;
 
-import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.configuration.credential.CredentialInfo;
 import com.dcall.core.configuration.entity.identity.Identity;
 import com.dcall.core.configuration.entity.identity.IdentityBean;
+import com.dcall.core.configuration.utils.StringUtils;
+import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.Screen;
@@ -23,11 +25,13 @@ public final class UserCredentialDrawer {
     private final TextBox email = new TextBox();
     private final TextBox login = new TextBox();
     private final TextBox password = new TextBox().setMask('*');
-    private final Identity identity = new IdentityBean();
+    private final Identity identity;
 
     public UserCredentialDrawer(final Screen screen, final CredentialInfo credentials) {
         this.screen = screen;
         this.credentials = credentials;
+
+        identity = credentials.getIdentity() != null ? credentials.getIdentity() : new IdentityBean();
     }
 
     public UserCredentialDrawer build() {
@@ -41,21 +45,38 @@ public final class UserCredentialDrawer {
         return this;
     }
 
+    private Label setStyleLabel(final Label label, final String value) {
+
+        if (credentials.getIdentity() == null)
+            return label;
+
+        label.addStyle(SGR.BOLD);
+
+        label.setForegroundColor(StringUtils.isEmpty(value) ? TextColor.ANSI.WHITE : TextColor.ANSI.BLACK);
+        label.setBackgroundColor(StringUtils.isEmpty(value) ? TextColor.ANSI.RED : null);
+
+        return label;
+    }
+
     private UserCredentialDrawer buildForm() {
         emptyLine();
-        panel.addComponent(new Label("name"));
+        panel.addComponent(setStyleLabel(new Label("name"), identity.getName()));
+        initTextValue(name, identity.getName());
         panel.addComponent(name);
 
         emptyLine();
-        panel.addComponent(new Label("surname"));
+        panel.addComponent(setStyleLabel(new Label("surname"), identity.getSurname()));
+        initTextValue(surname, identity.getSurname());
         panel.addComponent(surname);
 
         emptyLine();
-        panel.addComponent(new Label("email"));
+        panel.addComponent(setStyleLabel(new Label("email"), identity.getEmail()));
+        initTextValue(email, identity.getEmail());
         panel.addComponent(email);
 
         emptyLine();
-        panel.addComponent(new Label("login"));
+        panel.addComponent(setStyleLabel(new Label("login"), identity.getLogin()));
+        initTextValue(login, identity.getLogin());
         panel.addComponent(login);
 
 //        emptyLine();
@@ -69,21 +90,30 @@ public final class UserCredentialDrawer {
         return this;
     }
 
+    private void initTextValue(final TextBox textBox, final String value) {
+       textBox.setText(!StringUtils.isEmpty(value) ? value : "");
+       textBox.setPreferredSize(new TerminalSize(30, 1));
+    }
+
     private void emptyLine() {
         panel.addComponent( new EmptySpace());
         panel.addComponent( new EmptySpace());
     }
 
     private void buildAction() {
-        panel.addComponent(new Button("Skip", () -> {
+        final LayoutData layoutData = GridLayout.createLayoutData(
+                GridLayout.Alignment.END,
+                GridLayout.Alignment.CENTER);
+
+        panel.addComponent(new Button("Cancel", () -> {
             credentials.setUser(true);
             gui.removeWindow(window);
-        }));
+        }).setLayoutData(layoutData));
 
-        panel.addComponent(new Button("Create", () -> {
+        panel.addComponent(new Button("Ok", () -> {
             credentials.setIdentity(setIdentity());
             gui.removeWindow(window);
-        }));
+        }).setLayoutData(layoutData));
     }
 
     // build

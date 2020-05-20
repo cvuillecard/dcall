@@ -19,4 +19,8 @@ public final class StringUtils {
 
         return str;
     }
+
+    public static boolean isEmpty(final String s) {
+        return s == null || s.isEmpty();
+    }
 }
