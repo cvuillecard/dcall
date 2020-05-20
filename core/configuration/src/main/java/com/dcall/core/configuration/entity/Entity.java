@@ -1,4 +1,4 @@
-package com.dcall.core.configuration.bo;
+package com.dcall.core.configuration.entity;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;

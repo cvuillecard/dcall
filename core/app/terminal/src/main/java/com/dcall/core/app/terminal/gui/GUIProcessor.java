@@ -8,12 +8,16 @@ import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.bus.handler.IOHandler;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
+import com.dcall.core.app.terminal.gui.service.credential.window.UserCredentialDrawer;
 import com.dcall.core.configuration.vertx.VertxApplication;
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGIN_TOP;
 
@@ -25,7 +29,6 @@ public final class GUIProcessor {
 
     public static void start() {
         GUIProcessor.init();
-        bus.init();
         GUIProcessor.loop();
     }
 
@@ -38,6 +41,8 @@ public final class GUIProcessor {
         KeyboardController.init(terminal, bus);
         CursorController.init(screen);
         DisplayController.init(ScreenController.metrics());
+
+        bus.initCredentials();
     }
 
     private static void prompt(final ScreenMetrics metrics) {
@@ -49,9 +54,24 @@ public final class GUIProcessor {
     }
 
     private static void loop() {
-        GUIProcessor.prompt(ScreenController.metrics());
+        if (bus.hasUser()) {
+            try {
+                screen.setCursorPosition(null);
+                terminal.clearScreen();
+                GUIProcessor.prompt(ScreenController.metrics());
+                handleIO();
+            } catch (IOException e) {
+                LOG.error(e.getMessage());
+            }
+        } else
+            configureUser();
+    }
 
-        handleIO();
+    private static void configureUser() {
+        Vertx.currentContext().executeBlocking(
+                future -> future.complete(new UserCredentialDrawer(screen, bus.credentials()).build()),
+                handler -> loop()
+        );
     }
 
     private static void handleIO() {

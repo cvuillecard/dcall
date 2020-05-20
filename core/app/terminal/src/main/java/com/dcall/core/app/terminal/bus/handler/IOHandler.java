@@ -5,12 +5,9 @@ import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.vertx.constant.URIConfig;
 import com.dcall.core.configuration.constant.CredentialAction;
-import com.dcall.core.configuration.entity.MessageBean;
+import com.dcall.core.configuration.credential.CredentialInfo;
 import com.dcall.core.configuration.service.message.MessageService;
 import com.dcall.core.configuration.service.message.MessageServiceImpl;
-import com.dcall.core.configuration.vertx.cluster.HazelcastCluster;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,26 +19,20 @@ public final class IOHandler {
     private final InputHandler inputHandler = new InputHandler();
     private final OutputHandler outputHandler = new OutputHandler();
     private String lastInput = null;
-    private boolean root = false;
+    private CredentialInfo credential = new CredentialInfo();
 
-    public void init() {
-        initRootCredentials();
-    }
-
-    public void initRootCredentials() {
-        if (!root) {
-            root = checkRootCredentials();
+    public void initCredentials() {
+        if (!credential.hasUser()) {
+            getCredential();
         }
     }
 
-    private boolean checkRootCredentials() {
+    private boolean getCredential() {
         final byte[] datas = CredentialAction.HAS_ROOT.getBytes();
 //        sendInputMessage(datas, null);
 
         return false;
     }
-
-    public boolean isRoot() { return root; }
 
     public boolean handleInput() {
         lastInput = inputHandler.currentToString();
@@ -71,12 +62,10 @@ public final class IOHandler {
     public void sendLastInput() {
         lockDisplay();
         messageService.sendInputMessage(URIConfig.CMD_LOCAL_PROCESSOR_CONSUMER, lastInput.getBytes(),
-                success -> LOG.debug(" > GUI command traited by remote processor : replied > " + success.result()),
+                null,
                 failed -> {
-                    final String msgError = IOHandler.class.getName() + failed.cause().getMessage();
                     if (!failed.cause().getMessage().isEmpty())
                         output().addToEntry(failed.cause().getMessage());
-                    LOG.error(msgError);
                 }, () -> unlockDisplay());
     }
 
@@ -103,4 +92,10 @@ public final class IOHandler {
     public final InputHandler input() { return this.inputHandler; }
     public final OutputHandler output() { return this.outputHandler; }
     public final List<InputEntry<String>> entries(final boolean isInput) { return isInput ? input().entries() : output().entries(); }
+
+    public final CredentialInfo credentials() { return credential; }
+
+    public final boolean hasUser() {
+        return credential.hasUser();
+    }
 }

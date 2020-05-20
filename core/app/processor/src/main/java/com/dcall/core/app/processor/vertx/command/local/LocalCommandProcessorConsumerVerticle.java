@@ -3,7 +3,7 @@ package com.dcall.core.app.processor.vertx.command.local;
 import com.dcall.core.app.processor.bean.local.controller.command.LocalCommandController;
 import com.dcall.core.app.processor.vertx.command.CommandProcessorConsumerVerticle;
 import com.dcall.core.app.processor.vertx.constant.URIConfig;
-import com.dcall.core.configuration.entity.MessageBean;
+import com.dcall.core.configuration.entity.message.MessageBean;
 import com.dcall.core.configuration.exception.TechnicalException;
 import com.dcall.core.configuration.security.hash.HashProvider;
 import com.dcall.core.configuration.utils.URIUtils;
@@ -30,7 +30,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
     private final int BUF_SIZE = 8192;
     private final LocalCommandController commandController = new LocalCommandController();
 
-    private void execute(final Message<Object> handler, final com.dcall.core.configuration.bo.Message<String> msg) {
+    private void execute(final Message<Object> handler, final com.dcall.core.configuration.entity.message.Message<String> msg) {
         if (handler != null) {
             try {
                 handleLocalCommand(handler, msg);
@@ -40,10 +40,10 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         }
     }
 
-    private void handleLocalCommand(final Message<Object> handler, final com.dcall.core.configuration.bo.Message<String> sender) {
+    private void handleLocalCommand(final Message<Object> handler, final com.dcall.core.configuration.entity.message.Message<String> sender) {
         vertx.executeBlocking(future -> {
             try {
-                final com.dcall.core.configuration.bo.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
+                final com.dcall.core.configuration.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
 
                 final byte[] result = commandController.execute(new String(sender.getMessage()));
 
@@ -74,7 +74,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         return (result.length / BUF_SIZE) + ((result.length % BUF_SIZE) > 0 ? 1 : 0);
     }
 
-    private void sendChunk(final String address, final com.dcall.core.configuration.bo.Message<String> sender, final byte[] bytes, final int nbChunk, final com.dcall.core.configuration.bo.Message<String> resp) {
+    private void sendChunk(final String address, final com.dcall.core.configuration.entity.message.Message<String> sender, final byte[] bytes, final int nbChunk, final com.dcall.core.configuration.entity.message.Message<String> resp) {
         for (int i = 0; i < nbChunk; i++) {
             final int startIdx = i * BUF_SIZE;
             final int idx = startIdx + BUF_SIZE;
@@ -91,11 +91,11 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         }
     }
 
-    private void handleError(final Message<Object> handler, final String msgError, final com.dcall.core.configuration.bo.Message<String> sender) {
+    private void handleError(final Message<Object> handler, final String msgError, final com.dcall.core.configuration.entity.message.Message<String> sender) {
         final String error = "Failed to execute '" + new String(sender.getMessage()) + "' - ERROR : " + msgError;
         final byte[] bytes = error.getBytes();
         final String randId = HashProvider.seed(bytes);
-        final com.dcall.core.configuration.bo.Message<String> resp = new MessageBean(randId, bytes, bytes.length);
+        final com.dcall.core.configuration.entity.message.Message<String> resp = new MessageBean(randId, bytes, bytes.length);
 
         LOG.error(msgError);
 
@@ -109,7 +109,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         final MessageConsumer<Object> consumer = vertx.eventBus().consumer(LocalCommandProcessorConsumerVerticle.class.getName());
 
         consumer.handler(handler -> {
-            final com.dcall.core.configuration.bo.Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
+            final com.dcall.core.configuration.entity.message.Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
             LOG.info(CommandProcessorConsumerVerticle.class.getSimpleName() + " > received from : " + msg.getId() + " body : " + handler.body().toString());
             execute(handler, msg);
         });

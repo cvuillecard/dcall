@@ -1,7 +1,5 @@
-package com.dcall.core.configuration.entity;
+package com.dcall.core.configuration.entity.message;
 
-import com.dcall.core.configuration.bo.Message;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MessageBean implements Message<String> {

@@ -73,6 +73,10 @@ public final class AESProvider {
         return cipher.doFinal(message.getBytes(DEFAULT_CHARSET));
     }
 
+    public static byte[] encryptBytes(final byte[] bytes, final Cipher cipher) throws BadPaddingException, IllegalBlockSizeException {
+        return cipher.doFinal(bytes);
+    }
+
     public static byte[] decryptBytes(final byte[] bytes, final Cipher cipher) throws BadPaddingException, IllegalBlockSizeException {
         return cipher.doFinal(bytes);
     }
