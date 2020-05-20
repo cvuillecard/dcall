@@ -25,6 +25,7 @@ public final class GUIProcessor {
 
     public static void start() {
         GUIProcessor.init();
+        bus.init();
         GUIProcessor.loop();
     }
 
