@@ -28,7 +28,7 @@ public final class IOHandler {
     }
 
     private boolean getCredential() {
-        final byte[] datas = CredentialAction.HAS_ROOT.getBytes();
+//        final byte[] datas = CredentialAction.HAS_ROOT.getBytes();
 //        sendInputMessage(datas, null);
 
         return false;

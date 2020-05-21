@@ -9,10 +9,12 @@ public interface Identity {
     @JsonGetter("surname") String getSurname();
     @JsonGetter("email") String getEmail();
     @JsonGetter("login") String getLogin();
+    @JsonGetter("password") String getPassword();
 
     // setters
     @JsonSetter("name") void setName(final String name);
     @JsonSetter("surname") void setSurname(final String surname);
     @JsonSetter("email") void setEmail(final String email);
     @JsonSetter("login") void setLogin(final String login);
+    @JsonSetter("password") void setPassword(final String password);
 }

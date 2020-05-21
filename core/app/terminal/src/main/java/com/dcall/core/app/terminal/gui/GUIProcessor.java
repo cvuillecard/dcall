@@ -10,7 +10,6 @@ import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.service.credential.window.UserCredentialDrawer;
 import com.dcall.core.configuration.vertx.VertxApplication;
-import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
 import io.vertx.core.Vertx;
@@ -70,7 +69,9 @@ public final class GUIProcessor {
     private static void configureUser() {
         Vertx.currentContext().executeBlocking(
                 future -> future.complete(new UserCredentialDrawer(screen, bus.credentials()).build()),
-                handler -> loop()
+                handler -> {
+                    loop();
+                }
         );
     }
 

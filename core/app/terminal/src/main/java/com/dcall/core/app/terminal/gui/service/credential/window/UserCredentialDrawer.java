@@ -1,5 +1,6 @@
 package com.dcall.core.app.terminal.gui.service.credential.window;
 
+import com.dcall.core.app.terminal.gui.configuration.CredentialFields;
 import com.dcall.core.configuration.credential.CredentialInfo;
 import com.dcall.core.configuration.entity.identity.Identity;
 import com.dcall.core.configuration.entity.identity.IdentityBean;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 
 public final class UserCredentialDrawer {
     private final String _PANEL_TITLE = "User configuration";
+    private final int _TEXTBOX_SIZE = 30;
     private final int _LAYOUT_NB_COLS = 2;
     private WindowBasedTextGUI gui;
     private final Window window = new BasicWindow(_PANEL_TITLE);
@@ -60,28 +62,29 @@ public final class UserCredentialDrawer {
 
     private UserCredentialDrawer buildForm() {
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label("name"), identity.getName()));
+        panel.addComponent(setStyleLabel(new Label(CredentialFields.NAME), identity.getName()));
         initTextValue(name, identity.getName());
         panel.addComponent(name);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label("surname"), identity.getSurname()));
+        panel.addComponent(setStyleLabel(new Label(CredentialFields.SURNAME), identity.getSurname()));
         initTextValue(surname, identity.getSurname());
         panel.addComponent(surname);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label("email"), identity.getEmail()));
+        panel.addComponent(setStyleLabel(new Label(CredentialFields.EMAIL), identity.getEmail()));
         initTextValue(email, identity.getEmail());
         panel.addComponent(email);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label("login"), identity.getLogin()));
+        panel.addComponent(setStyleLabel(new Label(CredentialFields.LOGIN), identity.getLogin()));
         initTextValue(login, identity.getLogin());
         panel.addComponent(login);
 
-//        emptyLine();
-//        panel.addComponent(new Label("password"));
-//        panel.addComponent(password);
+        emptyLine();
+        panel.addComponent(setStyleLabel(new Label(CredentialFields.PASSWORD), identity.getPassword()));
+        initTextValue(password, identity.getPassword());
+        panel.addComponent(password);
 
         emptyLine();
 //        panel.addComponent(new EmptySpace(new TerminalSize(0, 0)));
@@ -92,7 +95,7 @@ public final class UserCredentialDrawer {
 
     private void initTextValue(final TextBox textBox, final String value) {
        textBox.setText(!StringUtils.isEmpty(value) ? value : "");
-       textBox.setPreferredSize(new TerminalSize(30, 1));
+       textBox.setPreferredSize(new TerminalSize(_TEXTBOX_SIZE, 1));
     }
 
     private void emptyLine() {
@@ -131,6 +134,7 @@ public final class UserCredentialDrawer {
         identity.setSurname(surname.getText().trim());
         identity.setLogin(login.getText().trim());
         identity.setEmail(email.getText().trim());
+        identity.setPassword(password.getText().trim());
 
         return identity;
     }

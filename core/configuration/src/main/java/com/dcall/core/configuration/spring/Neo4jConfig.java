@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.transaction.Neo4jTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@Configuration
-@EnableTransactionManagement
-@ComponentScans(value = { @ComponentScan({ "com.dcall.core" }) })
+//@Configuration
+//@EnableTransactionManagement
+//@ComponentScans(value = { @ComponentScan({ "com.dcall.core" }) })
 public class Neo4jConfig {
 	@Bean
 	public SessionFactory getSessionFactory() {

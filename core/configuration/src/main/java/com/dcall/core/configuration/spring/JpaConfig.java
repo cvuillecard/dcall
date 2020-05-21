@@ -9,9 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.*;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@Configuration
-@EnableTransactionManagement
-@ComponentScans(value = { @ComponentScan({ "com.dcall.core" }) })
+//@Configuration
+//@EnableTransactionManagement
+//@ComponentScans(value = { @ComponentScan({ "com.dcall.core" }) })
 public class JpaConfig {
     @Bean
     public LocalEntityManagerFactoryBean getEntityManagerFactoryBean() {

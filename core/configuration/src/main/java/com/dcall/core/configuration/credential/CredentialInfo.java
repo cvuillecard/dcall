@@ -11,7 +11,8 @@ public class CredentialInfo {
                 && identity.getName() != null && !identity.getName().isEmpty()
                 && identity.getSurname() != null && !identity.getSurname().isEmpty()
                 && identity.getEmail() != null && !identity.getEmail().isEmpty()
-                && identity.getLogin() != null && !identity.getLogin().isEmpty();
+                && identity.getLogin() != null && !identity.getLogin().isEmpty()
+                && identity.getPassword() != null && !identity.getPassword().isEmpty();
     }
 
     // getters

@@ -2,7 +2,7 @@ package com.dcall.core.configuration.vertx;
 
 import com.dcall.core.configuration.constant.ConstantResource;
 import com.dcall.core.configuration.exception.TechnicalException;
-import com.dcall.core.configuration.spring.JpaConfig;
+import com.dcall.core.configuration.spring.app.SpringConfig;
 import com.dcall.core.configuration.utils.ResourceUtils;
 import com.dcall.core.configuration.vertx.cluster.ClusterOptionsConfigurator;
 import com.dcall.core.configuration.vertx.cluster.HazelcastConfigurator;
@@ -71,7 +71,7 @@ public final class VertxApplication {
             if (res.succeeded()) {
                 final Vertx vertx = res.result();
                 final DeploymentOptions opts = new DeploymentOptions();
-                final VerticleFactory verticleFactory = isSpringVerticle ? initSptring(vertx) : null;
+                final VerticleFactory verticleFactory = isSpringVerticle ? initSpring(vertx) : null;
 
                 if (verticles instanceof Class[])
                     deployClasses(vertx, verticleFactory, opts, (Class<? extends Verticle>[]) verticles);
@@ -98,8 +98,8 @@ public final class VertxApplication {
         return properties;
     }
 
-    private static VerticleFactory initSptring(Vertx vertx) {
-        final ApplicationContext context = new AnnotationConfigApplicationContext(JpaConfig.class);
+    private static VerticleFactory initSpring(Vertx vertx) {
+        final ApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class);
         final VerticleFactory verticleFactory = context.getBean(SpringVerticleFactory.class);
 
         vertx.registerVerticleFactory(verticleFactory);

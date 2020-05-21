@@ -1,15 +1,11 @@
 package com.dcall.core.app.terminal;
 
-import com.dcall.core.app.terminal.gui.service.credential.window.UserCredentialDrawer;
+import com.dcall.core.configuration.vertx.VertxApplication;
+import com.dcall.core.configuration.runner.RunnerConfigurator;
+
 import com.dcall.core.app.terminal.vertx.InputConsumerVerticle;
 import com.dcall.core.app.terminal.vertx.TerminalApplicationVerticle;
-import com.dcall.core.configuration.credential.CredentialInfo;
-import com.dcall.core.configuration.runner.RunnerConfigurator;
-import com.dcall.core.configuration.vertx.VertxApplication;
-import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.screen.TerminalScreen;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.Terminal;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

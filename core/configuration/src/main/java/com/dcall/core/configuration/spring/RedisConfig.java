@@ -15,9 +15,9 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
-@Configuration
-@EnableCaching
-@ComponentScans(value = { @ComponentScan({ "com.dcall.core" }) })
+//@Configuration
+//@EnableCaching
+//@ComponentScans(value = { @ComponentScan({ "com.dcall.core" }) })
 public class RedisConfig {
 
     @Bean
