@@ -1,6 +1,6 @@
-package com.dcall.core.configuration.spring.app;
+package com.dcall.core.configuration.context.data;
 
-public class SharedData {
+public class DataContext {
     private Object datas;
 
     public <T> Object getDatas() {  return (T) datas; }
