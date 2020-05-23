@@ -12,6 +12,6 @@ public class TechnicalException extends Exception {
     public TechnicalException(final Throwable cause) { super(cause); }
 
     public void log() {
-        LOG.error(this.getClass().getName() + " : " + this.getMessage() + " - " + this.getCause());
+        LOG.error(this.getMessage() + " - " + this.getCause());
     }
 }

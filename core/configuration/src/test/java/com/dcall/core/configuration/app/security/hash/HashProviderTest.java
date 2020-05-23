@@ -42,8 +42,8 @@ public class HashProviderTest {
     @Test
     public void should_generate_128_hash_from_secret_sha512_seed() {
         final String secret = Base64.encodeBase64String(HashProvider.random());
-        final String key = HashProvider.seed(secret.getBytes());
-        final String key2 = HashProvider.seed(secret.getBytes());
+        final String key = HashProvider.seedSha512(secret.getBytes());
+        final String key2 = HashProvider.seedSha512(secret.getBytes());
 
         Assert.assertNotEquals(secret, key);
         Assert.assertEquals(key, key2);
@@ -51,13 +51,13 @@ public class HashProviderTest {
     }
 
     @Test
-    public void should_sign_with_128_hash_sign() {
+    public void should_sign_sha_512_with_128_hash_sign() {
         final String secret = Base64.encodeBase64String(HashProvider.random());
-        final String seed = HashProvider.seed(secret.getBytes());
-        final String signature = HashProvider.sign(seed, "ADN1", "ADN2", "ADN3");
-        final String differentSignature = HashProvider.sign(seed, "ADN3", "ADN2", "ADN1");
+        final String seed = HashProvider.seedSha512(secret.getBytes());
+        final String signature = HashProvider.signSha512(seed, "ADN1", "ADN2", "ADN3");
+        final String differentSignature = HashProvider.signSha512(seed, "ADN3", "ADN2", "ADN1");
 
-        Assert.assertEquals(signature, HashProvider.sign(seed, "ADN1", "ADN2", "ADN3"));
+        Assert.assertEquals(signature, HashProvider.signSha512(seed, "ADN1", "ADN2", "ADN3"));
         Assert.assertNotEquals(signature, differentSignature);
         Assert.assertEquals(SHA_STRING_LENGTH, signature.length());
         Assert.assertEquals(SHA_STRING_LENGTH, differentSignature.length());

@@ -118,4 +118,32 @@ public final class FileUtils extends Platform {
             LOG.error(e.getMessage());
         }
     }
+
+    public void remove(final String path) {
+        final File file = new File(path);
+
+        try {
+            if (!file.exists())
+                throw new FileNotFoundException("File not found : " + path);
+
+            if (file.isDirectory()) {
+                Arrays.stream(file.listFiles()).forEach(f -> {
+                    if (f.isDirectory())
+                        remove(f.getAbsolutePath());
+                    else
+                        f.delete();
+                });
+            }
+
+            file.delete();
+
+            if (file.exists())
+                throw new RuntimeException("Failed to delete : " + path);
+        }
+        catch (FileNotFoundException e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    public String pwd() { return super.pwd(); }
 }

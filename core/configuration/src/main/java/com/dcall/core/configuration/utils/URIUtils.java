@@ -11,13 +11,13 @@ public final class URIUtils {
 
     public static String getContextUri(final String baseUri, final String domainUri) {
         if (context != null)
-            return HashProvider.sign(context, getUri(baseUri, domainUri));
+            return HashProvider.signSha512(context, getUri(baseUri, domainUri));
         
         return getUri(baseUri, domainUri);
     }
 
     public static void setContext(final String seed) {
         if (seed != null && seed.length() > 0)
-            context = HashProvider.seed(seed.getBytes());
+            context = HashProvider.seedSha512(seed.getBytes());
     }
 }

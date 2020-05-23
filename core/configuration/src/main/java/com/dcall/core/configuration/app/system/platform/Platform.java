@@ -60,4 +60,8 @@ public abstract class Platform {
             LOG.error(e.getMessage());
         }
     }
+
+    protected String pwd() {
+        return System.getenv().get(isWin() ? "user.dir" : "PWD");
+    }
 }

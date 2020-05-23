@@ -94,7 +94,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
     private void handleError(final Message<Object> handler, final String msgError, final com.dcall.core.configuration.generic.entity.message.Message<String> sender) {
         final String error = "Failed to execute '" + new String(sender.getMessage()) + "' - ERROR : " + msgError;
         final byte[] bytes = error.getBytes();
-        final String randId = HashProvider.seed(bytes);
+        final String randId = HashProvider.seedSha512(bytes);
         final com.dcall.core.configuration.generic.entity.message.Message<String> resp = new MessageBean(randId, bytes, bytes.length);
 
         LOG.error(msgError);

@@ -4,6 +4,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.File;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
@@ -25,11 +26,19 @@ public final class HashProvider {
         return mac.doFinal(data);
     }
 
-    public static String seed(final byte[] bytes) {
+    public static String seedMd5(final byte[] bytes) {
+        return DigestUtils.md5Hex(bytes);
+    }
+
+    public static String seedSha512(final byte[] bytes) {
         return DigestUtils.sha512Hex(bytes);
     }
 
-    public static String sign(final String seed, String... keys) {
-        return DigestUtils.sha512Hex(seed + String.join("", Arrays.asList(keys)));
+    public static String signMd5(final String seed, String... keys) {
+        return DigestUtils.md5Hex(seed + File.separator + String.join("+", Arrays.asList(keys)));
+    }
+
+    public static String signSha512(final String seed, String... keys) {
+        return DigestUtils.sha512Hex(seed + File.separator + String.join("+", Arrays.asList(keys)));
     }
 }
