@@ -1,7 +1,7 @@
 package com.dcall.core.configuration.utils;
 
-import com.dcall.core.configuration.constant.ConstantResource;
-import com.dcall.core.configuration.exception.TechnicalException;
+import com.dcall.core.configuration.app.constant.ConstantResource;
+import com.dcall.core.configuration.app.exception.TechnicalException;
 
 import java.io.IOException;
 import java.util.Properties;

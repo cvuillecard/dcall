@@ -1,6 +1,6 @@
 package com.dcall.core.app.terminal.gui.configuration;
 
-import com.dcall.core.configuration.exception.TechnicalException;
+import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TextColor;
 import org.slf4j.Logger;

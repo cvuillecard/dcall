@@ -4,10 +4,9 @@ import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.vertx.constant.URIConfig;
-import com.dcall.core.configuration.constant.CredentialAction;
-import com.dcall.core.configuration.credential.CredentialInfo;
-import com.dcall.core.configuration.service.message.MessageService;
-import com.dcall.core.configuration.service.message.MessageServiceImpl;
+import com.dcall.core.configuration.app.user.credential.CredentialInfo;
+import com.dcall.core.configuration.app.service.message.MessageService;
+import com.dcall.core.configuration.app.service.message.MessageServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

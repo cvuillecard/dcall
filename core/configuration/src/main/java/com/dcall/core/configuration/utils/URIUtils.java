@@ -1,6 +1,6 @@
 package com.dcall.core.configuration.utils;
 
-import com.dcall.core.configuration.security.hash.HashProvider;
+import com.dcall.core.configuration.app.security.hash.HashProvider;
 
 public final class URIUtils {
     private static String context;

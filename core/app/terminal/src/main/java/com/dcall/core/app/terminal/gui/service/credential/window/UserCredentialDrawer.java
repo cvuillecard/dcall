@@ -1,9 +1,9 @@
 package com.dcall.core.app.terminal.gui.service.credential.window;
 
 import com.dcall.core.app.terminal.gui.configuration.CredentialFields;
-import com.dcall.core.configuration.credential.CredentialInfo;
-import com.dcall.core.configuration.entity.identity.Identity;
-import com.dcall.core.configuration.entity.identity.IdentityBean;
+import com.dcall.core.configuration.app.user.credential.CredentialInfo;
+import com.dcall.core.configuration.generic.entity.identity.Identity;
+import com.dcall.core.configuration.generic.entity.identity.IdentityBean;
 import com.dcall.core.configuration.utils.StringUtils;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalSize;

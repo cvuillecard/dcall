@@ -1,7 +1,7 @@
 package com.dcall.core.app.processor.vertx.command;
 
 import com.dcall.core.app.processor.vertx.constant.URIConfig;
-import com.dcall.core.configuration.exception.TechnicalException;
+import com.dcall.core.configuration.app.exception.TechnicalException;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;

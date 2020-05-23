@@ -1,7 +1,7 @@
 package com.dcall.core.configuration.utils;
 
-import com.dcall.core.configuration.exception.TechnicalException;
-import com.dcall.core.configuration.security.aes.AESProvider;
+import com.dcall.core.configuration.app.exception.TechnicalException;
+import com.dcall.core.configuration.app.security.aes.AESProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

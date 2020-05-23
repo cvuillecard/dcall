@@ -8,7 +8,7 @@ import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.controller.screen.ScrollMetrics;
 import com.dcall.core.app.terminal.gui.service.drawer.TextDrawerService;
-import com.dcall.core.configuration.constant.IOConstant;
+import com.dcall.core.configuration.app.constant.IOConstant;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.Terminal;
 import org.slf4j.Logger;

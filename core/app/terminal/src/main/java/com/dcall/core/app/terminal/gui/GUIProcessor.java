@@ -9,7 +9,7 @@ import com.dcall.core.app.terminal.bus.handler.IOHandler;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.service.credential.window.UserCredentialDrawer;
-import com.dcall.core.configuration.vertx.VertxApplication;
+import com.dcall.core.configuration.app.vertx.VertxApplication;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
 import io.vertx.core.Vertx;
