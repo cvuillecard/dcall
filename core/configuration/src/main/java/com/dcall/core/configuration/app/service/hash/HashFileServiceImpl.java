@@ -74,7 +74,7 @@ public final class HashFileServiceImpl implements HashFileService {
     }
 
     @Override
-    public String getHashPath(String parentPath, String dirName, String salt) {
+    public String getHashPath(String parentPath, final String dirName, final String salt) {
         String path = null;
 
         if (dirName != null && !dirName.isEmpty()) {
@@ -91,20 +91,14 @@ public final class HashFileServiceImpl implements HashFileService {
         final List<String> l = new ArrayList<>();
         final File d = new File(dir);
 
-        if (d.exists())
+        if (d.exists() && d.isDirectory())
             Arrays.stream(d.listFiles()).forEach(f -> l.add(f.getName()));
 
         return l;
     }
 
     @Override
-    public HashFileService setRoot(final String path) { this.root = path; return this; }
-
-    @Override
-    public HashFileService setSalt(final String salt) { this.salt = salt; return this; }
-
-    @Override
-    public boolean exists(String parentPath, final String salt, final String... relativePaths) {
+    public boolean exists(final String parentPath, final String salt, final String... relativePaths) {
         if (relativePaths.length > 0) {
             for (final String p : relativePaths) {
                 final String path = getHashPath(parentPath, p, salt);
@@ -117,4 +111,11 @@ public final class HashFileServiceImpl implements HashFileService {
         }
         return false;
     }
+
+    @Override
+    public HashFileService setRoot(final String path) { this.root = path; return this; }
+
+    @Override
+    public HashFileService setSalt(final String salt) { this.salt = salt; return this; }
+
 }

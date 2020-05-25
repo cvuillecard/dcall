@@ -6,16 +6,15 @@ import java.util.List;
 public interface HashFileService {
 
     String createRootDirectory(final String parentPath, final String salt);
-//    String createDirectory(final String parentPath, final String salt, final String dirName);
-    List<String> createDirectories(String parentPath, String salt, String... directories);
+    List<String> createDirectories(final String parentPath, final String salt, final String... directories);
 
     // utils
-    String getPath(String parentPath, String hashFileName);
-    String getFileHash(String parentPath, String fileName, String salt);
-    String getHashPath(String parentPath, String dirName, String salt);
+    String getPath(final String parentPath, final String hashFileName);
+    String getFileHash(String parentPath, final String fileName, final String salt);
+    String getHashPath(String parentPath, final String dirName, final String salt);
 
     Collection<String> list(final String dir);
-    boolean exists(String parentPath, String salt, String... relativePaths);
+    boolean exists(final String parentPath, final String salt, final String... relativePaths);
 
     // setters
     HashFileService setRoot(final String path);

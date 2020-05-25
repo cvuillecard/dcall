@@ -24,10 +24,10 @@ public class HashFileServiceTest extends Platform {
     @BeforeClass
     public static void init() {
         FileUtils.getInstance().remove(pwd);
-        new File(pwd).mkdir();
+        new File(pwd).mkdirs();
     }
 
-    @Test public void should_create_root_directory_createRootDirectory_createDirectory() {
+    @Test public void should_create_root_directory_createRootDirectory_createDirectory_exists() {
         final String hashSalt = HashProvider.seedMd5(salt.getBytes());
         final String root = service.createRootDirectory(pwd, salt);
         final String hash = service.getFileHash(pwd, "root", hashSalt);
@@ -44,12 +44,12 @@ public class HashFileServiceTest extends Platform {
     }
 
     @Test
-    public void should_create_recursively_directories_createDirectories() {
+    public void should_create_recursively_directories_with_or_without_relative_paths_createDirectories() {
         final String hashSalt = HashProvider.seedMd5(salt.getBytes());
         final String root = service.createRootDirectory(pwd, salt);
 
         final String pathToto = "toto" + File.separator + "cousin_de_toto";
-        final String pathTiti = "titi" + File.separator + "cert";
+        final String pathTiti = "titi" + File.separator + "cert" + File.separator + "public";
         final String pathTata = "tata";
 
         final String hashPathToto = service.getHashPath(root, pathToto, hashSalt);
@@ -62,10 +62,13 @@ public class HashFileServiceTest extends Platform {
         Assert.assertTrue(paths.contains(hashPathTiti));
         Assert.assertTrue(paths.contains(hashPathTata));
 
+        final String rootCert = service.getHashPath(root, "titi" + File.separator + "cert", hashSalt);
         Assert.assertTrue(service.exists(root, hashSalt, "toto", pathToto, "titi", pathTiti, "tata"));
+        Assert.assertTrue(service.exists(rootCert, hashSalt, "public"));
 
         Assert.assertFalse(service.exists(root, hashSalt, "toto" + File.separator + "other"));
         Assert.assertFalse(service.exists(root, hashSalt, "toto", pathToto + File.separator + "other", "titi"));
+        Assert.assertFalse(service.exists(rootCert, hashSalt, "private"));
 
         paths.stream().forEach(p -> Assert.assertTrue(new File(p).exists()));
     }
