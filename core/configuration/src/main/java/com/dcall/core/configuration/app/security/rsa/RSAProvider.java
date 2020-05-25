@@ -117,7 +117,7 @@ public final class RSAProvider {
 
     public static KeyPair getKeyPairFromKeyStore(final String keyStoreFullPath, final RSAProvider.KeyStoreType storeType, final String alias, final String storePass, final String keyPass) throws Exception {
         if (!new File(keyStoreFullPath).exists())
-            throw new NoSuchFileException(RSAProvider.class.getName() + " : getKeyPairFromKeyStore() -> keystore with path " + keyStoreFullPath + "doesn't exists. Please check the path or rights.");
+            throw new NoSuchFileException(RSAProvider.class.getName() + " : getKeyPairFromKeyStore() -> keystore with path " + keyStoreFullPath + "doesn't fileExists. Please check the path or rights.");
 
         KeyStore keyStore = KeyStore.getInstance(storeType == null ? KeyStoreType.PKCS12.name() : storeType.name());
         keyStore.load(new FileInputStream(keyStoreFullPath), storePass.toCharArray());   //Keystore password

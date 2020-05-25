@@ -18,7 +18,7 @@ public class LocalCommandController {
         this.input = input.trim().toLowerCase().split(INPUT_SEPARATOR);
 
         if (input.length() <= 0)
-            return ("Command "  + input + " doesn't exist.").getBytes();
+            return ("Command "  + input + " doesn't exists.").getBytes();
 
         final LocalCommandAction cmd = LocalCommandAction.valueOf(this.input[0]);
         final String[] params = Arrays.copyOfRange(this.input, 1, input.length());

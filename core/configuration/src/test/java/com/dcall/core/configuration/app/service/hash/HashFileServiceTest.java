@@ -13,8 +13,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-public class HashServiceTest extends Platform {
-    private final static Logger LOG = LoggerFactory.getLogger(HashServiceTest.class);
+public class HashFileServiceTest extends Platform {
+    private final static Logger LOG = LoggerFactory.getLogger(HashFileServiceTest.class);
     private final static int MD5_LENGTH = 32;
     private final static String workspace = String.join(File.separator, Arrays.asList("src", "test", "resources", "workspace"));
     private final static String pwd =  FileUtils.getInstance().pwd() + File.separator + workspace;
@@ -28,16 +28,19 @@ public class HashServiceTest extends Platform {
     }
 
     @Test public void should_create_root_directory_createRootDirectory_createDirectory() {
+        final String hashSalt = HashProvider.seedMd5(salt.getBytes());
         final String root = service.createRootDirectory(pwd, salt);
-        final String root2 = service.createDirectory(pwd, "root", HashProvider.seedMd5(salt.getBytes()));
-        final String hash = root.replace(pwd + File.separator, "");
-        final String hash2 = root2.replace(pwd + File.separator, "");
+        final String hash = service.getFileHash(pwd, "root", hashSalt);
 
         Assert.assertEquals(MD5_LENGTH, hash.length());
-        Assert.assertEquals(MD5_LENGTH, hash2.length());
 
         Assert.assertTrue(new File(root).exists());
-        Assert.assertEquals(hash, hash2);
+
+        Assert.assertTrue(service.exists(pwd, hashSalt, "root"));
+        Assert.assertTrue(service.exists(pwd, hashSalt, "root" + File.separator)); // root/
+        Assert.assertTrue(service.exists(pwd, hashSalt, "root" + File.separator + File.separator + File.separator)); // root///
+
+        Assert.assertFalse(service.exists(pwd, hashSalt, "rot"));
     }
 
     @Test
@@ -45,19 +48,24 @@ public class HashServiceTest extends Platform {
         final String hashSalt = HashProvider.seedMd5(salt.getBytes());
         final String root = service.createRootDirectory(pwd, salt);
 
-        final String hashPathToto = service.getHashPath(root, "toto", hashSalt);
-        final String hashPathTiti = service.getHashPath(root, "titi", hashSalt);
-        final String hashPathTata = service.getHashPath(root, "tata", hashSalt);
+        final String pathToto = "toto" + File.separator + "cousin_de_toto";
+        final String pathTiti = "titi" + File.separator + "cert";
+        final String pathTata = "tata";
 
-        final List<String> paths = service.createDirectories(root, salt, "toto", "titi", "tata");
+        final String hashPathToto = service.getHashPath(root, pathToto, hashSalt);
+        final String hashPathTiti = service.getHashPath(root, pathTiti, hashSalt);
+        final String hashPathTata = service.getHashPath(root, pathTata, hashSalt);
+
+        final List<String> paths = service.createDirectories(root, salt, pathToto, pathTiti, pathTata);
 
         Assert.assertTrue(paths.contains(hashPathToto));
         Assert.assertTrue(paths.contains(hashPathTiti));
         Assert.assertTrue(paths.contains(hashPathTata));
 
-        Assert.assertTrue(service.exists(root, "toto", hashSalt));
-        Assert.assertTrue(service.exists(root, "titi", hashSalt));
-        Assert.assertTrue(service.exists(root, "tata", hashSalt));
+        Assert.assertTrue(service.exists(root, hashSalt, "toto", pathToto, "titi", pathTiti, "tata"));
+
+        Assert.assertFalse(service.exists(root, hashSalt, "toto" + File.separator + "other"));
+        Assert.assertFalse(service.exists(root, hashSalt, "toto", pathToto + File.separator + "other", "titi"));
 
         paths.stream().forEach(p -> Assert.assertTrue(new File(p).exists()));
     }

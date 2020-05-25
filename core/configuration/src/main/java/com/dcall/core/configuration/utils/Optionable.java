@@ -159,7 +159,7 @@ public final class Optionable<T> {
 //     *
 //     * Here, {@code findFirst} returns an {@code Optional<URI>}, and then
 //     * {@code map} returns an {@code Optional<Path>} for the desired
-//     * URI if one exists.
+//     * URI if one fileExists.
 //     *
 //     * @param mapper the mapping function to apply to a value, if present
 //     * @param <U> The type of the value returned from the mapping function

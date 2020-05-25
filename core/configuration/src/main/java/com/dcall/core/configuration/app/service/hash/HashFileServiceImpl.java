@@ -16,42 +16,42 @@ public final class HashFileServiceImpl implements HashFileService {
     private String root = null;
     private String salt = null;
 
+    private String seed(String salt) {
+        return HashProvider.seedMd5(salt.getBytes());
+    }
+
+    private String sign(String parentPath, String fileName, String salt) {
+        return HashProvider.signMd5(parentPath, fileName, salt);
+    }
+
     @Override
     public String createRootDirectory(final String parentPath, final String salt) {
-        setRoot(createDirectory(parentPath, "root", HashProvider.seedMd5(salt.getBytes())));
+        setRoot(createDirectories(parentPath, salt, "root").get(0));
         return this.root;
     }
 
     @Override
-    public String createDirectory(final String parentPath, final String dirName, final String salt) {
+    public List<String> createDirectories(final String parentPath, final String salt, final String... directories) {
         try {
-            final File dir = new File(getHashPath(parentPath, dirName, salt));
+            final String hashSalt = seed(salt);
+            final List<String> list = new ArrayList<>();
 
-            if (!dir.exists()) {
-                dir.mkdirs();
-                if (!dir.exists())
-                    throw new TechnicalException(parentPath + " directory could not be created");
-                else
-                    LOG.debug("created directory : " + dir.getAbsolutePath());
+            if (directories.length > 0) {
+                for (final String p : directories) {
+                        final String path = getHashPath(parentPath, p, hashSalt);
+                        final File dir = new File(path);
+                        dir.mkdirs();
+                        if (!dir.exists())
+                            throw new TechnicalException(parentPath + File.separator + p + " > " + path + " : could not be created");
+                        list.add(path);
+                }
             }
-
-            return dir.getAbsolutePath();
+            return list;
         }
         catch (TechnicalException e) {
             e.log();
         }
-
         return null;
-    }
-
-    @Override
-    public List<String> createDirectories(final String parentPath, final String salt, final String... directories) {
-        final String hashSalt = HashProvider.seedMd5(salt.getBytes());
-        final List<String> list = new ArrayList<>();
-
-        Arrays.stream(directories).forEach(dir -> list.add(createDirectory(parentPath, dir, hashSalt)));
-
-        return list;
     }
 
     @Override
@@ -60,13 +60,30 @@ public final class HashFileServiceImpl implements HashFileService {
     }
 
     @Override
-    public String getFileHash(final String parentPath, final String fileName, final String salt) {
-        return HashProvider.signMd5(parentPath, fileName, salt);
+    public String getFileHash(String parentPath, final String fileName, final String salt) {
+        String hash = null;
+
+        if (fileName != null && !fileName.isEmpty()) {
+            for (final String member : fileName.split(File.separator)) {
+                hash = sign(parentPath, seed(member), salt);
+                parentPath = getPath(parentPath, hash);
+            }
+        }
+
+        return hash;
     }
 
     @Override
     public String getHashPath(String parentPath, String dirName, String salt) {
-        return getPath(parentPath, getFileHash(parentPath, HashProvider.seedMd5(dirName.getBytes()), salt));
+        String path = null;
+
+        if (dirName != null && !dirName.isEmpty()) {
+            for (final String member : dirName.split(File.separator)) {
+                path = getPath(parentPath, getFileHash(parentPath, member, salt));
+                parentPath = path;
+            }
+        }
+        return path;
     }
 
     @Override
@@ -87,7 +104,17 @@ public final class HashFileServiceImpl implements HashFileService {
     public HashFileService setSalt(final String salt) { this.salt = salt; return this; }
 
     @Override
-    public boolean exists(final String parentPath, final String fileName, final String salt) {
-        return new File(getHashPath(parentPath, fileName, salt)).exists();
+    public boolean exists(String parentPath, final String salt, final String... relativePaths) {
+        if (relativePaths.length > 0) {
+            for (final String p : relativePaths) {
+                final String path = getHashPath(parentPath, p, salt);
+                if (!new File(path).exists()) {
+                    LOG.debug(parentPath + File.separator + p + " > " + path + " : doesn't exists");
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }
