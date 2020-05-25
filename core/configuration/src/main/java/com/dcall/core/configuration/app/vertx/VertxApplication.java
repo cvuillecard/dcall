@@ -73,6 +73,8 @@ public final class VertxApplication {
                 final DeploymentOptions opts = new DeploymentOptions();
                 final VerticleFactory verticleFactory = isSpringVerticle ? initSpring(vertx) : null;
 
+                VertxInterceptor.logRequest(vertx);
+
                 if (verticles instanceof Class[])
                     deployClasses(vertx, verticleFactory, opts, (Class<? extends Verticle>[]) verticles);
                 else if (verticles instanceof Verticle[])
@@ -98,7 +100,7 @@ public final class VertxApplication {
         return properties;
     }
 
-    private static VerticleFactory initSpring(Vertx vertx) {
+    private static VerticleFactory initSpring(final Vertx vertx) {
         final ApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class);
         final VerticleFactory verticleFactory = context.getBean(SpringVerticleFactory.class);
 

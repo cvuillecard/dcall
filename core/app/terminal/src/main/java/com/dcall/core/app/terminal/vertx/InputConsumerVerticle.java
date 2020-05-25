@@ -2,6 +2,7 @@ package com.dcall.core.app.terminal.vertx;
 
 import com.dcall.core.app.terminal.gui.GUIProcessor;
 import com.dcall.core.app.terminal.vertx.constant.URIConfig;
+import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.generic.entity.message.Message;
 import com.dcall.core.configuration.generic.entity.message.MessageBean;
 import com.dcall.core.configuration.utils.URIUtils;
@@ -12,7 +13,14 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
+@Component
+@Scope(SCOPE_PROTOTYPE)
 public final class InputConsumerVerticle extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(InputConsumerVerticle.class);
 

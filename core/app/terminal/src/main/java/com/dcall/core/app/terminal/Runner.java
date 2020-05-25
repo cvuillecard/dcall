@@ -19,10 +19,10 @@ public class Runner {
 
         VertxApplication.init(configurator.getHost(), configurator.getPort());
         VertxApplication.startOnCluster(
-                false,
+                true,
                 configurator.getPeers().toArray(new String[configurator.getPeers().size()]),
-                new InputConsumerVerticle(),
-                new TerminalApplicationVerticle()
+                InputConsumerVerticle.class,
+                TerminalApplicationVerticle.class
         );
     }
 }
