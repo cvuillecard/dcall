@@ -1,6 +1,10 @@
 package com.dcall.core.configuration.app.vertx.cluster;
 
+import com.dcall.core.configuration.app.security.hash.HashProvider;
+import com.dcall.core.configuration.generic.entity.cluster.Cluster;
+import com.dcall.core.configuration.generic.entity.cluster.ClusterBean;
 import com.hazelcast.config.Config;
+import com.hazelcast.core.Hazelcast;
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +15,6 @@ public final class HazelcastConfigurator {
     private static final Logger LOG = LoggerFactory.getLogger(HazelcastConfigurator.class);
     private Config config = new Config();
 
-
     /**
      * Configure the network in a none-multicast mode,
      * which means tcp-ip must be enabled in this case.
@@ -20,19 +23,23 @@ public final class HazelcastConfigurator {
      *
      * @return {@link HazelcastConfigurator}
      */
-    public HazelcastClusterManager configureNoMulticast() {
+    public HazelcastClusterManager configureNoMulticast(final String groupName, final String groupPass) {
 
-        enableMulticast(false).enableTcpIp(true);
+        enableMulticast(false).enableTcpIp(true).configureGroup(groupName, groupPass);
 
         config.getNetworkConfig().setReuseAddress(true);
 
         return getClusterManager();
     }
 
-    public HazelcastClusterManager configureDefault() {
-        return new HazelcastClusterManager();
-    }
+    public HazelcastConfigurator configureGroup(final String groupName, final String groupPass) {
+        final Cluster cluster = new ClusterBean(HashProvider.seedSha512((groupName + groupPass).getBytes()), groupName, groupPass);
 
+        this.config.getGroupConfig().setName(cluster.getName());
+        this.config.getGroupConfig().setPassword(cluster.getPassword()); // going to be deleted after test proved it's not used.
+
+        return this;
+    }
 
     private HazelcastClusterManager getClusterManager() {
         return new HazelcastClusterManager(this.config);

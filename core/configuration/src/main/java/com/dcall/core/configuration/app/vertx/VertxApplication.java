@@ -1,6 +1,7 @@
 package com.dcall.core.configuration.app.vertx;
 
-import com.dcall.core.configuration.app.constant.ConstantResource;
+import com.dcall.core.configuration.app.constant.ClusterConstant;
+import com.dcall.core.configuration.app.constant.ResourceConstant;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.spring.SpringConfig;
 import com.dcall.core.configuration.utils.ResourceUtils;
@@ -31,12 +32,12 @@ public final class VertxApplication {
     private static VertxOptions options;
     private static HazelcastConfigurator hazelcastConfigurator;
 
-    public static void init(final String host, final Integer port) {
+    public static void init(final String host, final Integer port, final String groupName, final String groupPassword) {
         final String hostName = host != null && !host.isEmpty() ? host : ResourceUtils.getString("cluster.host.ip");
         final int hostPort = port != null && port > 0 ? port : ResourceUtils.getInt("cluster.host.port");
 
         hazelcastConfigurator = new HazelcastConfigurator();
-        clusterOptionsConfigurator = new ClusterOptionsConfigurator(configureVertxOptions(ResourceUtils.localProperties()))
+        clusterOptionsConfigurator = new ClusterOptionsConfigurator(configureVertxOptions(ResourceUtils.localProperties(), groupName, groupPassword))
                 .configure(hostName, hostPort);
 
         options = clusterOptionsConfigurator.getVertxOptions();
@@ -46,9 +47,6 @@ public final class VertxApplication {
         if (verticles == null) {
             throw new IllegalArgumentException("verticleToDeploy cannot be null");
         }
-
-        if (hazelcastConfigurator == null)
-            init(null, null);
 
         if (peers.length < 1) {
             throw new IllegalArgumentException("Bad usage of 'peers' parameter : Need at least one peer endpoint to join the cluster where peer is a string as \"ip:port\" ");
@@ -63,9 +61,6 @@ public final class VertxApplication {
         if (verticles == null) {
             throw new IllegalArgumentException("verticleToDeploy cannot be null");
         }
-
-        if (hazelcastConfigurator == null)
-            init(null, null);
 
         Vertx.clusteredVertx(options, res -> {
             if (res.succeeded()) {
@@ -83,19 +78,19 @@ public final class VertxApplication {
         });
     }
 
-    private static VertxOptions configureVertxOptions(final Properties properties) {
+    private static VertxOptions configureVertxOptions(final Properties properties, final String groupName, final String groupPassword) {
         return new VertxEventBusSSLConfigurator()
                 .setKeyStoreFilePath(properties.get("keystore.path").toString())
                 .setTrustStoreFilePath(properties.get("truststore.path").toString())
                 .setPwdKeyStore(properties.get("keystore.pwd").toString())
                 .setPwdTrustStore(properties.get("truststore.pwd").toString())
                 .execute()
-                .setClusterManager(hazelcastConfigurator.configureNoMulticast());
+                .setClusterManager(hazelcastConfigurator.configureNoMulticast(groupName, groupPassword));
     }
 
     private static Properties loadProperties() throws IOException {
         final Properties properties = new Properties();
-        properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(ConstantResource.LOCAL_PROPERTIES));
+        properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(ResourceConstant.LOCAL_PROPERTIES));
 
         return properties;
     }

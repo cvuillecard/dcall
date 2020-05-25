@@ -17,7 +17,7 @@ public class Runner {
                 .defaultValidateArgs(args)
                 .parseOptions(args);
 
-        VertxApplication.init(configurator.getHost(), configurator.getPort());
+        VertxApplication.init(configurator.getHost(), configurator.getPort(), configurator.getGroupName(), configurator.getGroupPassword());
         VertxApplication.startOnCluster(
                 true,
                 configurator.getPeers().toArray(new String[configurator.getPeers().size()]),

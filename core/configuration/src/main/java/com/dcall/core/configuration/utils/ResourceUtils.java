@@ -1,6 +1,6 @@
 package com.dcall.core.configuration.utils;
 
-import com.dcall.core.configuration.app.constant.ConstantResource;
+import com.dcall.core.configuration.app.constant.ResourceConstant;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public final class ResourceUtils {
         if (properties == null) {
             try {
                 properties = new Properties();
-                properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(ConstantResource.LOCAL_PROPERTIES));
+                properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(ResourceConstant.LOCAL_PROPERTIES));
             } catch (IOException e) {
                 new TechnicalException(e).log();
             }

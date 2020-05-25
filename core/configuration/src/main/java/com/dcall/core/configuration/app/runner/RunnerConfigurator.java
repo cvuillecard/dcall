@@ -1,5 +1,7 @@
 package com.dcall.core.configuration.app.runner;
 
+import com.dcall.core.configuration.app.constant.ClusterConstant;
+import com.dcall.core.configuration.generic.entity.cluster.Cluster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,12 +14,15 @@ public final class RunnerConfigurator {
 
     private final int HOST = 0;
     private final int PORT = 1;
-    private final int PEERS = 2;
+    private final int GROUP = 2;
+    private final int PEERS = 3;
     private final int DEFAULT_MIN_AC = 6;
 
     private String name;
     private String host;
     private Integer port;
+    private String groupName;
+    private String groupPassword;
     private Set<String> peers = new HashSet<>();
 
     public RunnerConfigurator(final String name) {
@@ -25,7 +30,7 @@ public final class RunnerConfigurator {
     }
 
     private final String[] DEFAULT_OPTIONS = new String[] {
-      "-host", "-port", "-peers"
+      "-host", "-port", "-group", "-peers"
     };
 
     public RunnerConfigurator defaultValidateArgs(final String[] argv) {
@@ -46,7 +51,7 @@ public final class RunnerConfigurator {
         boolean parse = true;
 
         for(int i = 0; parse && i < args.length; i++) {
-            if (parse = parseHost(i, args) || parsePort(i, args) || parsePeers(i, args))
+            if (parse = parseHost(i, args) || parsePort(i, args) || parseGroup(i, args) || parsePeers(i, args))
                 i++;
         }
 
@@ -73,6 +78,18 @@ public final class RunnerConfigurator {
         return false;
     }
 
+    private boolean parseGroup(final int idx, final String[] args) {
+        if (args[idx].equalsIgnoreCase(DEFAULT_OPTIONS[GROUP])) {
+            final String[] group = args[idx + 1].split(":");
+
+            this.groupName = group[0];
+            this.groupPassword = group[1];
+
+            return true;
+        }
+        return false;
+    }
+
     private boolean parsePeers(final int idx, final String[] args) {
         if (args[idx].equalsIgnoreCase(DEFAULT_OPTIONS[PEERS])) {
             checkNextArgument(idx, args, PEERS, "options requires at least one peer argument (ex : -peers <host:port>)");
@@ -91,11 +108,14 @@ public final class RunnerConfigurator {
     }
 
     protected String usage() {
-        return "[" + this.name + "] <options> " + "[ -host <address> -port <number> -peers <host1:port1> <host2:port2> <host3:port3> <...> ]";
+        return "[" + this.name + "] <options> " + "[ -host <address> -port <number> -group <groupName:groupPassword> -peers <host1:port1> <host2:port2> <host3:port3> <...> ]";
     }
 
     // GETTERS
     public String getHost() { return this.host; }
     public Integer getPort() { return this.port; }
     public Set<String> getPeers() { return this.peers; }
+    public String getGroupName() { return this.groupName == null ? ClusterConstant.GROUP_GATE : this.groupName; }
+    @Deprecated // going to be deleted because not used by hazelcast
+    public String getGroupPassword() { return this.groupPassword == null ? ClusterConstant.GATE_PWD : this.groupPassword; }
 }
