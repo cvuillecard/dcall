@@ -1,11 +1,10 @@
 package com.dcall.core.configuration.app.vertx;
 
-import com.dcall.core.configuration.app.constant.ClusterConstant;
 import com.dcall.core.configuration.app.constant.ResourceConstant;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.spring.SpringConfig;
 import com.dcall.core.configuration.utils.ResourceUtils;
-import com.dcall.core.configuration.app.vertx.cluster.ClusterOptionsConfigurator;
+import com.dcall.core.configuration.app.vertx.cluster.EventBusConfigurator;
 import com.dcall.core.configuration.app.vertx.cluster.HazelcastConfigurator;
 import com.dcall.core.configuration.app.vertx.ssl.VertxEventBusSSLConfigurator;
 import io.vertx.core.DeploymentOptions;
@@ -28,7 +27,7 @@ import java.util.Properties;
  */
 public final class VertxApplication {
 	private static final Logger LOG = LoggerFactory.getLogger(VertxApplication.class);
-	private static ClusterOptionsConfigurator clusterOptionsConfigurator;
+	private static EventBusConfigurator eventBusConfigurator;
     private static VertxOptions options;
     private static HazelcastConfigurator hazelcastConfigurator;
 
@@ -37,10 +36,10 @@ public final class VertxApplication {
         final int hostPort = port != null && port > 0 ? port : ResourceUtils.getInt("cluster.host.port");
 
         hazelcastConfigurator = new HazelcastConfigurator();
-        clusterOptionsConfigurator = new ClusterOptionsConfigurator(configureVertxOptions(ResourceUtils.localProperties(), groupName, groupPassword))
+        eventBusConfigurator = new EventBusConfigurator(configureVertxOptions(ResourceUtils.localProperties(), groupName, groupPassword))
                 .configure(hostName, hostPort);
 
-        options = clusterOptionsConfigurator.getVertxOptions();
+        options = eventBusConfigurator.getVertxOptions();
     }
 
     public static <T> void startOnCluster(final boolean isSpringVerticle, final String[] peers, T... verticles) {
