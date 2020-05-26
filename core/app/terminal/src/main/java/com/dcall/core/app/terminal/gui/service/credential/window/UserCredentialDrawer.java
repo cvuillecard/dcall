@@ -1,9 +1,9 @@
 package com.dcall.core.app.terminal.gui.service.credential.window;
 
 import com.dcall.core.app.terminal.gui.configuration.CredentialFields;
-import com.dcall.core.configuration.app.user.credential.CredentialInfo;
-import com.dcall.core.configuration.generic.entity.identity.Identity;
-import com.dcall.core.configuration.generic.entity.identity.IdentityBean;
+import com.dcall.core.configuration.generic.vto.UserVto;
+import com.dcall.core.configuration.generic.entity.user.User;
+import com.dcall.core.configuration.generic.entity.user.UserBean;
 import com.dcall.core.configuration.utils.StringUtils;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalSize;
@@ -21,19 +21,19 @@ public final class UserCredentialDrawer {
     private final Window window = new BasicWindow(_PANEL_TITLE);
     private final Panel panel = new Panel();
     private final Screen screen;
-    private final CredentialInfo credentials;
     private final TextBox name = new TextBox();
     private final TextBox surname = new TextBox();
     private final TextBox email = new TextBox();
     private final TextBox login = new TextBox();
     private final TextBox password = new TextBox().setMask('*');
-    private final Identity identity;
+    private final UserVto userVto;
+    private final User user;
 
-    public UserCredentialDrawer(final Screen screen, final CredentialInfo credentials) {
+    public UserCredentialDrawer(final Screen screen, final UserVto user) {
         this.screen = screen;
-        this.credentials = credentials;
+        this.userVto = user;
 
-        identity = credentials.getIdentity() != null ? credentials.getIdentity() : new IdentityBean();
+        this.user = user.getUser() != null ? user.getUser() : new UserBean();
     }
 
     public UserCredentialDrawer build() {
@@ -49,7 +49,7 @@ public final class UserCredentialDrawer {
 
     private Label setStyleLabel(final Label label, final String value) {
 
-        if (credentials.getIdentity() == null)
+        if (userVto.getUser() == null)
             return label;
 
         label.addStyle(SGR.BOLD);
@@ -62,28 +62,28 @@ public final class UserCredentialDrawer {
 
     private UserCredentialDrawer buildForm() {
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(CredentialFields.NAME), identity.getName()));
-        initTextValue(name, identity.getName());
+        panel.addComponent(setStyleLabel(new Label(CredentialFields.NAME), user.getName()));
+        initTextValue(name, user.getName());
         panel.addComponent(name);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(CredentialFields.SURNAME), identity.getSurname()));
-        initTextValue(surname, identity.getSurname());
+        panel.addComponent(setStyleLabel(new Label(CredentialFields.SURNAME), user.getSurname()));
+        initTextValue(surname, user.getSurname());
         panel.addComponent(surname);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(CredentialFields.EMAIL), identity.getEmail()));
-        initTextValue(email, identity.getEmail());
+        panel.addComponent(setStyleLabel(new Label(CredentialFields.EMAIL), user.getEmail()));
+        initTextValue(email, user.getEmail());
         panel.addComponent(email);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(CredentialFields.LOGIN), identity.getLogin()));
-        initTextValue(login, identity.getLogin());
+        panel.addComponent(setStyleLabel(new Label(CredentialFields.LOGIN), user.getLogin()));
+        initTextValue(login, user.getLogin());
         panel.addComponent(login);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(CredentialFields.PASSWORD), identity.getPassword()));
-        initTextValue(password, identity.getPassword());
+        panel.addComponent(setStyleLabel(new Label(CredentialFields.PASSWORD), user.getPassword()));
+        initTextValue(password, user.getPassword());
         panel.addComponent(password);
 
         emptyLine();
@@ -109,12 +109,12 @@ public final class UserCredentialDrawer {
                 GridLayout.Alignment.CENTER);
 
         panel.addComponent(new Button("Cancel", () -> {
-            credentials.setUser(true);
+            userVto.setUserExists(true);
             gui.removeWindow(window);
         }).setLayoutData(layoutData));
 
         panel.addComponent(new Button("Ok", () -> {
-            credentials.setIdentity(setIdentity());
+            userVto.setUser(setIdentity());
             gui.removeWindow(window);
         }).setLayoutData(layoutData));
     }
@@ -129,13 +129,13 @@ public final class UserCredentialDrawer {
     }
 
     // setters
-    private Identity setIdentity() {
-        identity.setName(name.getText().trim());
-        identity.setSurname(surname.getText().trim());
-        identity.setLogin(login.getText().trim());
-        identity.setEmail(email.getText().trim());
-        identity.setPassword(password.getText().trim());
+    private User setIdentity() {
+        user.setName(name.getText().trim());
+        user.setSurname(surname.getText().trim());
+        user.setLogin(login.getText().trim());
+        user.setEmail(email.getText().trim());
+        user.setPassword(password.getText().trim());
 
-        return identity;
+        return user;
     }
 }

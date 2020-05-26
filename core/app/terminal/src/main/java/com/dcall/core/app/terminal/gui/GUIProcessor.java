@@ -40,8 +40,6 @@ public final class GUIProcessor {
         KeyboardController.init(terminal, bus);
         CursorController.init(screen);
         DisplayController.init(ScreenController.metrics());
-
-        bus.initCredentials();
     }
 
     private static void prompt(final ScreenMetrics metrics) {

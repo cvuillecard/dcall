@@ -1,17 +1,17 @@
-package com.dcall.core.configuration.generic.entity.identity;
+package com.dcall.core.configuration.generic.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class IdentityBean implements Identity {
+public class UserBean implements User {
     private String name;
     private String surname;
     private String email;
     private String login;
     private String password;
 
-    public IdentityBean() {}
+    public UserBean() {}
 
-    public IdentityBean(@JsonProperty final String name, @JsonProperty final String surname, @JsonProperty final String email, @JsonProperty final String login, @JsonProperty final String password) {
+    public UserBean(@JsonProperty final String name, @JsonProperty final String surname, @JsonProperty final String email, @JsonProperty final String login, @JsonProperty final String password) {
         this.name = name;
         this.surname = surname;
         this.email = email;

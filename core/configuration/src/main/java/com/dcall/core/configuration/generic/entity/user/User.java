@@ -1,9 +1,9 @@
-package com.dcall.core.configuration.generic.entity.identity;
+package com.dcall.core.configuration.generic.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-public interface Identity {
+public interface User {
     // getters
     @JsonGetter("name")String getName();
     @JsonGetter("surname") String getSurname();

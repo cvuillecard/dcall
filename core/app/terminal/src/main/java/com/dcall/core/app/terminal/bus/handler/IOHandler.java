@@ -4,7 +4,7 @@ import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.vertx.constant.URIConfig;
-import com.dcall.core.configuration.app.user.credential.CredentialInfo;
+import com.dcall.core.configuration.generic.vto.UserVto;
 import com.dcall.core.configuration.app.service.message.MessageService;
 import com.dcall.core.configuration.app.service.message.MessageServiceImpl;
 import org.slf4j.Logger;
@@ -18,20 +18,7 @@ public final class IOHandler {
     private final InputHandler inputHandler = new InputHandler();
     private final OutputHandler outputHandler = new OutputHandler();
     private String lastInput = null;
-    private CredentialInfo credential = new CredentialInfo();
-
-    public void initCredentials() {
-        if (!credential.hasUser()) {
-            getCredential();
-        }
-    }
-
-    private boolean getCredential() {
-//        final byte[] datas = CredentialAction.HAS_ROOT.getBytes();
-//        sendInputMessage(datas, null);
-
-        return false;
-    }
+    private UserVto credential = new UserVto();
 
     public boolean handleInput() {
         lastInput = inputHandler.currentToString();
@@ -92,9 +79,9 @@ public final class IOHandler {
     public final OutputHandler output() { return this.outputHandler; }
     public final List<InputEntry<String>> entries(final boolean isInput) { return isInput ? input().entries() : output().entries(); }
 
-    public final CredentialInfo credentials() { return credential; }
+    public final UserVto credentials() { return credential; }
 
     public final boolean hasUser() {
-        return credential.hasUser();
+        return credential.userExists();
     }
 }
