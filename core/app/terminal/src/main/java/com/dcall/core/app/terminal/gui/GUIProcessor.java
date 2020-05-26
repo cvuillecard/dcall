@@ -1,6 +1,7 @@
 package com.dcall.core.app.terminal.gui;
 
 import com.dcall.core.app.terminal.bus.input.InputEntry;
+import com.dcall.core.app.terminal.gui.configuration.LoginOption;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.screen.CursorController;
 import com.dcall.core.app.terminal.gui.controller.keyboard.KeyboardController;
@@ -9,6 +10,8 @@ import com.dcall.core.app.terminal.bus.handler.IOHandler;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.service.credential.window.UserCredentialDrawer;
+import com.dcall.core.configuration.app.context.RuntimeContext;
+import com.dcall.core.configuration.app.service.user.UserService;
 import com.dcall.core.configuration.app.vertx.VertxApplication;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
@@ -22,16 +25,24 @@ import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGI
 
 public final class GUIProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(GUIProcessor.class);
+    private static volatile RuntimeContext runtimeContext;
+    private static UserService userService;
     private static final IOHandler bus = new IOHandler();
     private static Terminal terminal;
     private static Screen screen;
 
-    public static void start() {
-        GUIProcessor.init();
-        GUIProcessor.loop();
+    public static void start(final RuntimeContext runtimeContext) {
+        GUIProcessor.init(runtimeContext);
+        GUIProcessor.startLoop(LoginOption.LOGIN);
     }
 
-    private static void init() {
+    private static void initContext(final RuntimeContext runtimeContext) {
+        GUIProcessor.runtimeContext = runtimeContext;
+        userService = runtimeContext.serviceContext().serviceProvider().userServiceProvider().userService();
+    }
+
+    private static void init(final RuntimeContext runtimeContext) {
+        initContext(runtimeContext);
         ScreenController.init();
 
         terminal = ScreenController.getTerminal();
@@ -50,8 +61,8 @@ public final class GUIProcessor {
         DisplayController.displayPrompt(metrics);
     }
 
-    private static void loop() {
-        if (bus.hasUser()) {
+    private static void startLoop(final LoginOption loginOption) {
+        if (userService.hasIdentity(runtimeContext.userContext().getUser()) || userService.hasLogged(runtimeContext.userContext().getUser())) {
             try {
                 screen.setCursorPosition(null);
                 terminal.clearScreen();
@@ -61,14 +72,18 @@ public final class GUIProcessor {
                 LOG.error(e.getMessage());
             }
         } else
-            configureUser();
+            configureUser(loginOption);
     }
 
-    private static void configureUser() {
+    private static void configureUser(final LoginOption loginOption) {
         Vertx.currentContext().executeBlocking(
-                future -> future.complete(new UserCredentialDrawer(screen, bus.credentials()).build()),
+                future -> future.complete(new UserCredentialDrawer(screen, runtimeContext.userContext()).build(loginOption)),
                 handler -> {
-                    loop();
+                    final UserService service = runtimeContext.serviceContext().serviceProvider().userServiceProvider().userService();
+
+                    service.configureUserContext(runtimeContext.userContext());
+
+                    startLoop((LoginOption) handler.result());
                 }
         );
     }
