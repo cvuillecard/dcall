@@ -1,6 +1,6 @@
 package com.dcall.core.configuration.app.context.user;
 
-import com.dcall.core.configuration.generic.entity.system.Environ;
+import com.dcall.core.configuration.generic.entity.environ.Environ;
 import com.dcall.core.configuration.generic.entity.user.User;
 
 public class UserContext {

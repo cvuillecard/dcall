@@ -76,11 +76,6 @@ public final class FileUtils extends Platform {
 
         if (!dir.exists())
             dir.mkdirs();
-
-        if (!dir.isDirectory()) {
-            dir.delete();
-            createDirectory(path);
-        }
     }
 
     public void lockDelete(final String path) {

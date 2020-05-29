@@ -5,8 +5,8 @@ import com.dcall.core.configuration.app.constant.UserConstant;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.security.aes.AESProvider;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
-import com.dcall.core.configuration.generic.entity.system.Environ;
-import com.dcall.core.configuration.generic.entity.system.EnvironBean;
+import com.dcall.core.configuration.generic.entity.environ.Environ;
+import com.dcall.core.configuration.generic.entity.environ.EnvironBean;
 import com.dcall.core.configuration.generic.entity.user.User;
 import com.dcall.core.configuration.utils.FileUtils;
 import com.dcall.core.configuration.utils.ResourceUtils;
@@ -32,6 +32,7 @@ public class EnvironServiceImpl implements EnvironService {
     public Environ getOrCreateUserEnv(final User user) {
         final Environ<String> env = new EnvironBean();
         final Properties userProps = getOrCreateUserProps(user);
+
         final Iterator it = userProps.keySet().iterator();
 
         while (it.hasNext()) {
@@ -40,6 +41,9 @@ public class EnvironServiceImpl implements EnvironService {
         }
 
         return env;
+    }
+
+    public void checkWorkspace(final User user) {
     }
 
     private Properties getOrCreateUserProps(final User user) {

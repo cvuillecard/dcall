@@ -1,4 +1,4 @@
-package com.dcall.core.configuration.generic.entity.system;
+package com.dcall.core.configuration.generic.entity.environ;
 
 import com.dcall.core.configuration.generic.entity.Entity;
 

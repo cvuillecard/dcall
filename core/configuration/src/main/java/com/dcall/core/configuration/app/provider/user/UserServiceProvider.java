@@ -5,7 +5,6 @@ import com.dcall.core.configuration.app.service.environ.EnvironService;
 import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 import com.dcall.core.configuration.app.service.user.UserService;
 import com.dcall.core.configuration.app.service.user.UserServiceImpl;
-import com.dcall.core.configuration.generic.entity.system.Environ;
 
 public final class UserServiceProvider {
     private final EnvironService environService;
