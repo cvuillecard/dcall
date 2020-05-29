@@ -74,11 +74,11 @@ public final class HashFileServiceImpl implements HashFileService {
     }
 
     @Override
-    public String getHashPath(String parentPath, final String dirName, final String salt) {
+    public String getHashPath(String parentPath, final String fileName, final String salt) {
         String path = null;
 
-        if (dirName != null && !dirName.isEmpty()) {
-            for (final String member : dirName.split(File.separator)) {
+        if (fileName != null && !fileName.isEmpty()) {
+            for (final String member : fileName.split(File.separator)) {
                 path = getPath(parentPath, getFileHash(parentPath, member, salt));
                 parentPath = path;
             }

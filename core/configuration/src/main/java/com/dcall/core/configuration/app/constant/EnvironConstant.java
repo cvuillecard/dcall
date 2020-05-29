@@ -1,7 +1,15 @@
 package com.dcall.core.configuration.app.constant;
 
 public final class EnvironConstant {
-    public static final String DCALL_HOME = "DCALL_HOME";
-    public static final String LINUX_HOME_DCALL = "/var/lib/dcall/home";
-    public static final String WINDOWS_HOME_DCALL = "C:\\dcall\\home";
+    // Extern
+    public static final String RUNTIME_CONF = "extern.runtime.conf";
+
+    // User
+    public static final String USER_HOME = "USER_HOME";
+    public static final String USER_CONF = "USER_CONF";
+    public static final String USER_PROP = "USER_PROP";
+    public static final String USER_IDENTITY_PROP = "USER_IDENTITY_PROP";
+
+    public static final String USER_PROP_FILENAME = "env.properties";
+    public static String USER_IDENTITY_FILENAME = "identity.properties";
 }

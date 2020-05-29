@@ -1,6 +1,6 @@
 package com.dcall.core.app.terminal.gui.service.credential.window;
 
-import com.dcall.core.app.terminal.gui.configuration.LoginFields;
+import com.dcall.core.configuration.app.constant.UserConstant;
 import com.dcall.core.app.terminal.gui.configuration.LoginOption;
 import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.generic.entity.user.User;
@@ -29,6 +29,7 @@ public final class UserCredentialDrawer {
     private final TextBox email = new TextBox();
     private final TextBox login = new TextBox();
     private final TextBox password = new TextBox().setMask('*');
+    private final TextBox path = new TextBox();
     private final UserContext userContext;
     private User user;
 
@@ -75,29 +76,34 @@ public final class UserCredentialDrawer {
 
     private UserCredentialDrawer buildFormCreate() {
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(LoginFields.NAME), user.getName()));
+        panel.addComponent(setStyleLabel(new Label(UserConstant.NAME), user.getName()));
         initTextValue(name, user.getName());
         panel.addComponent(name);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(LoginFields.SURNAME), user.getSurname()));
+        panel.addComponent(setStyleLabel(new Label(UserConstant.SURNAME), user.getSurname()));
         initTextValue(surname, user.getSurname());
         panel.addComponent(surname);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(LoginFields.EMAIL), user.getEmail()));
+        panel.addComponent(setStyleLabel(new Label(UserConstant.EMAIL), user.getEmail()));
         initTextValue(email, user.getEmail());
         panel.addComponent(email);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(LoginFields.LOGIN), user.getLogin()));
+        panel.addComponent(setStyleLabel(new Label(UserConstant.LOGIN), user.getLogin()));
         initTextValue(login, user.getLogin());
         panel.addComponent(login);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(LoginFields.PASSWORD), user.getPassword()));
+        panel.addComponent(setStyleLabel(new Label(UserConstant.PASSWORD), user.getPassword()));
         initTextValue(password, user.getPassword());
         panel.addComponent(password);
+
+        emptyLine();
+        panel.addComponent(setStyleLabel(new Label(UserConstant.PATH), user.getPath()));
+        initTextValue(path, user.getPath());
+        panel.addComponent(path);
 
         emptyLine();
 
@@ -107,12 +113,12 @@ public final class UserCredentialDrawer {
 
     private UserCredentialDrawer buildFormLogin() {
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(LoginFields.EMAIL), user.getEmail()));
+        panel.addComponent(setStyleLabel(new Label(UserConstant.EMAIL), user.getEmail()));
         initTextValue(email, user.getEmail());
         panel.addComponent(email);
 
         emptyLine();
-        panel.addComponent(setStyleLabel(new Label(LoginFields.PASSWORD), user.getPassword()));
+        panel.addComponent(setStyleLabel(new Label(UserConstant.PASSWORD), user.getPassword()));
         initTextValue(password, user.getPassword());
         panel.addComponent(password);
 
@@ -181,12 +187,12 @@ public final class UserCredentialDrawer {
 
     // setters
     private User fillUser() {
-        user.setName(name.getText().trim());
-        user.setSurname(surname.getText().trim());
-        user.setLogin(login.getText().trim());
-        user.setEmail(email.getText().trim());
-        user.setPassword(password.getText().trim());
-
-        return user;
+        return user
+                .setName(name.getText().trim())
+                .setSurname(surname.getText().trim())
+                .setLogin(login.getText().trim())
+                .setEmail(email.getText().trim())
+                .setPassword(password.getText().trim())
+                .setPath(path.getText().trim());
     }
 }

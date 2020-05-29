@@ -11,6 +11,7 @@ import com.dcall.core.app.terminal.gui.controller.screen.ScreenMetrics;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.service.credential.window.UserCredentialDrawer;
 import com.dcall.core.configuration.app.context.RuntimeContext;
+import com.dcall.core.configuration.app.provider.ServiceProvider;
 import com.dcall.core.configuration.app.service.user.UserService;
 import com.dcall.core.configuration.app.vertx.VertxApplication;
 import com.googlecode.lanterna.screen.Screen;
@@ -26,6 +27,7 @@ import static com.dcall.core.app.terminal.gui.configuration.TermAttributes.MARGI
 public final class GUIProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(GUIProcessor.class);
     private static volatile RuntimeContext runtimeContext;
+    private static ServiceProvider services;
     private static UserService userService;
     private static final IOHandler bus = new IOHandler();
     private static Terminal terminal;
@@ -38,7 +40,8 @@ public final class GUIProcessor {
 
     private static void initContext(final RuntimeContext runtimeContext) {
         GUIProcessor.runtimeContext = runtimeContext;
-        userService = runtimeContext.serviceContext().serviceProvider().userServiceProvider().userService();
+        services = runtimeContext.serviceContext().serviceProvider();
+        userService = services.userServiceProvider().userService();
     }
 
     private static void init(final RuntimeContext runtimeContext) {
@@ -62,7 +65,7 @@ public final class GUIProcessor {
     }
 
     private static void startLoop(final LoginOption loginOption) {
-        if (userService.hasIdentity(runtimeContext.userContext().getUser()) || userService.hasLogged(runtimeContext.userContext().getUser())) {
+        if (userService.hasUser(runtimeContext.userContext().getUser())) {
             try {
                 screen.setCursorPosition(null);
                 terminal.clearScreen();
@@ -79,9 +82,8 @@ public final class GUIProcessor {
         Vertx.currentContext().executeBlocking(
                 future -> future.complete(new UserCredentialDrawer(screen, runtimeContext.userContext()).build(loginOption)),
                 handler -> {
-                    final UserService service = runtimeContext.serviceContext().serviceProvider().userServiceProvider().userService();
-
-                    service.configureUserContext(runtimeContext.userContext());
+                    if (userService.hasUser(runtimeContext.userContext().getUser()))
+                        runtimeContext.userContext().setEnviron(services.environService().getOrCreateUserEnv(runtimeContext.userContext().getUser()));
 
                     startLoop((LoginOption) handler.result());
                 }

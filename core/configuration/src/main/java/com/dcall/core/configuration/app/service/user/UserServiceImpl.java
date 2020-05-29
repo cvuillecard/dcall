@@ -1,14 +1,15 @@
 package com.dcall.core.configuration.app.service.user;
 
 import com.dcall.core.configuration.app.context.user.UserContext;
+import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.generic.entity.user.User;
 
 public class UserServiceImpl implements UserService {
-    @Override
-    public void configureUserContext(final UserContext userContext) {
+    private final HashServiceProvider hashServiceProvider;
 
-    }
+    public UserServiceImpl() { hashServiceProvider = new HashServiceProvider(); }
+    public UserServiceImpl(final HashServiceProvider hashServiceProvider) { this.hashServiceProvider = hashServiceProvider; }
 
     @Override
     public boolean hasIdentity(final User user) {
@@ -17,7 +18,8 @@ public class UserServiceImpl implements UserService {
                 && user.getSurname() != null && !user.getSurname().isEmpty()
                 && user.getEmail() != null && !user.getEmail().isEmpty()
                 && user.getLogin() != null && !user.getLogin().isEmpty()
-                && user.getPassword() != null && !user.getPassword().isEmpty();
+                && user.getPassword() != null && !user.getPassword().isEmpty()
+                && user.getPath() != null && !user.getPath().isEmpty();
 
         if (state)
             encodePassword(user);
@@ -35,6 +37,11 @@ public class UserServiceImpl implements UserService {
             encodePassword(user);
 
         return state;
+    }
+
+    @Override
+    public boolean hasUser(User user) {
+        return hasIdentity(user) || hasLogged(user);
     }
 
     @Override
