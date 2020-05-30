@@ -84,7 +84,7 @@ public final class GUIProcessor {
                 handler -> {
                     LoginOption option = (LoginOption) handler.result();
                     if (userService.hasUser(runtimeContext.userContext().getUser())) {
-                        if (option.equals(LoginOption.NEW_USER))
+                        if (option.equals(LoginOption.NEW_USER) && userService.hasIdentity(runtimeContext.userContext().getUser(), false))
                             runtimeContext.userContext().setEnviron(services.environService().createEnviron(runtimeContext.userContext().getUser()));
                         else if (!userService.hasConfiguration(runtimeContext.userContext().getUser()))
                             option = LoginOption.NEW_USER;

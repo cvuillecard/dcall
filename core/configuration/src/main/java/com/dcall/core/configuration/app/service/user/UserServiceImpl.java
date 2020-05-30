@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean hasIdentity(final User user) {
+    public boolean hasIdentity(final User user, final boolean encode) {
         boolean state = user != null
                 && user.getName() != null && !user.getName().isEmpty()
                 && user.getSurname() != null && !user.getSurname().isEmpty()
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
                 && user.getPassword() != null && !user.getPassword().isEmpty()
                 && user.getPath() != null && !user.getPath().isEmpty();
 
-        if (state)
+        if (state && encode)
             encodePassword(user);
 
         return state;
@@ -50,12 +50,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean hasUser(final User user) {
-        return hasIdentity(user) || hasLogged(user);
+        return hasIdentity(user, true) || hasLogged(user);
     }
 
     @Override
     public boolean hasConfiguration(final User user) {
-        final boolean hasConfiguration = !this.hasIdentity(user) && environService.hasConfiguration(user);
+        final boolean hasConfiguration = !this.hasIdentity(user, false) && environService.hasConfiguration(user);
 
         if (!hasConfiguration)
             user.reset();
