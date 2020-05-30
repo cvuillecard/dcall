@@ -7,5 +7,6 @@ public interface UserService {
     boolean hasIdentity(final User user);
     boolean hasLogged(final User user);
     boolean hasUser(final User user);
+    boolean hasConfiguration(final User user);
     void encodePassword(final User user);
 }

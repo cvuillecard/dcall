@@ -44,4 +44,16 @@ public class UserBean implements User<String> {
     @Override public User<String> setPassword(final String password) { this.password = password; return this; }
     @Override public User<String> setPath(final String path) { this.path = path; return this; }
 
+    // util
+    @Override public User<String> reset() {
+        this.id = null;
+        this.name = null;
+        this.surname = null;
+        this.email = null;
+        this.login = null;
+        this.password = null;
+        this.path = null;
+
+        return this;
+    }
 }

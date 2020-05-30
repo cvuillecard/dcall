@@ -11,12 +11,13 @@ public final class UserServiceProvider {
     private final UserService userService;
 
     public UserServiceProvider() {
-        userService = new UserServiceImpl();
-        environService = new EnvironServiceImpl();
+        this.userService = new UserServiceImpl();
+        this.environService = new EnvironServiceImpl();
     }
-    public UserServiceProvider(final HashServiceProvider hashServiceProvider) {
-        userService = new UserServiceImpl(hashServiceProvider);
-        environService = new EnvironServiceImpl(hashServiceProvider);
+
+    public UserServiceProvider(final EnvironService environService) {
+        this.userService = new UserServiceImpl(environService);
+        this.environService = environService;
     }
 
     public UserService userService() { return this.userService; }

@@ -26,6 +26,19 @@ public class CryptoAESBean implements CryptoAES<String> {
         }
     }
 
+    public CryptoAESBean(final String password, final String salt, final int encryptMode) {
+        try {
+            final SecretKey key = AESProvider.getSecretKey(password, salt.getBytes());
+
+            if (encryptMode == Cipher.ENCRYPT_MODE)
+                cipherIn = AESProvider.initCipher(Cipher.ENCRYPT_MODE, key);
+            else
+                cipherOut = AESProvider.initCipher(Cipher.DECRYPT_MODE, key);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
     // getters
     @Override public String getId() { return id; }
     @Override public Cipher getCipherIn() { return cipherIn; }

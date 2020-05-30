@@ -1,15 +1,24 @@
 package com.dcall.core.configuration.app.service.user;
 
-import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
+import com.dcall.core.configuration.app.service.environ.EnvironService;
+import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 import com.dcall.core.configuration.generic.entity.user.User;
 
 public class UserServiceImpl implements UserService {
     private final HashServiceProvider hashServiceProvider;
+    private final EnvironService environService;
 
-    public UserServiceImpl() { hashServiceProvider = new HashServiceProvider(); }
-    public UserServiceImpl(final HashServiceProvider hashServiceProvider) { this.hashServiceProvider = hashServiceProvider; }
+    public UserServiceImpl() {
+        this.hashServiceProvider = new HashServiceProvider();
+        this.environService = new EnvironServiceImpl(this.hashServiceProvider);
+    }
+
+    public UserServiceImpl(final EnvironService environService) {
+        this.hashServiceProvider = environService.getHashServiceProvider();
+        this.environService = environService;
+    }
 
     @Override
     public boolean hasIdentity(final User user) {
@@ -40,8 +49,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean hasUser(User user) {
+    public boolean hasUser(final User user) {
         return hasIdentity(user) || hasLogged(user);
+    }
+
+    @Override
+    public boolean hasConfiguration(final User user) {
+        final boolean hasConfiguration = !this.hasIdentity(user) && environService.hasConfiguration(user);
+
+        if (!hasConfiguration)
+            user.reset();
+
+        return hasConfiguration;
     }
 
     @Override

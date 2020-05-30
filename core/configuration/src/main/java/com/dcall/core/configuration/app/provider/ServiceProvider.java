@@ -7,8 +7,8 @@ import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 
 public final class ServiceProvider {
     private final HashServiceProvider hashServiceProvider = new HashServiceProvider();
-    private final UserServiceProvider userServiceProvider = new UserServiceProvider(hashServiceProvider);
     private final EnvironService environService = new EnvironServiceImpl(hashServiceProvider);
+    private final UserServiceProvider userServiceProvider = new UserServiceProvider(environService);
 
     public HashServiceProvider hashServiceProvider() { return hashServiceProvider; }
     public UserServiceProvider userServiceProvider() { return userServiceProvider; }

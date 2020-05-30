@@ -1,6 +1,8 @@
 package com.dcall.core.configuration.app.service.hash;
 
 import com.dcall.core.configuration.app.exception.TechnicalException;
+import com.dcall.core.configuration.generic.entity.user.User;
+import com.dcall.core.configuration.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.File;
@@ -16,7 +18,7 @@ public final class HashFileServiceImpl implements HashFileService {
     private String root = null;
     private String salt = null;
 
-    private String seed(String salt) {
+    public String seed(String salt) {
         return HashProvider.seedMd5(salt.getBytes());
     }
 
@@ -117,5 +119,4 @@ public final class HashFileServiceImpl implements HashFileService {
 
     @Override
     public HashFileService setSalt(final String salt) { this.salt = salt; return this; }
-
 }

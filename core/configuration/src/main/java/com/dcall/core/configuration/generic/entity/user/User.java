@@ -20,4 +20,7 @@ public interface User<ID> extends Entity<ID> {
     @JsonSetter("login") User<ID> setLogin(final String login);
     @JsonSetter("password") User<ID> setPassword(final String password);
     @JsonSetter("path") User<String> setPath(String path);
+
+    // util
+    User<ID> reset();
 }

@@ -41,4 +41,13 @@ public final class HashProvider {
     public static String signSha512(final String seed, String... keys) {
         return DigestUtils.sha512Hex(seed + File.separator + String.join("+", Arrays.asList(keys)));
     }
+
+    public static String createSalt512(final String seed, final String...keys) {
+        return HashProvider.signSha512(seed, keys);
+    }
+
+    public static String createSaltMD5(final String seed, final String...keys) {
+        return HashProvider.signMd5(seed, keys);
+    }
+
 }

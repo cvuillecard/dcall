@@ -82,11 +82,12 @@ public final class GUIProcessor {
         Vertx.currentContext().executeBlocking(
                 future -> future.complete(new UserCredentialDrawer(screen, runtimeContext.userContext()).build(loginOption)),
                 handler -> {
-                    final LoginOption option = (LoginOption) handler.result();
+                    LoginOption option = (LoginOption) handler.result();
                     if (userService.hasUser(runtimeContext.userContext().getUser())) {
-        //                        if (!userService.hasIdentity(runtimeContext.userContext().getUser()))
-        //                            services.environService().checkWorkspace();
-                        runtimeContext.userContext().setEnviron(services.environService().getOrCreateUserEnv(runtimeContext.userContext().getUser()));
+                        if (option.equals(LoginOption.NEW_USER))
+                            runtimeContext.userContext().setEnviron(services.environService().createEnviron(runtimeContext.userContext().getUser()));
+                        else if (!userService.hasConfiguration(runtimeContext.userContext().getUser()))
+                            option = LoginOption.NEW_USER;
                     }
 
                     startLoop(option);

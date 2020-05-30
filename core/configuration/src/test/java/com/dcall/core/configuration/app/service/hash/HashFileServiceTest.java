@@ -30,9 +30,14 @@ public class HashFileServiceTest extends Platform {
     @Test public void should_create_root_directory_createRootDirectory_createDirectory_exists() {
         final String hashSalt = HashProvider.seedMd5(salt.getBytes());
         final String root = service.createRootDirectory(pwd, salt);
+        final List<String> root2 = service.createDirectories(pwd, salt, "root");
+        final String rootHashPath = service.getHashPath(pwd, "root", HashProvider.seedMd5(salt.getBytes()));
         final String hash = service.getFileHash(pwd, "root", hashSalt);
 
         Assert.assertEquals(MD5_LENGTH, hash.length());
+        Assert.assertEquals(root, root2.get(0));
+        Assert.assertEquals(root, rootHashPath);
+        Assert.assertTrue(service.exists(pwd, HashProvider.seedMd5(salt.getBytes()), "root"));
 
         Assert.assertTrue(new File(root).exists());
 

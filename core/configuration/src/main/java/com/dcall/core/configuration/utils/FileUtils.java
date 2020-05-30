@@ -71,11 +71,13 @@ public final class FileUtils extends Platform {
         return (capacity == nread) ? buf : Arrays.copyOf(buf, nread);
     }
 
-    public void createDirectory(final String path) {
+    public String createDirectory(final String path) {
         final File dir = new File(path);
 
         if (!dir.exists())
             dir.mkdirs();
+
+        return path;
     }
 
     public void lockDelete(final String path) {
