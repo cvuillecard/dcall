@@ -12,8 +12,8 @@ public interface HashFileService {
 
     // utils
     String getPath(final String parentPath, final String hashFileName);
-    String getFileHash(String parentPath, final String fileName, final String salt);
-    String getHashPath(String parentPath, final String dirName, final String salt);
+    String getFileHash(String parentPath, final String salt, final String fileName);
+    String getHashPath(String parentPath, final String salt, final String dirName);
 
     Collection<String> list(final String dir);
     boolean exists(final String parentPath, final String salt, final String... relativePaths);

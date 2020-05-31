@@ -1,5 +1,6 @@
 package com.dcall.core.configuration.app.service.user;
 
+import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.service.environ.EnvironService;
@@ -54,11 +55,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean hasConfiguration(final User user) {
-        final boolean hasConfiguration = !this.hasIdentity(user, false) && environService.hasConfiguration(user);
+    public boolean hasConfiguration(final UserContext context) {
+        final boolean hasConfiguration = !this.hasIdentity(context.getUser(), false) && environService.hasConfiguration(context);
 
         if (!hasConfiguration)
-            user.reset();
+            context.getUser().reset();
+        else
+            environService.configureEnviron(context, false);
 
         return hasConfiguration;
     }

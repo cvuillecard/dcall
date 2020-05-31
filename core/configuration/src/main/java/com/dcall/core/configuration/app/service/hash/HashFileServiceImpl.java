@@ -40,7 +40,7 @@ public final class HashFileServiceImpl implements HashFileService {
 
             if (directories.length > 0) {
                 for (final String p : directories) {
-                        final String path = getHashPath(parentPath, p, hashSalt);
+                        final String path = getHashPath(parentPath, hashSalt, p);
                         final File dir = new File(path);
                         dir.mkdirs();
                         if (!dir.exists())
@@ -62,7 +62,7 @@ public final class HashFileServiceImpl implements HashFileService {
     }
 
     @Override
-    public String getFileHash(String parentPath, final String fileName, final String salt) {
+    public String getFileHash(String parentPath, final String salt, final String fileName) {
         String hash = null;
 
         if (fileName != null && !fileName.isEmpty()) {
@@ -76,12 +76,12 @@ public final class HashFileServiceImpl implements HashFileService {
     }
 
     @Override
-    public String getHashPath(String parentPath, final String fileName, final String salt) {
+    public String getHashPath(String parentPath, final String salt, final String fileName) {
         String path = null;
 
         if (fileName != null && !fileName.isEmpty()) {
             for (final String member : fileName.split(File.separator)) {
-                path = getPath(parentPath, getFileHash(parentPath, member, salt));
+                path = getPath(parentPath, getFileHash(parentPath, salt, member));
                 parentPath = path;
             }
         }
@@ -103,7 +103,7 @@ public final class HashFileServiceImpl implements HashFileService {
     public boolean exists(final String parentPath, final String salt, final String... relativePaths) {
         if (relativePaths.length > 0) {
             for (final String p : relativePaths) {
-                final String path = getHashPath(parentPath, p, salt);
+                final String path = getHashPath(parentPath, salt, p);
                 if (!new File(path).exists()) {
                     LOG.debug(parentPath + File.separator + p + " > " + path + " : doesn't exists");
                     return false;

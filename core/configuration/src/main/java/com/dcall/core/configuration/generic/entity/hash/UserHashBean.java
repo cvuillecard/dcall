@@ -1,6 +1,6 @@
 package com.dcall.core.configuration.generic.entity.hash;
 
-import com.dcall.core.configuration.app.constant.SaltConstant;
+import com.dcall.core.configuration.app.constant.SaltDef;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.generic.entity.Entity;
 import com.dcall.core.configuration.generic.entity.user.User;
@@ -13,15 +13,15 @@ public class UserHashBean implements UserHash<String> {
 
     public UserHashBean() {}
 
-    public UserHashBean(final String pwd, final User user) {
+    public UserHashBean(final String pwd, final User user, final SaltDef saltDef) {
         this.pwd = pwd;
-        this.setSalt(user);
+        this.setSalt(user, saltDef);
     }
 
-    public UserHashBean(final String id, final String pwd, final User user) {
+    public UserHashBean(final String id, final String pwd, final User user, final SaltDef saltDef) {
         this.id = id;
         this.pwd = pwd;
-        this.setSalt(user);
+        this.setSalt(user, saltDef);
     }
 
     // getter
@@ -45,8 +45,8 @@ public class UserHashBean implements UserHash<String> {
     }
 
     @Override
-    public UserHash<String> setSalt(final User user) {
-        this.salt = HashProvider.createSalt512(user.getEmail(), user.getPassword(), SaltConstant.SALT_USER);
+    public UserHash<String> setSalt(final User user, final SaltDef saltDef) {
+        this.salt = HashProvider.createSalt512(user.getEmail(), user.getPassword(), saltDef.getSalt());
         this.md5Salt = HashProvider.seedMd5(this.salt.getBytes());
 
         return this;

@@ -294,14 +294,13 @@ public final class KeyboardController {
     }
 
     public static void paste() {
-        final ScreenMetrics metrics = ScreenController.metrics();
         final InputEntry<String> entry = bus.input().current();
         final String content = bus.input().clipBoard().getContent();
 
         if (content != null) {
             bus.input().addStrToEntry(entry, content);
 
-            DisplayController.paste(entry, content.length(), metrics);
+            DisplayController.paste(entry, content.length(), ScreenController.metrics());
         }
     }
 

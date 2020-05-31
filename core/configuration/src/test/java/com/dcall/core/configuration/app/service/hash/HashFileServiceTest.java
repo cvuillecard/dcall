@@ -31,8 +31,8 @@ public class HashFileServiceTest extends Platform {
         final String hashSalt = HashProvider.seedMd5(salt.getBytes());
         final String root = service.createRootDirectory(pwd, salt);
         final List<String> root2 = service.createDirectories(pwd, salt, "root");
-        final String rootHashPath = service.getHashPath(pwd, "root", HashProvider.seedMd5(salt.getBytes()));
-        final String hash = service.getFileHash(pwd, "root", hashSalt);
+        final String rootHashPath = service.getHashPath(pwd, HashProvider.seedMd5(salt.getBytes()), "root");
+        final String hash = service.getFileHash(pwd, hashSalt, "root");
 
         Assert.assertEquals(MD5_LENGTH, hash.length());
         Assert.assertEquals(root, root2.get(0));
@@ -57,9 +57,9 @@ public class HashFileServiceTest extends Platform {
         final String pathTiti = "titi" + File.separator + "cert" + File.separator + "public";
         final String pathTata = "tata";
 
-        final String hashPathToto = service.getHashPath(root, pathToto, hashSalt);
-        final String hashPathTiti = service.getHashPath(root, pathTiti, hashSalt);
-        final String hashPathTata = service.getHashPath(root, pathTata, hashSalt);
+        final String hashPathToto = service.getHashPath(root, hashSalt, pathToto);
+        final String hashPathTiti = service.getHashPath(root, hashSalt, pathTiti);
+        final String hashPathTata = service.getHashPath(root, hashSalt, pathTata);
 
         final List<String> paths = service.createDirectories(root, salt, pathToto, pathTiti, pathTata);
 
@@ -67,7 +67,7 @@ public class HashFileServiceTest extends Platform {
         Assert.assertTrue(paths.contains(hashPathTiti));
         Assert.assertTrue(paths.contains(hashPathTata));
 
-        final String rootCert = service.getHashPath(root, "titi" + File.separator + "cert", hashSalt);
+        final String rootCert = service.getHashPath(root, hashSalt, "titi" + File.separator + "cert");
         Assert.assertTrue(service.exists(root, hashSalt, "toto", pathToto, "titi", pathTiti, "tata"));
         Assert.assertTrue(service.exists(rootCert, hashSalt, "public"));
 
