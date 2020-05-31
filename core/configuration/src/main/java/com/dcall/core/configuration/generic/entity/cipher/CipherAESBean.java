@@ -1,4 +1,4 @@
-package com.dcall.core.configuration.generic.entity.crypto;
+package com.dcall.core.configuration.generic.entity.cipher;
 
 import com.dcall.core.configuration.app.security.aes.AESProvider;
 import com.dcall.core.configuration.generic.entity.Entity;
@@ -8,15 +8,15 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
-public class CryptoAESBean implements CryptoAES<String> {
-    private static final Logger LOG = LoggerFactory.getLogger(CryptoAESBean.class);
+public class CipherAESBean implements CipherAES<String> {
+    private static final Logger LOG = LoggerFactory.getLogger(CipherAESBean.class);
 
     private String id;
     private Cipher cipherIn;
     private Cipher cipherOut;
 
-    public CryptoAESBean() {}
-    public CryptoAESBean(final String password, final String salt) {
+    public CipherAESBean() {}
+    public CipherAESBean(final String password, final String salt) {
         try {
             final SecretKey key = AESProvider.getSecretKey(password, salt.getBytes());
             cipherIn = AESProvider.initCipher(Cipher.ENCRYPT_MODE, key);
@@ -26,7 +26,7 @@ public class CryptoAESBean implements CryptoAES<String> {
         }
     }
 
-    public CryptoAESBean(final String password, final String salt, final int encryptMode) {
+    public CipherAESBean(final String password, final String salt, final int encryptMode) {
         try {
             final SecretKey key = AESProvider.getSecretKey(password, salt.getBytes());
 

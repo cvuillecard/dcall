@@ -115,7 +115,7 @@ public class RSAProviderTest {
         final RSAProvider.KeyStoreType storeType = RSAProvider.KeyStoreType.PKCS12;
         final String keyStoreFullPath = "./src/test/resources/keystore.p12";
         final String domainName = "Crea Technologie";
-        final int validity = 365;
+        final Long validity = 365L;
         final String aliasKey = "certificate_key";
         final String storePass = "123456";
         final String keyPass = "654321";

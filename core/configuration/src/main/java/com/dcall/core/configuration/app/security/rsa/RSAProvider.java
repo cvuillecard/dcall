@@ -39,7 +39,7 @@ public final class RSAProvider {
      *
      * See also https://www.pixelstech.net/article/1408345768-Different-types-of-keystore-in-Java----Overview
      */
-    enum KeyStoreType { JKS, JCEKS, PKCS12, PKCS11, DKS }
+    public enum KeyStoreType { JKS, JCEKS, PKCS12, PKCS11, DKS }
 
     public static KeyPair generateKeyPair() throws Exception {
         KeyPairGenerator generator = KeyPairGenerator.getInstance(_ALGORITHM);
@@ -49,7 +49,7 @@ public final class RSAProvider {
         return pair;
     }
 
-    public static X509Certificate generateX509Certificat(final String domainName, final KeyPair keyPair, final int validity, final String sigAlgName) throws GeneralSecurityException, IOException {
+    public static X509Certificate generateX509Certificat(final String domainName, final KeyPair keyPair, final Long validity, final String sigAlgName) throws GeneralSecurityException, IOException {
         final PrivateKey privateKey = keyPair.getPrivate();
         final X509CertInfo info = new X509CertInfo();
         final Date from = new Date();
@@ -82,7 +82,7 @@ public final class RSAProvider {
     }
 
     public static void createKeyStore(final KeyStoreType storeType, final String keyStoreFullPath, final String domainName, final KeyPair keyPair,
-                                     final int validity, final String alias, final String storePwd, final String keyPwd) throws Exception {
+                                     final Long validity, final String alias, final String storePwd, final String keyPwd) throws Exception {
         final File keystore = new File(keyStoreFullPath);
         final int MIN_PKCS12_PWD_LENGTH = 6;
 
