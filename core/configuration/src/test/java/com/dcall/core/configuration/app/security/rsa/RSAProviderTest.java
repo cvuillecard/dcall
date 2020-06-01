@@ -138,7 +138,7 @@ public class RSAProviderTest {
 
         should_create_keystore_createKeyStore(); // create a keyStore with RSA certificate keyPair
 
-        final KeyPair keyPairLoaded = RSAProvider.getKeyPairFromKeyStore(keyStoreFullPath, storeType, aliasKey, storePass, keyPass);
+        final KeyPair keyPairLoaded = RSAProvider.getKeyPairFromFileKeyStore(keyStoreFullPath, storeType, aliasKey, storePass, keyPass);
 
         Assert.assertEquals(RSAProvider.encodeKey(_keyPair, RSAProvider.KeyType.PUBLIC), RSAProvider.encodeKey(keyPairLoaded, RSAProvider.KeyType.PUBLIC));
         Assert.assertEquals(RSAProvider.encodeKey(_keyPair, RSAProvider.KeyType.PRIVATE), RSAProvider.encodeKey(keyPairLoaded, RSAProvider.KeyType.PRIVATE));

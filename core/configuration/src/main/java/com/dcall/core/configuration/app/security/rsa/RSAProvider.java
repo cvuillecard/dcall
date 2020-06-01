@@ -4,13 +4,11 @@ import sun.security.x509.*;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.file.NoSuchFileException;
 import java.security.*;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -82,16 +80,16 @@ public final class RSAProvider {
     }
 
     public static void createKeyStore(final KeyStoreType storeType, final String keyStoreFullPath, final String domainName, final KeyPair keyPair,
-                                     final Long validity, final String alias, final String storePwd, final String keyPwd) throws Exception {
+                                     final Long validity, final String alias, final String storePass, final String keyPass) throws Exception {
         final File keystore = new File(keyStoreFullPath);
         final int MIN_PKCS12_PWD_LENGTH = 6;
 
         if (keystore.exists())
             keystore.delete();
 
-        if (storePwd.length() < MIN_PKCS12_PWD_LENGTH)
+        if (storePass.length() < MIN_PKCS12_PWD_LENGTH)
             throw new BadPaddingException(RSAProvider.class.getName() + " : Failed to create KeyStore -storepass <pwd> requires a padding of 6 characters at least.");
-        if (keyPwd.length() < MIN_PKCS12_PWD_LENGTH)
+        if (keyPass.length() < MIN_PKCS12_PWD_LENGTH)
             throw new BadPaddingException(RSAProvider.class.getName() + " : Failed to create KeyStore -keypass <pwd> requires a padding of 6 characters at least.");
 
         final FileOutputStream fos = new FileOutputStream(keyStoreFullPath);
@@ -99,9 +97,9 @@ public final class RSAProvider {
 
         KeyStore keyStore = KeyStore.getInstance(storeType == null ? KeyStoreType.PKCS12.name() : storeType.name());
         keyStore.load(null, null);
-        keyStore.setKeyEntry(alias, keyPair.getPrivate(), keyPwd.toCharArray(), chain);
+        keyStore.setKeyEntry(alias, keyPair.getPrivate(), keyPass.toCharArray(), chain);
 
-        keyStore.store(fos, storePwd.toCharArray());
+        keyStore.store(fos, storePass.toCharArray());
 
         fos.close();
     }
@@ -115,12 +113,19 @@ public final class RSAProvider {
         throw new NullPointerException("publicKeyToString failed to encode to string " + keyType.name() + " key.");
     }
 
-    public static KeyPair getKeyPairFromKeyStore(final String keyStoreFullPath, final RSAProvider.KeyStoreType storeType, final String alias, final String storePass, final String keyPass) throws Exception {
+    public static KeyPair getKeyPairFromFileKeyStore(final String keyStoreFullPath, final RSAProvider.KeyStoreType storeType, final String alias, final String storePass, final String keyPass) throws Exception {
         if (!new File(keyStoreFullPath).exists())
-            throw new NoSuchFileException(RSAProvider.class.getName() + " : getKeyPairFromKeyStore() -> keystore with path " + keyStoreFullPath + "doesn't fileExists. Please check the path or rights.");
+            throw new NoSuchFileException(RSAProvider.class.getName() + " : getKeyPairFromFileKeyStore() -> keystore with path " + keyStoreFullPath + "doesn't fileExists. Please check the path or rights.");
+
+        return getKeyPairFromInputStreamKeyStore(new FileInputStream(keyStoreFullPath), storeType, alias, storePass, keyPass);
+    }
+
+    public static KeyPair getKeyPairFromInputStreamKeyStore(final InputStream inputStream, final KeyStoreType storeType, final String alias, final String storePass, final String keyPass) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableEntryException {
+        if (inputStream == null)
+            throw new NullPointerException("cannot create KeyPair : inputStream is null");
 
         KeyStore keyStore = KeyStore.getInstance(storeType == null ? KeyStoreType.PKCS12.name() : storeType.name());
-        keyStore.load(new FileInputStream(keyStoreFullPath), storePass.toCharArray());   //Keystore password
+        keyStore.load(inputStream, storePass.toCharArray());   //Keystore password
         KeyStore.PasswordProtection keyPassword = new KeyStore.PasswordProtection(keyPass.toCharArray());
 
         final KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(alias, keyPassword);

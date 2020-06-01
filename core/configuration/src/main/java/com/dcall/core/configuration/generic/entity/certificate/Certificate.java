@@ -1,7 +1,8 @@
 package com.dcall.core.configuration.generic.entity.certificate;
 
-import com.dcall.core.configuration.generic.entity.Entity;
+import java.security.KeyPair;
 
-public interface Certificate<ID> extends Entity<ID> {
-
+public interface Certificate {
+    KeyPair getKeyPair();
+    Certificate setKeyPair(final KeyPair keyPair);
 }

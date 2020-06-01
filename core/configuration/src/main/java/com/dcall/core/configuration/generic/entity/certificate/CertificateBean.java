@@ -1,13 +1,27 @@
 package com.dcall.core.configuration.generic.entity.certificate;
 
-import com.dcall.core.configuration.generic.entity.Entity;
+import com.dcall.core.configuration.generic.entity.cipher.AbstractCipherResource;
+import com.dcall.core.configuration.generic.entity.cipher.CipherAES;
 
-public class CertificateBean implements Certificate<String> {
-    private String id;
+import java.security.KeyPair;
 
-    @Override
-    public String getId() { return this.id; }
+public class CertificateBean extends AbstractCipherResource<String> implements Certificate {
+    private KeyPair keyPair;
 
-    @Override
-    public Entity<String> setId(final String id) { this.id = id; return this; }
+    public CertificateBean() { super(); }
+
+    public CertificateBean(final String path, final CipherAES<String> cipherAES) { super(path, cipherAES); }
+
+    public CertificateBean(final String path, final CipherAES<String> cipherAES, final KeyPair keyPair) {
+        super(path, cipherAES);
+        this.keyPair = keyPair;
+    }
+
+    public CertificateBean(final String id, final String path, final CipherAES<String> cipherAES, final KeyPair keyPair) {
+        super(id, path, cipherAES);
+        this.keyPair = keyPair;
+    }
+
+    @Override public KeyPair getKeyPair() { return this.keyPair; }
+    @Override public Certificate setKeyPair(KeyPair keyPair) { this.keyPair = keyPair; return this; }
 }

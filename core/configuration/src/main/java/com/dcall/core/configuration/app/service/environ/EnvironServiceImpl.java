@@ -2,26 +2,24 @@ package com.dcall.core.configuration.app.service.environ;
 
 import com.dcall.core.configuration.app.constant.EnvironConstant;
 import com.dcall.core.configuration.app.constant.SaltDef;
-import com.dcall.core.configuration.app.constant.UserConstant;
 import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.security.aes.AESProvider;
 import com.dcall.core.configuration.app.service.hash.HashFileService;
+import com.dcall.core.configuration.generic.entity.certificate.Certificate;
+import com.dcall.core.configuration.generic.entity.cipher.AbstractCipherResource;
 import com.dcall.core.configuration.generic.entity.cipher.CipherAES;
 import com.dcall.core.configuration.generic.entity.environ.Environ;
 import com.dcall.core.configuration.generic.entity.environ.EnvironBean;
 import com.dcall.core.configuration.generic.entity.hash.UserHash;
-import com.dcall.core.configuration.generic.entity.user.User;
 import com.dcall.core.configuration.utils.FileUtils;
 import com.dcall.core.configuration.utils.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.crypto.Cipher;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 public class EnvironServiceImpl implements EnvironService {
@@ -74,19 +72,23 @@ public class EnvironServiceImpl implements EnvironService {
         try {
             final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherResource(userHash.getSalt(), EnvironConstant.USER_PROP_FILENAME, userPropsPath, null);
 
-            if (userPropFile.exists())
+            if (userPropFile.exists()) {
                 userProps.load(new ByteArrayInputStream(AESProvider.decryptFileBytes(Paths.get(userPropsPath), cipher.getCipherOut())));
+                context.setCertificate(hashServiceProvider.certificateService().getUserCertificate(context, userProps.getProperty(EnvironConstant.USER_CERT), userHash.getSalt()));
+            }
             else {
                 FileUtils.getInstance().createDirectory(context.getUser().getPath());
                 final String userHome = hashService.createDirectories(context.getUser().getPath(), userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_HOME)).get(0);
                 final String userCert = hashService.createDirectories(userHome, userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_CERT)).get(0);
                 final String identityPath = hashServiceProvider.identityService().createUserIdentity(context.getUser(), userHome, userHash.getSalt());
-                final String certPath = hashServiceProvider.certificateService().createUserCertificate(context, userCert, userHash.getSalt());
+                final Certificate certificate = hashServiceProvider.certificateService().createUserCertificate(context, userCert, userHash.getSalt());
+
+                context.setCertificate(hashServiceProvider.certificateService().getUserCertificate(context, certificate, userHash.getSalt()));
 
                 userProps.setProperty(EnvironConstant.USER_HOME, userHome);
                 userProps.setProperty(EnvironConstant.USER_CONF, userPwd);
                 userProps.setProperty(EnvironConstant.USER_IDENTITY_PROP, identityPath);
-                userProps.setProperty(EnvironConstant.USER_CERT, certPath);
+                userProps.setProperty(EnvironConstant.USER_CERT, ((AbstractCipherResource<String>)certificate).getPath());
 
                 userProps.store(new FileWriter(userPropsPath), context.getUser().getEmail() + " - env properties");
                 AESProvider.encryptFile(userPropsPath, userPropsPath, cipher.getCipherIn());
