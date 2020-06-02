@@ -39,7 +39,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public Certificate createUserCertificate(final UserContext context, final String path, final String salt) {
         try {
-            final String certPath = hashServiceProvider.hashFileService().getHashPath(path, hashServiceProvider.hashFileService().seed(salt), EnvironConstant.USER_KEYSTORE_FILENAME);
+            final String certPath = hashServiceProvider.hashFileService().getHashPath(path, context.getUserHash().getMd5Salt(), EnvironConstant.USER_KEYSTORE_FILENAME);
 
             if (!new File(certPath).exists()) {
                 final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherResource(salt, EnvironConstant.USER_KEYSTORE_FILENAME, certPath, null);
@@ -55,7 +55,12 @@ public class CertificateServiceImpl implements CertificateService {
                         context.getUserHash().saltResource(CertificateConstant.DEFAULT_KEY_PASS));
 
                 AESProvider.encryptFile(certPath, certPath, cipher.getCipherIn());
+
                 return new CertificateBean(certPath, cipher);
+            }
+            else {
+                final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherResource(salt, EnvironConstant.USER_KEYSTORE_FILENAME, certPath, Cipher.DECRYPT_MODE);
+                return getUserCertificate(context, new CertificateBean(certPath, cipher));
             }
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -69,6 +74,7 @@ public class CertificateServiceImpl implements CertificateService {
         try {
             if (new File(path).exists()) {
                 final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherResource(salt, EnvironConstant.USER_KEYSTORE_FILENAME, path, Cipher.DECRYPT_MODE);
+
                 return new CertificateBean(path, cipher, loadUserKeyPair(context, path, cipher));
             }
         }
@@ -80,7 +86,7 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public Certificate getUserCertificate(final UserContext context, final Certificate certificate, final String salt) {
+    public Certificate getUserCertificate(final UserContext context, final Certificate certificate) {
         final AbstractCipherResource<String> cert = (AbstractCipherResource<String>) certificate;
         try {
             if (new File(cert.getPath()).exists())

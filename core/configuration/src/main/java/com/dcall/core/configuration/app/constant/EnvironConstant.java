@@ -7,6 +7,7 @@ public final class EnvironConstant {
     // User
     public static final String USER_HOME = "USER_HOME";
     public static final String USER_CONF = "USER_CONF";
+    public static String USER_WORKSPACE = "USER_WORKSPACE";
     public static final String USER_PROP = "USER_PROP";
     public static final String USER_CERT = "USER_CERT";
     public static final String USER_IDENTITY_PROP = "USER_IDENTITY_PROP";
