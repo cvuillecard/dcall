@@ -30,6 +30,7 @@ public class TermAttributes {
     public static final TextColor HEADER_FOREGROUND = new TextColor.RGB(0, 0, 0); // BLACK
     public static final SGR[] HEADER_STYLE = new SGR[] { SGR.BOLD };
     public static final String HEADER_TITLE = "DCall (More you do, more it works..)";
+    public static final String USER_CREATE_WAIT = "PLEASE WAIT A MOMENT FOR USER CREATION...";
 
     // PROMPT
     public static final TextColor PROMPT_BACKGROUND = TextColor.ANSI.BLACK;

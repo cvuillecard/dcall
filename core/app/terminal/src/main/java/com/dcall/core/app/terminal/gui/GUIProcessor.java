@@ -84,8 +84,10 @@ public final class GUIProcessor {
                 handler -> {
                     LoginOption option = (LoginOption) handler.result();
                     if (userService.hasUser(runtimeContext.userContext().getUser())) {
-                        if (option.equals(LoginOption.NEW_USER) && userService.hasIdentity(runtimeContext.userContext().getUser(), false))
+                        if (option.equals(LoginOption.NEW_USER) && userService.hasIdentity(runtimeContext.userContext().getUser(), false)) {
+                            DisplayController.printWaiting(ScreenController.metrics());
                             services.environService().configureEnviron(runtimeContext.userContext(), true);
+                        }
                         else if (!userService.hasConfiguration(runtimeContext.userContext()))
                             option = LoginOption.NEW_USER;
                     }

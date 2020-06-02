@@ -311,4 +311,11 @@ public final class DisplayController {
         ScrollService.scrollDown(bus, metrics, scrollMetrics, scrollPadding);
     }
 
+    public static void printWaiting(final ScreenMetrics scrollMetrics) {
+        final int startX = (scrollMetrics.width / 2) - (TermAttributes.HEADER_TITLE.length() / 2);
+        final int startY = scrollMetrics.height / 3;
+
+        TextDrawerService.drawInputString(startX, startY, TermAttributes.USER_CREATE_WAIT);
+        ScreenController.refresh();
+    }
 }
