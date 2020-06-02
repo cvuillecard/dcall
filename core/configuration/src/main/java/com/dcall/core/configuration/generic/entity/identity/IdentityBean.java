@@ -33,15 +33,30 @@ public class IdentityBean extends AbstractCipherResource<String> implements Iden
     // setter
     @Override public Identity setUser(final User user) {
         this.user = user;
-        this.setProperties(new Properties());
+        this.properties = new Properties();
 
-        this.properties.setProperty(UserConstant.NAME, user.getName());
-        this.properties.setProperty(UserConstant.SURNAME, user.getSurname());
-        this.properties.setProperty(UserConstant.EMAIL, user.getEmail());
-        this.properties.setProperty(UserConstant.LOGIN, user.getLogin());
-        this.properties.setProperty(UserConstant.PATH, user.getPath());
+        if (this.user.getName() != null)
+            this.properties.setProperty(UserConstant.NAME, this.user.getName());
+        if (this.user.getSurname() != null)
+            this.properties.setProperty(UserConstant.SURNAME, this.user.getSurname());
+        if (this.user.getEmail() != null)
+            this.properties.setProperty(UserConstant.EMAIL, this.user.getEmail());
+        if (this.user.getLogin() != null)
+            this.properties.setProperty(UserConstant.LOGIN, this.user.getLogin());
+        if (this.user.getPath() != null)
+            this.properties.setProperty(UserConstant.PATH, this.user.getPath());
 
         return this;
     }
-    @Override public Identity setProperties(final Properties properties) { this.properties = properties; return this; }
+    @Override public Identity setProperties(final Properties properties) {
+        this.properties = properties;
+
+        user.setName(this.properties.getProperty(UserConstant.NAME));
+        user.setSurname(this.properties.getProperty(UserConstant.SURNAME));
+        user.setEmail(this.properties.getProperty(UserConstant.EMAIL));
+        user.setLogin(this.properties.getProperty(UserConstant.LOGIN));
+        user.setPath(this.properties.getProperty(UserConstant.PATH));
+
+        return this;
+    }
 }

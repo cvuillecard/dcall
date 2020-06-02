@@ -1,7 +1,7 @@
 package com.dcall.core.app.terminal.gui.service.credential.window;
 
 import com.dcall.core.configuration.app.constant.UserConstant;
-import com.dcall.core.app.terminal.gui.configuration.LoginOption;
+import com.dcall.core.configuration.app.constant.LoginOption;
 import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.generic.entity.user.User;
 import com.dcall.core.configuration.generic.entity.user.UserBean;

@@ -1,7 +1,6 @@
 package com.dcall.core.configuration.app.service.identity;
 
 import com.dcall.core.configuration.app.constant.EnvironConstant;
-import com.dcall.core.configuration.app.constant.UserConstant;
 import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.security.aes.AESProvider;
@@ -9,11 +8,9 @@ import com.dcall.core.configuration.generic.entity.cipher.AbstractCipherResource
 import com.dcall.core.configuration.generic.entity.cipher.CipherAES;
 import com.dcall.core.configuration.generic.entity.identity.Identity;
 import com.dcall.core.configuration.generic.entity.identity.IdentityBean;
-import com.dcall.core.configuration.generic.entity.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.crypto.Cipher;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -44,7 +41,7 @@ public class IdentityServiceImpl implements IdentityService {
                 return identity;
             }
             else
-                return getUserIdentity(identity);
+                return getUserIdentity(context, identity);
 
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -54,7 +51,7 @@ public class IdentityServiceImpl implements IdentityService {
     }
 
     @Override
-    public Identity getUserIdentity(final Identity identity) {
+    public Identity getUserIdentity(final UserContext context, final Identity identity) {
         try {
             final Properties props = new Properties();
             final AbstractCipherResource<String> cipherResource = (AbstractCipherResource<String>) identity;

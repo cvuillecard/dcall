@@ -1,5 +1,6 @@
 package com.dcall.core.configuration.app.service.user;
 
+import com.dcall.core.configuration.app.constant.LoginOption;
 import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
@@ -22,57 +23,56 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean hasIdentity(final User user, final boolean encode) {
-        boolean state = user != null
+    public boolean hasIdentity(final User user) {
+        return user != null
                 && user.getName() != null && !user.getName().isEmpty()
                 && user.getSurname() != null && !user.getSurname().isEmpty()
                 && user.getEmail() != null && !user.getEmail().isEmpty()
                 && user.getLogin() != null && !user.getLogin().isEmpty()
                 && user.getPassword() != null && !user.getPassword().isEmpty()
                 && user.getPath() != null && !user.getPath().isEmpty();
-
-        if (state && encode)
-            encodePassword(user);
-
-        return state;
     }
 
     @Override
     public boolean hasLogged(final User user) {
-        boolean state = user != null
+        return user != null
                 && user.getEmail() != null && !user.getEmail().isEmpty()
                 && user.getPassword() != null && !user.getPassword().isEmpty();
-
-        if (state)
-            encodePassword(user);
-
-        return state;
     }
 
     @Override
     public boolean hasUser(final User user) {
-        return hasIdentity(user, true) || hasLogged(user);
+        return hasIdentity(user) || hasLogged(user);
+    }
+
+    @Override
+    public boolean isValidUser(final User user, final LoginOption loginOption) {
+        return
+                (loginOption.equals(LoginOption.NEW_USER) && hasIdentity(user))
+                        ||
+                (loginOption.equals(LoginOption.LOGIN) && hasLogged(user));
     }
 
     @Override
     public boolean hasConfiguration(final UserContext context) {
-        final boolean hasConfiguration = !this.hasIdentity(context.getUser(), false) && environService.hasConfiguration(context);
+        final boolean hasConfiguration = !this.hasIdentity(encodePassword(context.getUser())) && environService.hasConfiguration(context);
 
         if (!hasConfiguration)
             context.getUser().reset();
-        else
+        else {
             environService.configureEnviron(context, false);
+        }
 
         return hasConfiguration;
     }
 
     @Override
-    public void encodePassword(final User user) {
-        user.setPassword(
+    public User encodePassword(final User user) {
+        return hasLogged(user) ? user.setPassword(
                 HashProvider.signSha512(
                         HashProvider.seedSha512(user.getEmail().getBytes()),
                         HashProvider.seedSha512(user.getPassword().getBytes())
                 )
-        );
+        ) : user;
     }
 }

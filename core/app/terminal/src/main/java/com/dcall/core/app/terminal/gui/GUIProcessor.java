@@ -1,7 +1,7 @@
 package com.dcall.core.app.terminal.gui;
 
 import com.dcall.core.app.terminal.bus.input.InputEntry;
-import com.dcall.core.app.terminal.gui.configuration.LoginOption;
+import com.dcall.core.configuration.app.constant.LoginOption;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.screen.CursorController;
 import com.dcall.core.app.terminal.gui.controller.keyboard.KeyboardController;
@@ -65,7 +65,7 @@ public final class GUIProcessor {
     }
 
     private static void startLoop(final LoginOption loginOption) {
-        if (userService.hasUser(runtimeContext.userContext().getUser())) {
+        if (userService.isValidUser(runtimeContext.userContext().getUser(), loginOption)) {
             try {
                 screen.setCursorPosition(null);
                 terminal.clearScreen();
@@ -84,11 +84,12 @@ public final class GUIProcessor {
                 handler -> {
                     LoginOption option = (LoginOption) handler.result();
                     if (userService.hasUser(runtimeContext.userContext().getUser())) {
-                        if (option.equals(LoginOption.NEW_USER) && userService.hasIdentity(runtimeContext.userContext().getUser(), false)) {
-                            DisplayController.printWaiting(ScreenController.metrics());
+                        if (option.equals(LoginOption.NEW_USER) && userService.hasIdentity(runtimeContext.userContext().getUser())) {
+                            DisplayController.printWaiting(ScreenController.metrics(), TermAttributes.USER_CREATE_WAIT);
+                            userService.encodePassword(runtimeContext.userContext().getUser());
                             services.environService().configureEnviron(runtimeContext.userContext(), true);
                         }
-                        else if (!userService.hasConfiguration(runtimeContext.userContext()))
+                        else if (option.equals(LoginOption.LOGIN) && !userService.hasConfiguration(runtimeContext.userContext()))
                             option = LoginOption.NEW_USER;
                     }
 

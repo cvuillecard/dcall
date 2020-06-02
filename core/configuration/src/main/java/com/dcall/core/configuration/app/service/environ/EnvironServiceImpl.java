@@ -84,7 +84,7 @@ public class EnvironServiceImpl implements EnvironService {
                 final Identity identity = hashServiceProvider.identityService().createUserIdentity(context, userHome, userHash.getSalt());
                 final Certificate certificate = hashServiceProvider.certificateService().createUserCertificate(context, userCert, userHash.getSalt());
 
-                context.setIdentity(hashServiceProvider.identityService().getUserIdentity(identity))
+                context.setIdentity(hashServiceProvider.identityService().getUserIdentity(context, identity))
                         .setCertificate(hashServiceProvider.certificateService().getUserCertificate(context, certificate));
 
                 userProps.setProperty(EnvironConstant.USER_HOME, userHome);
