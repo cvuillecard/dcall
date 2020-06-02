@@ -10,5 +10,6 @@ public interface UserService {
     boolean hasUser(final User user);
     boolean isValidUser(final User user, final LoginOption loginOption);
     boolean hasConfiguration(final UserContext context);
+    void initRepository(final UserContext context);
     User encodePassword(final User user);
 }

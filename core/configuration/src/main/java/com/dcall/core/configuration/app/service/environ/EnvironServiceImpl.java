@@ -129,9 +129,8 @@ public class EnvironServiceImpl implements EnvironService {
         return null;
     }
 
-    private String getConfigDirectory() {
-        return ResourceUtils.localProperties().getProperty(EnvironConstant.RUNTIME_CONF);
-    }
+    @Override
+    public String getConfigDirectory() { return ResourceUtils.localProperties().getProperty(EnvironConstant.RUNTIME_CONF); }
 
     private UserHash<String> initHash(final UserContext context) {
         return context.setUserHash(hashServiceProvider.hashService().createUserHash(context.getUser(), getConfigDirectory(), SaltDef.SALT_USER)).getUserHash();

@@ -79,30 +79,36 @@
             <artifactId>vertx-hazelcast</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-web</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-web</artifactId>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-service-discovery</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-service-discovery</artifactId>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-auth-common</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-auth-common</artifactId>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-auth-jwt</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-auth-jwt</artifactId>-->
+        <!--</dependency>-->
 
         <!--TERMINAL-->
         <dependency>
             <groupId>com.googlecode.lanterna</groupId>
             <artifactId>lanterna</artifactId>
+        </dependency>
+
+        <!--GIT-->
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
         </dependency>
 
         <!--LOGGING-->

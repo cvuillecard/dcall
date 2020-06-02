@@ -38,6 +38,7 @@
         <spring.data.version>2.2.5.RELEASE</spring.data.version>
         <spring.data.neo4j.version>5.0.7.RELEASE</spring.data.neo4j.version>
         <jedis.version>3.2.0</jedis.version>
+        <jgit.version>5.7.0.202003110725-r</jgit.version>
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
         <mockito.version>1.10.18</mockito.version>
@@ -175,6 +176,13 @@
                 <groupId>io.vertx</groupId>
                 <artifactId>vertx-auth-jwt</artifactId>
                 <version>${vertx-auth.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
+            <dependency>
+                <groupId>org.eclipse.jgit</groupId>
+                <artifactId>org.eclipse.jgit</artifactId>
+                <version>${jgit.version}</version>
             </dependency>
 
             <!--LOGGING-->

@@ -88,6 +88,7 @@ public final class GUIProcessor {
                             DisplayController.printWaiting(ScreenController.metrics(), TermAttributes.USER_CREATE_WAIT);
                             userService.encodePassword(runtimeContext.userContext().getUser());
                             services.environService().configureEnviron(runtimeContext.userContext(), true);
+                            userService.initRepository(runtimeContext.userContext());
                         }
                         else if (option.equals(LoginOption.LOGIN) && !userService.hasConfiguration(runtimeContext.userContext()))
                             option = LoginOption.NEW_USER;
