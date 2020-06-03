@@ -7,6 +7,7 @@ import com.dcall.core.configuration.app.service.environ.EnvironService;
 import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 import com.dcall.core.configuration.utils.ResourceUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
@@ -39,8 +40,8 @@ public class GitServiceImpl implements GitService {
 
         if (rFile.exists()) {
             if (sFile.exists()) {
-                checkoutRepository(sysGit = openGitFile(sFile));
-                checkoutRepository(userGit = openGitFile(uFile));
+                reset(sysGit = openGitFile(sFile), ResetCommand.ResetType.HARD, GitConstant.MASTER);
+//                reset(userGit = openGitFile(uFile), ResetCommand.ResetType.HARD, GitConstant.MASTER);
             }
             else {
                 final String[] confPath = environService.getConfigDirectory().split(File.separator);
@@ -48,12 +49,13 @@ public class GitServiceImpl implements GitService {
                 final String[] userHome = context.getEnviron().getEnv().get(EnvironConstant.USER_HOME).toString().split(File.separator);
                 sysGit = initRepository(rFile);
 
-                userGit = initRepository(new File(context.getUser().getPath()));
-                addFilePath(userGit, userHome[userHome.length - 1]);
-                commit(userGit, context.getUser().getLogin() + " - init user workspace [" + context.getUser().getPath() + "]");
+//                userGit = initRepository(new File(context.getUser().getPath()));
+//                addFilePath(userGit, userHome[userHome.length - 1]);
+//                commit(userGit, context.getUser().getLogin() + " - init user workspace [" + context.getUser().getPath() + "]");
 
                 addFilePath(sysGit, confPath[confPath.length - 1]);
                 addFilePath(sysGit, workspace[workspace.length - 1]);
+//                addFilePath(sysGit, workspace[workspace.length - 1] + File.separator + ".git");
 
                 commit(sysGit, "Dcall init configuration");
 //                status(sysGit);
@@ -85,15 +87,34 @@ public class GitServiceImpl implements GitService {
     }
 
     @Override
-    public Status status(final Git sysGit) {
+    public Status status(final Git git) {
         try {
-            return sysGit.status().call();
+            return git.status().call();
         }
         catch (GitAPIException e) {
             LOG.error(e.getMessage());
         }
 
         return null;
+    }
+
+    @Override
+    public Git reset(final Git git, final ResetCommand.ResetType resetType, final String ref) {
+        try {
+            if (resetType != null) {
+                if (ref != null && !ref.isEmpty())
+                    git.reset().setMode(resetType).setRef(GitConstant.BRANCH_REFS + ref).call();
+                else
+                    git.reset().setMode(resetType).call();
+            }
+            else
+                git.reset().call();
+        }
+        catch (GitAPIException e) {
+            LOG.error(e.getMessage());
+        }
+
+        return git;
     }
 
     @Override
@@ -114,9 +135,9 @@ public class GitServiceImpl implements GitService {
     }
 
     @Override
-    public Git openGitFile(final File fGit) {
+    public Git openGitFile(final File gitFile) {
         try {
-            return Git.open(fGit);
+            return Git.open(gitFile);
         }
         catch (IOException e) {
             LOG.error(e.getMessage());

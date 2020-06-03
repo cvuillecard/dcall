@@ -2,6 +2,7 @@ package com.dcall.core.configuration.app.service.git;
 
 import com.dcall.core.configuration.app.context.user.UserContext;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.lib.Repository;
 
@@ -15,6 +16,7 @@ public interface GitService {
     void addFilePath(final Git git, final String path);
     void commit(final Git git, final String msg);
     Status status(final Git sysGit);
+    Git reset(Git git, ResetCommand.ResetType resetType, String ref);
     Git openGitFile(final File fGit);
     String getSystemRepository();
 }
