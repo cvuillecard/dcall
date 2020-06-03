@@ -17,4 +17,5 @@ public class RuntimeContext {
     public DataContext dataContext() { return dataContext; }
     public UserContext userContext() { return userContext; }
     public ServiceContext serviceContext() { return serviceContext; }
+    public SystemContext systemContext() { return systemContext; }
 }

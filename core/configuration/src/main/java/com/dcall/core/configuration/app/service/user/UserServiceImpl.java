@@ -1,13 +1,15 @@
 package com.dcall.core.configuration.app.service.user;
 
 import com.dcall.core.configuration.app.constant.LoginOption;
-import com.dcall.core.configuration.app.context.user.UserContext;
+import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.provider.version.VersionServiceProvider;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.service.environ.EnvironService;
 import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 import com.dcall.core.configuration.generic.entity.user.User;
+
+import java.io.File;
 
 public class UserServiceImpl implements UserService {
     private final HashServiceProvider hashServiceProvider;
@@ -64,21 +66,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean hasConfiguration(final UserContext context) {
-        initRepository(context);
-        final boolean hasConfiguration = !this.hasIdentity(encodePassword(context.getUser())) && environService.hasConfiguration(context);
+    public boolean hasConfiguration(final RuntimeContext context) {
+        initRepository(context, false);
+        final boolean hasConfiguration = !this.hasIdentity(encodePassword(context.userContext().getUser())) && environService.hasConfiguration(context.userContext());
 
         if (!hasConfiguration)
-            context.getUser().reset();
+            context.userContext().getUser().reset();
         else
-            environService.configureEnviron(context, false);
+            environService.configureEnviron(context.userContext(), false);
 
         return hasConfiguration;
     }
 
     @Override
-    public void initRepository(final UserContext context) {
-        versionServiceProvider.gitService().createSystemRepository(context);
+    public void initRepository(final RuntimeContext context, final boolean create) { // temporaire : ne gere pas la creation de nouveaux users..
+        if (create ||
+                (!context.systemContext().isGitInit() &&
+                        versionServiceProvider.gitService().isGitRepository(versionServiceProvider.gitService().getSystemRepository()))) {
+            versionServiceProvider.gitService().createSystemRepository(context.userContext());
+            context.systemContext().setGitInit(true);
+        }
     }
 
     @Override

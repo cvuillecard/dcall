@@ -41,6 +41,7 @@ public class GitServiceImpl implements GitService {
         if (rFile.exists()) {
             if (sFile.exists()) {
                 reset(sysGit = openGitFile(sFile), ResetCommand.ResetType.HARD, GitConstant.MASTER);
+//                initSubModule(sysGit);
 //                reset(userGit = openGitFile(uFile), ResetCommand.ResetType.HARD, GitConstant.MASTER);
             }
             else {
@@ -48,13 +49,13 @@ public class GitServiceImpl implements GitService {
                 final String[] workspace = context.getUser().getPath().split(File.separator);
                 final String[] userHome = context.getEnviron().getEnv().get(EnvironConstant.USER_HOME).toString().split(File.separator);
                 sysGit = initRepository(rFile);
-
 //                userGit = initRepository(new File(context.getUser().getPath()));
 //                addFilePath(userGit, userHome[userHome.length - 1]);
 //                commit(userGit, context.getUser().getLogin() + " - init user workspace [" + context.getUser().getPath() + "]");
 
                 addFilePath(sysGit, confPath[confPath.length - 1]);
                 addFilePath(sysGit, workspace[workspace.length - 1]);
+//                addSubModule(sysGit, context.getUser().getPath(), workspace[workspace.length - 1]);
 //                addFilePath(sysGit, workspace[workspace.length - 1] + File.separator + ".git");
 
                 commit(sysGit, "Dcall init configuration");
@@ -70,6 +71,16 @@ public class GitServiceImpl implements GitService {
     public void addFilePath(final Git git, final String path) {
         try {
             git.add().addFilepattern(path).call();
+        }
+        catch (GitAPIException e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public void addSubModule(final Git git, final String path, final String name) {
+        try {
+            git.submoduleAdd().setPath(path).setName(name).call();
         }
         catch (GitAPIException e) {
             LOG.error(e.getMessage());
@@ -130,6 +141,16 @@ public class GitServiceImpl implements GitService {
     }
 
     @Override
+    public void initSubModule(final Git git) {
+        try {
+            git.submoduleInit().call();
+        }
+        catch (GitAPIException e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    @Override
     public Repository checkoutRepository(Git git) {
         return git.checkout().getRepository();
     }
@@ -149,5 +170,14 @@ public class GitServiceImpl implements GitService {
     @Override
     public String getSystemRepository() {
         return ResourceUtils.localProperties().getProperty(GitConstant.SYS_GIT_REPOSITORY);
+    }
+
+    @Override
+    public boolean isGitRepository(final String dirPath) {
+        if (dirPath != null && !dirPath.isEmpty()) {
+            return new File(getGitPath(dirPath)).exists();
+        }
+
+        return false;
     }
 }
