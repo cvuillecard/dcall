@@ -5,7 +5,7 @@ import com.dcall.core.configuration.generic.entity.Entity;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EnvironBean implements Environ<String> {
+public final class EnvironBean implements Environ<String> {
     private String id;
     private Map<String, String> env = new HashMap<>();
 

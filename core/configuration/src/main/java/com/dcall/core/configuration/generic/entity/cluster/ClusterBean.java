@@ -3,7 +3,7 @@ package com.dcall.core.configuration.generic.entity.cluster;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.generic.entity.Entity;
 
-public class ClusterBean implements Cluster<String> {
+public final class ClusterBean implements Cluster<String> {
     private final String id;
     private final String name;
     private final String password;

@@ -1,6 +1,5 @@
 package com.dcall.core.configuration.generic.entity.identity;
 
-import com.dcall.core.configuration.app.constant.EnvironConstant;
 import com.dcall.core.configuration.app.constant.UserConstant;
 import com.dcall.core.configuration.generic.entity.cipher.AbstractCipherResource;
 import com.dcall.core.configuration.generic.entity.cipher.CipherAES;
@@ -8,7 +7,7 @@ import com.dcall.core.configuration.generic.entity.user.User;
 
 import java.util.Properties;
 
-public class IdentityBean extends AbstractCipherResource<String> implements Identity {
+public final class IdentityBean extends AbstractCipherResource<String> implements Identity {
     private User user;
     private Properties properties;
 

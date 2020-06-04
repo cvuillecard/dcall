@@ -1,8 +1,10 @@
 package com.dcall.core.configuration.app.context.system;
 
-public final class SystemContext {
-    private boolean gitInit = false; // temporaire car pas tres joli //todo RepositoryBean
+import com.dcall.core.configuration.generic.entity.repository.GitRepository;
 
-    public SystemContext setGitInit(final boolean state) { this.gitInit = state; return this; }
-    public boolean isGitInit() { return this.gitInit; }
+public final class SystemContext {
+    GitRepository repository = null;
+
+    public SystemContext setRepository(final GitRepository repository) { this.repository = repository; return this; }
+    public GitRepository getRepository() { return this.repository; }
 }

@@ -72,19 +72,21 @@ public class UserServiceImpl implements UserService {
 
         if (!hasConfiguration)
             context.userContext().getUser().reset();
-        else
+        else {
             environService.configureEnviron(context.userContext(), false);
+            context.systemContext().getRepository().getSubModules().keySet().forEach(k -> {
+                versionServiceProvider.gitService().clone(context.userContext().getUser().getPath(), versionServiceProvider.gitService().getSystemRepository() + File.separator + k);
+            });
+        }
 
         return hasConfiguration;
     }
 
     @Override
     public void initRepository(final RuntimeContext context, final boolean create) { // temporaire : ne gere pas la creation de nouveaux users..
-        if (create ||
-                (!context.systemContext().isGitInit() &&
-                        versionServiceProvider.gitService().isGitRepository(versionServiceProvider.gitService().getSystemRepository()))) {
-            versionServiceProvider.gitService().createSystemRepository(context.userContext());
-            context.systemContext().setGitInit(true);
+        if (context.systemContext().getRepository() == null &&
+                (create || versionServiceProvider.gitService().isGitRepository(versionServiceProvider.gitService().getSystemRepository()))) {
+            context.systemContext().setRepository(versionServiceProvider.gitService().createSystemRepository(context));
         }
     }
 

@@ -2,7 +2,7 @@ package com.dcall.core.configuration.generic.entity.message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class MessageBean implements Message<String> {
+public final class MessageBean implements Message<String> {
     private String id;
     private byte[] message;
     private int length;

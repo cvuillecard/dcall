@@ -5,7 +5,7 @@ import com.dcall.core.configuration.generic.entity.cipher.CipherAES;
 
 import java.util.Properties;
 
-public class PropertyBean extends AbstractCipherResource<String> implements Property {
+public final class PropertyBean extends AbstractCipherResource<String> implements Property {
     private Properties properties;
 
     public PropertyBean() { super(); }

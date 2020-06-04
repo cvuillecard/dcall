@@ -5,7 +5,7 @@ import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.generic.entity.Entity;
 import com.dcall.core.configuration.generic.entity.user.User;
 
-public class UserHashBean implements UserHash<String> {
+public final class UserHashBean implements UserHash<String> {
     private String id;
     private String pwd;
     private String salt;

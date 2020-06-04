@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
-public class CipherAESBean implements CipherAES<String> {
+public final class CipherAESBean implements CipherAES<String> {
     private static final Logger LOG = LoggerFactory.getLogger(CipherAESBean.class);
 
     private String id;

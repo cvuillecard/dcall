@@ -2,7 +2,8 @@ package com.dcall.core.configuration.app.constant;
 
 public final class EnvironConstant {
     // Extern
-    public static final String RUNTIME_CONF = "extern.runtime.conf";
+    public static final String RUNTIME_CONF_PATH = "extern.runtime.conf.path";
+    public static final String RUNTIME_CONF_NAME = "extern.runtime.conf.name";
 
     // User
     public static final String USER_HOME = "USER_HOME";

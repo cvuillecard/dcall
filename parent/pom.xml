@@ -61,6 +61,7 @@
         <project.extern.resources.directory>/var/lib/dcall</project.extern.resources.directory>
         <extern.base.directory></extern.base.directory>
         <extern.unzip.destination></extern.unzip.destination>
+        <extern.runtime.conf.name>conf</extern.runtime.conf.name>
 
     </properties>
 
@@ -382,7 +383,7 @@
                 <jar.classpath.layout>repository</jar.classpath.layout>
                 <extern.lib.repository>/home/worker/.m2/repository</extern.lib.repository>
                 <extern.global.properties>${project.extern.resources.directory}/env/local.properties</extern.global.properties>
-                <extern.runtime.conf>${project.extern.resources.directory}/conf</extern.runtime.conf>
+                <extern.runtime.conf.path>${project.extern.resources.directory}/${extern.runtime.conf.name}</extern.runtime.conf.path>
             </properties>
         </profile>
 
@@ -400,7 +401,7 @@
                 <extern.lib.repository>configuration</extern.lib.repository>
                 <extern.unzip.destination>${extern.base.directory}/configuration</extern.unzip.destination>
                 <extern.global.properties>${project.extern.resources.directory}/env/local.properties</extern.global.properties>
-                <extern.runtime.conf>${project.extern.resources.directory}/conf</extern.runtime.conf>
+                <extern.runtime.conf.path>${project.extern.resources.directory}/${extern.runtime.conf.name}</extern.runtime.conf.path>
             </properties>
         </profile>
 
@@ -416,7 +417,7 @@
                 <project.extern.resources.directory>C:\Users\Super\dcall</project.extern.resources.directory>
                 <extern.lib.repository>C:\Users\Super\.m2\repository</extern.lib.repository>
                 <extern.global.properties>${project.extern.resources.directory}\env\local.properties</extern.global.properties>
-                <extern.runtime.conf>${project.extern.resources.directory}\conf</extern.runtime.conf>
+                <extern.runtime.conf.path>${project.extern.resources.directory}\${extern.runtime.conf.name}</extern.runtime.conf.path>
             </properties>
         </profile>
 
@@ -435,7 +436,7 @@
                 <extern.lib.repository>configuration</extern.lib.repository>
                 <extern.unzip.destination>${extern.base.directory}\configuration</extern.unzip.destination>
                 <extern.global.properties>${project.extern.resources.directory}\env\local.properties</extern.global.properties>
-                <extern.runtime.conf>${project.extern.resources.directory}\conf</extern.runtime.conf>
+                <extern.runtime.conf.path>${project.extern.resources.directory}\${extern.runtime.conf.name}</extern.runtime.conf.path>
             </properties>
         </profile>
 

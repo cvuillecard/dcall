@@ -5,7 +5,7 @@ import com.dcall.core.configuration.generic.entity.cipher.CipherAES;
 
 import java.security.KeyPair;
 
-public class CertificateBean extends AbstractCipherResource<String> implements Certificate {
+public final class CertificateBean extends AbstractCipherResource<String> implements Certificate {
     private KeyPair keyPair;
 
     public CertificateBean() { super(); }

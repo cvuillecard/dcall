@@ -3,7 +3,7 @@ package com.dcall.core.configuration.generic.entity.user;
 import com.dcall.core.configuration.generic.entity.Entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class UserBean implements User<String> {
+public final class UserBean implements User<String> {
     private String id;
     private String name;
     private String surname;

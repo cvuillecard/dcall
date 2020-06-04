@@ -7,6 +7,7 @@ import com.dcall.core.configuration.generic.entity.environ.Environ;
 public interface EnvironService {
     Environ configureEnviron(final UserContext context, final boolean create);
     boolean hasConfiguration(final UserContext context);
+    String getConfigDirName();
     String getConfigDirectory();
     HashServiceProvider getHashServiceProvider();
 }
