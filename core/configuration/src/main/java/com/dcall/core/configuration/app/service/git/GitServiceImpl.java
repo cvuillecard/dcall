@@ -1,6 +1,7 @@
 package com.dcall.core.configuration.app.service.git;
 
 import com.dcall.core.configuration.app.constant.GitConstant;
+import com.dcall.core.configuration.app.constant.UserConstant;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.service.environ.EnvironService;
@@ -84,44 +85,28 @@ public class GitServiceImpl implements GitService {
         GitRepository repo = null;
         final String sysPath = getSystemRepository();
         final File gitFile = new File(getGitPath(sysPath));
-        final boolean isUserSubDir = context.userContext().getUser().getPath().contains(sysPath);
-        final String[] userWorkspace = context.userContext().getUser().getPath().split(File.separator);
 
         if (!gitFile.exists()) {
             repo = createRepository(sysPath);
 
             addFilePath(repo.getGit(), context.serviceContext().serviceProvider().environService().getConfigDirName());
-
-            if (isUserSubDir)
-                addFilePath(repo.getGit(), userWorkspace[userWorkspace.length - 1]);
-            else {
-                final GitRepository userRepo = createUserRepository(context.userContext().getUser());
-                addSubModule(repo.getGit(), getCanonicalPath(userRepo.getGit()), userWorkspace[userWorkspace.length - 1]).close();
-            }
+            addFilePath(repo.getGit(), UserConstant.WORKSPACE);
 
             commit(repo.getGit(), "DCall init configuration");
             repo.initFromInstance(repo.getGit());
         }
-        else {
+        else
             reset((repo = getRepository(new File(sysPath))).getGit(), ResetCommand.ResetType.HARD, GitConstant.MASTER);
-//            if (!isUserSubDir) {
-//                pull(repo.getGit());
-////                initSubModule(repo.getGit());
-////                subModuleUpdate(repo.getGit());
-//                clone(repo.getGit().getRepository().getDirectory().getParent(), repo.getPath() + File.separator + userWorkspace[userWorkspace.length - 1]);
-////                fetchSubModules(repo);
-//            }
-        }
 
         return repo;
     }
 
     @Override
     public GitRepository createUserRepository(final User user) {
-        final File workspace = new File(user.getPath());
+        final File workspace = new File(user.getWorkspace());
 
         if (workspace.exists()) {
-            final GitRepository repository  = createRepository(user.getPath());
+            final GitRepository repository  = createRepository(user.getWorkspace());
             Arrays.stream(workspace.listFiles()).forEach(f -> addFilePath(repository.getGit(), f.getName()));
 
             commit(repository.getGit(), user.getLogin() + " repository creation.");

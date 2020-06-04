@@ -8,8 +8,8 @@ Note : All commands and futur applications must hold a 'help' file which general
 
 [ General ]
 
-pwd         - display local path working directory
-cd          - change the path working directory
+pwd         - display local workspace working directory
+cd          - change the workspace working directory
 cwn         - display current working network on which you are connected
 env         - display all current global environment variables
 workspace   - list all local workspaces registered

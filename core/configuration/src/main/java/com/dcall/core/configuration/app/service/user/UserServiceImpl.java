@@ -41,8 +41,7 @@ public class UserServiceImpl implements UserService {
                 && user.getSurname() != null && !user.getSurname().isEmpty()
                 && user.getEmail() != null && !user.getEmail().isEmpty()
                 && user.getLogin() != null && !user.getLogin().isEmpty()
-                && user.getPassword() != null && !user.getPassword().isEmpty()
-                && user.getPath() != null && !user.getPath().isEmpty();
+                && user.getPassword() != null && !user.getPassword().isEmpty();
     }
 
     @Override
@@ -74,9 +73,6 @@ public class UserServiceImpl implements UserService {
             context.userContext().getUser().reset();
         else {
             environService.configureEnviron(context.userContext(), false);
-            context.systemContext().getRepository().getSubModules().keySet().forEach(k -> {
-                versionServiceProvider.gitService().clone(context.userContext().getUser().getPath(), versionServiceProvider.gitService().getSystemRepository() + File.separator + k);
-            });
         }
 
         return hasConfiguration;

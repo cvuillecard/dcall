@@ -1,10 +1,12 @@
 package com.dcall.core.app.terminal.gui.service.credential.window;
 
+import com.dcall.core.configuration.app.constant.GitConstant;
 import com.dcall.core.configuration.app.constant.UserConstant;
 import com.dcall.core.configuration.app.constant.LoginOption;
 import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.generic.entity.user.User;
 import com.dcall.core.configuration.generic.entity.user.UserBean;
+import com.dcall.core.configuration.utils.ResourceUtils;
 import com.dcall.core.configuration.utils.StringUtils;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalSize;
@@ -12,6 +14,7 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.Screen;
 
+import java.io.File;
 import java.util.Arrays;
 
 public final class UserCredentialDrawer {
@@ -29,7 +32,6 @@ public final class UserCredentialDrawer {
     private final TextBox email = new TextBox();
     private final TextBox login = new TextBox();
     private final TextBox password = new TextBox().setMask('*');
-    private final TextBox path = new TextBox();
     private final UserContext userContext;
     private User user;
 
@@ -99,11 +101,6 @@ public final class UserCredentialDrawer {
         panel.addComponent(setStyleLabel(new Label(UserConstant.PASSWORD), user.getPassword()));
         initTextValue(password, user.getPassword());
         panel.addComponent(password);
-
-        emptyLine();
-        panel.addComponent(setStyleLabel(new Label(UserConstant.PATH), user.getPath()));
-        initTextValue(path, user.getPath());
-        panel.addComponent(path);
 
         emptyLine();
 
@@ -193,6 +190,6 @@ public final class UserCredentialDrawer {
                 .setLogin(login.getText().trim())
                 .setEmail(email.getText().trim())
                 .setPassword(password.getText().trim())
-                .setPath(path.getText().trim());
+                .setWorkspace(ResourceUtils.localProperties().getProperty(GitConstant.SYS_GIT_REPOSITORY) + File.separator + UserConstant.WORKSPACE);
     }
 }

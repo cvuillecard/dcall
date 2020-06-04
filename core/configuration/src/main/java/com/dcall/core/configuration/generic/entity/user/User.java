@@ -11,7 +11,7 @@ public interface User<ID> extends Entity<ID> {
     @JsonGetter("email") String getEmail();
     @JsonGetter("login") String getLogin();
     @JsonGetter("password") String getPassword();
-    @JsonGetter("path") String getPath();
+    @JsonGetter("path") String getWorkspace();
 
     // setters
     @JsonSetter("name") User<ID> setName(final String name);
@@ -19,7 +19,7 @@ public interface User<ID> extends Entity<ID> {
     @JsonSetter("email") User<ID> setEmail(final String email);
     @JsonSetter("login") User<ID> setLogin(final String login);
     @JsonSetter("password") User<ID> setPassword(final String password);
-    @JsonSetter("path") User<String> setPath(String path);
+    @JsonSetter("path") User<String> setWorkspace(String path);
 
     // util
     User<ID> reset();

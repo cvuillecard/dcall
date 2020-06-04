@@ -42,8 +42,8 @@ public final class IdentityBean extends AbstractCipherResource<String> implement
             this.properties.setProperty(UserConstant.EMAIL, this.user.getEmail());
         if (this.user.getLogin() != null)
             this.properties.setProperty(UserConstant.LOGIN, this.user.getLogin());
-        if (this.user.getPath() != null)
-            this.properties.setProperty(UserConstant.PATH, this.user.getPath());
+        if (this.user.getWorkspace() != null)
+            this.properties.setProperty(UserConstant.WORKSPACE, this.user.getWorkspace());
 
         return this;
     }
@@ -54,7 +54,7 @@ public final class IdentityBean extends AbstractCipherResource<String> implement
         user.setSurname(this.properties.getProperty(UserConstant.SURNAME));
         user.setEmail(this.properties.getProperty(UserConstant.EMAIL));
         user.setLogin(this.properties.getProperty(UserConstant.LOGIN));
-        user.setPath(this.properties.getProperty(UserConstant.PATH));
+        user.setWorkspace(this.properties.getProperty(UserConstant.WORKSPACE));
 
         return this;
     }

@@ -10,20 +10,20 @@ public final class UserBean implements User<String> {
     private String email;
     private String login;
     private String password;
-    private String path;
+    private String workspace;
 
     public UserBean() {}
 
     public UserBean(@JsonProperty final String id, @JsonProperty final String name, @JsonProperty final String surname,
                     @JsonProperty final String email, @JsonProperty final String login, @JsonProperty final String password,
-                    @JsonProperty final String path) {
+                    @JsonProperty final String workspace) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.login = login;
         this.password = password;
-        this.path = path;
+        this.workspace = workspace;
     }
 
     // getters
@@ -33,7 +33,7 @@ public final class UserBean implements User<String> {
     @Override public String getEmail() { return email; }
     @Override public String getLogin() { return login; }
     @Override public String getPassword() { return password; }
-    @Override public String getPath() { return path; }
+    @Override public String getWorkspace() { return workspace; }
 
     // setters
     @Override public Entity<String> setId(final String id) { this.id = id; return this; }
@@ -42,7 +42,7 @@ public final class UserBean implements User<String> {
     @Override public User<String> setEmail(final String email) { this.email = email; return this; }
     @Override public User<String> setLogin(final String login) { this.login = login; return this; }
     @Override public User<String> setPassword(final String password) { this.password = password; return this; }
-    @Override public User<String> setPath(final String path) { this.path = path; return this; }
+    @Override public User<String> setWorkspace(final String workspace) { this.workspace = workspace; return this; }
 
     // util
     @Override public User<String> reset() {
@@ -52,7 +52,7 @@ public final class UserBean implements User<String> {
         this.email = null;
         this.login = null;
         this.password = null;
-        this.path = null;
+        this.workspace = null;
 
         return this;
     }
