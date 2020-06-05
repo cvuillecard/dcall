@@ -10,7 +10,7 @@ public enum SaltDef {
 
     private String salt;
 
-    SaltDef(String salt) { this.salt = salt; }
+    SaltDef(final String salt) { this.salt = salt; }
 
     public String getSalt() { return this.salt; }
 }

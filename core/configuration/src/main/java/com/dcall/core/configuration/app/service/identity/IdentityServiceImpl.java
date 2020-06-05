@@ -27,7 +27,7 @@ public class IdentityServiceImpl implements IdentityService {
     @Override
     public Identity createUserIdentity(final UserContext context, final String path, final String salt) {
         final String identityPath = hashServiceProvider.hashFileService().getHashPath(path, context.getUserHash().getMd5Salt(), EnvironConstant.USER_IDENTITY_FILENAME);
-        final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherResource(salt, EnvironConstant.USER_IDENTITY_FILENAME, identityPath, null);
+        final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(salt, EnvironConstant.USER_IDENTITY_FILENAME, identityPath, null);
         final Identity identity = new IdentityBean(identityPath, cipher, context.getUser());
 
         final File f = new File(identityPath);

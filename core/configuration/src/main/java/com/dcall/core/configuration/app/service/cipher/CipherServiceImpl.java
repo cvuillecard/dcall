@@ -5,7 +5,7 @@ import com.dcall.core.configuration.generic.entity.cipher.CipherAESBean;
 
 public class CipherServiceImpl implements CipherService {
     @Override
-    public CipherAESBean createCipherResource(final String salt, final String key, final String resource, final Integer encryptMode) {
+    public CipherAESBean createCipherAES(final String salt, final String key, final String resource, final Integer encryptMode) {
         if (encryptMode == null)
             return new CipherAESBean(HashProvider.signSha512(salt, key), resource);
         else

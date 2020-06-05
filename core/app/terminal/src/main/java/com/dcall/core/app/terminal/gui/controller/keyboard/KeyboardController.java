@@ -50,12 +50,12 @@ public final class KeyboardController {
         }
     }
 
-    public static int handleKeyboard(final boolean displayInputLocked) {
+    public static int handleKeyboard(final boolean isRunningTask) {
         readInput();
         lock = false;
 
         if (keyPressed != null) {
-            if (!displayInputLocked)
+            if (!isRunningTask)
                 Stream.of(KeyboardAction.values())
                         .filter(k -> !lock && k.getKeyType().equals(KeyboardController.keyPressed.getKeyType()))
                         .forEach(KeyboardController::handleKeys);
@@ -433,8 +433,8 @@ public final class KeyboardController {
             clearScreen();
     }
 
-    public static void handleNextInput(final boolean displayInputLocked) {
-        if (handleKeyboard(displayInputLocked) == IOConstant.EXIT_SUCCESS) {
+    public static void handleNextInput(final boolean isRunningTask) {
+        if (handleKeyboard(isRunningTask) == IOConstant.EXIT_SUCCESS) {
             if (bus.output().size() > 0 && bus.output().getLastIdx() < bus.output().current().nbLine()) {
                 DisplayController.drawOutputEntry(bus, ScreenController.metrics());
             } else {

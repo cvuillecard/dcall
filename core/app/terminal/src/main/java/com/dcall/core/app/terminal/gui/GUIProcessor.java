@@ -105,9 +105,9 @@ public final class GUIProcessor {
                 if (handler.result().equals(true)) {
                     if (DisplayController.getLock())
                         KeyboardController.handleNextInput(true);
-                    else {
+                    else
                         KeyboardController.handleKeyboard(false);
-                    }
+
                     handleIO();
                 } else
                     GUIProcessor.close();

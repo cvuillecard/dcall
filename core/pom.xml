@@ -50,6 +50,7 @@
                                             <artifactId>processor</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
+                                            <overWrite>true</overWrite>
                                         </artifactItem>
 
                                         <artifactItem>
@@ -57,6 +58,7 @@
                                             <artifactId>terminal</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
+                                            <overWrite>true</overWrite>
                                         </artifactItem>
 
                                         <artifactItem>
@@ -64,6 +66,7 @@
                                             <artifactId>cli</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
+                                            <overWrite>true</overWrite>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>

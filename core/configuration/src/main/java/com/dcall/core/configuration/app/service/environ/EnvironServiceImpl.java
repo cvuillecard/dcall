@@ -65,7 +65,7 @@ public class EnvironServiceImpl implements EnvironService {
                 hashService.createDirectories(userHash.getPwd(), userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_CONF)).get(0) :
                 hashService.getHashPath(userHash.getPwd(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_CONF));
         final String userPropsPath = hashService.getHashPath(userPwd, userHash.getMd5Salt(), EnvironConstant.USER_PROP_FILENAME);
-        final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherResource(userHash.getSalt(), EnvironConstant.USER_PROP_FILENAME, userPropsPath, null);
+        final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(userHash.getSalt(), EnvironConstant.USER_PROP_FILENAME, userPropsPath, null);
 
         final File userPropFile = new File(userPropsPath);
         Properties userProps = new Properties();
