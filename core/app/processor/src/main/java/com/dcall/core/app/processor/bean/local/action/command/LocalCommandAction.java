@@ -1,7 +1,7 @@
 package com.dcall.core.app.processor.bean.local.action.command;
 
 import com.dcall.core.app.processor.bean.local.service.command.LocalHelpCommandServiceImpl;
-import com.dcall.core.configuration.app.service.GenericCommandService;
+import com.dcall.core.configuration.generic.service.command.GenericCommandService;
 
 public enum LocalCommandAction {
     help(new LocalHelpCommandServiceImpl());

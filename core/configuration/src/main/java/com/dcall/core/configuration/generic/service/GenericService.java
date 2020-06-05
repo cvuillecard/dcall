@@ -1,4 +1,4 @@
-package com.dcall.core.configuration.app.service;
+package com.dcall.core.configuration.generic.service;
 
 public interface GenericService<T, ID> {
 	T create(final T bo) throws Exception;

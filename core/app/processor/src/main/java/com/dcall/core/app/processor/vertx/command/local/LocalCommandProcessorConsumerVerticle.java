@@ -3,6 +3,7 @@ package com.dcall.core.app.processor.vertx.command.local;
 import com.dcall.core.app.processor.bean.local.controller.command.LocalCommandController;
 import com.dcall.core.app.processor.vertx.command.CommandProcessorConsumerVerticle;
 import com.dcall.core.app.processor.vertx.constant.URIConfig;
+import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.generic.entity.message.MessageBean;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
@@ -15,6 +16,7 @@ import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Component
 @Scope(SCOPE_PROTOTYPE)
 public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
+    @Autowired private RuntimeContext runtimeContext;
     private static final Logger LOG = LoggerFactory.getLogger(LocalCommandProcessorConsumerVerticle.class);
 
     private final int BUF_SIZE = 8192;
@@ -45,7 +48,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
             try {
                 final com.dcall.core.configuration.generic.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
 
-                final byte[] result = commandController.execute(new String(sender.getMessage()));
+                final byte[] result = commandController.execute(this.runtimeContext, new String(sender.getMessage()));
 
                 sendChunk(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, sender, result, getNbChunk(result), resp);
             }

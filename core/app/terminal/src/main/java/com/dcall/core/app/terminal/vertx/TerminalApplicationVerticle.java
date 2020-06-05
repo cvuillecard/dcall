@@ -12,7 +12,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Component
 @Scope(SCOPE_PROTOTYPE)
 public class TerminalApplicationVerticle extends AbstractVerticle {
-    @Autowired RuntimeContext runtimeContext;
+    @Autowired private RuntimeContext runtimeContext;
 
     @Override
     public void start() { GUIProcessor.start(runtimeContext); }
