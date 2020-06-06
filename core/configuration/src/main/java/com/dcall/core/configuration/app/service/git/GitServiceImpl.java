@@ -1,6 +1,7 @@
 package com.dcall.core.configuration.app.service.git;
 
 import com.dcall.core.configuration.app.constant.GitConstant;
+import com.dcall.core.configuration.app.constant.GitMessage;
 import com.dcall.core.configuration.app.constant.UserConstant;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.exception.TechnicalException;
@@ -87,7 +88,7 @@ public class GitServiceImpl implements GitService {
         final File gitFile = new File(getGitPath(sysPath));
 
         if (!gitFile.exists())
-            commitSystemRepository(context, (repo = createRepository(sysPath)), "DCall init configuration");
+            commitSystemRepository(context, (repo = createRepository(sysPath)), GitMessage.getMountPointMsg(context.userContext().getUser()));
         else
             reset((repo = getRepository(new File(sysPath))).getGit(), ResetCommand.ResetType.HARD, GitConstant.MASTER);
 
