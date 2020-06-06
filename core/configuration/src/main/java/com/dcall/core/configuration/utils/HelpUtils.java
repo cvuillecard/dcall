@@ -1,10 +1,16 @@
 package com.dcall.core.configuration.utils;
 
 public final class HelpUtils {
-    private static final String HELP_DIR = "help/";
-    private static final String FILE_EXT = ".help";
+    public static final String HELP = "help";
+    private static final String HELP_DIR = HELP + "/";
+    private static final String BUILTIN_DIR = "builtin/";
+    private static final String FILE_EXT = "." + HELP;
 
     public static String getHelpPath(final String name) {
         return HELP_DIR + name + FILE_EXT;
+    }
+
+    public static String getBuiltInHelp(final String name, final String[] params) {
+        return params != null && params.length > 0 ? HELP_DIR + BUILTIN_DIR + name + FILE_EXT : HELP_DIR + HELP + FILE_EXT;
     }
 }

@@ -14,6 +14,6 @@ public final class ServiceProvider {
 
     public HashServiceProvider hashServiceProvider() { return hashServiceProvider; }
     public EnvironService environService() { return environService; }
-    public VersionServiceProvider versionService() { return versionServiceProvider; }
+    public VersionServiceProvider versionServiceProvider() { return versionServiceProvider; }
     public UserServiceProvider userServiceProvider() { return userServiceProvider; }
 }

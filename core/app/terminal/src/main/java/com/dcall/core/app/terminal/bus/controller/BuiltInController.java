@@ -1,12 +1,12 @@
-package com.dcall.core.app.processor.bean.local.controller.command;
+package com.dcall.core.app.terminal.bus.controller;
 
-import com.dcall.core.app.processor.bean.local.action.command.LocalCommandAction;
+import com.dcall.core.app.terminal.bus.constant.BuiltInAction;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.utils.HelpUtils;
 
 import java.util.Arrays;
 
-public final class LocalCommandController {
+public final class BuiltInController {
     public final String INPUT_SEPARATOR = " ";
     private RuntimeContext runtimeContext;
     private String[] input;
@@ -16,17 +16,18 @@ public final class LocalCommandController {
         this.input = input.trim().toLowerCase().split(INPUT_SEPARATOR);
 
         if (input.length() <= 0)
-            return ("Command "  + input + " doesn't exists.").getBytes();
+            return ("Built-in " + input + " doesn't exists.").getBytes();
 
         final String cmdName = this.input[0];
-        final LocalCommandAction cmd = LocalCommandAction.valueOf(cmdName);
+        final BuiltInAction cmd = BuiltInAction.valueOf(cmdName);
         final String[] params = Arrays.copyOfRange(this.input, 1, input.length());
 
         if (cmd != null) {
             return cmd.getAction()
-                    .init(runtimeContext, HelpUtils.getHelpPath(cmdName))
+                    .init(runtimeContext, HelpUtils.getBuiltInHelp(cmdName, params))
                     .run(params);
         }
-        return LocalCommandAction.help.getAction().init(runtimeContext, HelpUtils.getHelpPath("help")).usage();
+        return BuiltInAction.help.getAction()
+                .init(runtimeContext, HelpUtils.getHelpPath(HelpUtils.HELP)).usage();
     }
 }

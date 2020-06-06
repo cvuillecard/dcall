@@ -1,0 +1,13 @@
+*******************************************
+* DCall - beta version ${project.version} *
+*******************************************
+
+Note : All commands and futur applications must hold a 'help' file which generally is used as 'help <command_name>'
+
+- Local commands available -
+
+[ Built-in ]
+
+identity    - command used to print user identity, and set identity properties (see also 'help identity')
+snapshot    - command used to take a snapshot of local repository (see also 'help snapshot')
+rollback    - command used to rollback changes on local repository (see also 'help rollback')

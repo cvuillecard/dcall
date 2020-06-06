@@ -8,6 +8,6 @@ public interface GenericCommandService {
     byte[] getDatas();
 
     byte[] usage();
-    byte[] execute(final String... params);
+    byte[] run(final String... params);
     GenericCommandService init(final RuntimeContext context, final String helpFile);
 }

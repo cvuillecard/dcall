@@ -22,6 +22,8 @@ public interface GitService {
     GitRepository createRepository(final String path);
     GitRepository getRepository(final File fileRepo);
     GitRepository createSystemRepository(final RuntimeContext context);
+    RevCommit commitSystemRepository(RuntimeContext context, GitRepository repo, String commitMsg);
+
     GitRepository createUserRepository(final User user);
     Git clone(final String src, final String dest);
 

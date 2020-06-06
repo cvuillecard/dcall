@@ -8,7 +8,12 @@ public class LocalHelpCommandServiceImpl extends AbstractCommand implements Loca
     private static final Logger LOG = LoggerFactory.getLogger(LocalHelpCommandServiceImpl.class);
 
     @Override
-    public byte[] run(final String... params) {
+    public byte[] execute(final String... params) {
+        return this.usage();
+    }
+
+    @Override
+    public byte[] execute() {
         return this.usage();
     }
 }

@@ -86,19 +86,20 @@ public class GitServiceImpl implements GitService {
         final String sysPath = getSystemRepository();
         final File gitFile = new File(getGitPath(sysPath));
 
-        if (!gitFile.exists()) {
-            repo = createRepository(sysPath);
-
-            addFilePath(repo.getGit(), context.serviceContext().serviceProvider().environService().getConfigDirName());
-            addFilePath(repo.getGit(), UserConstant.WORKSPACE);
-
-            commit(repo.getGit(), "DCall init configuration");
-            repo.initFromInstance(repo.getGit());
-        }
+        if (!gitFile.exists())
+            commitSystemRepository(context, (repo = createRepository(sysPath)), "DCall init configuration");
         else
             reset((repo = getRepository(new File(sysPath))).getGit(), ResetCommand.ResetType.HARD, GitConstant.MASTER);
 
         return repo;
+    }
+
+    @Override
+    public RevCommit commitSystemRepository(final RuntimeContext context, final GitRepository repo, final String commitMsg) {
+        addFilePath(repo.getGit(), context.serviceContext().serviceProvider().environService().getConfigDirName());
+        addFilePath(repo.getGit(), UserConstant.WORKSPACE);
+
+        return commit(repo.getGit(), commitMsg);
     }
 
     @Override

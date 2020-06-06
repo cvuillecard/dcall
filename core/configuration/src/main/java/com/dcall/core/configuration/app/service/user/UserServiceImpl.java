@@ -1,5 +1,6 @@
 package com.dcall.core.configuration.app.service.user;
 
+import com.dcall.core.configuration.app.constant.GitMessage;
 import com.dcall.core.configuration.app.constant.LoginOption;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
@@ -8,8 +9,6 @@ import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.service.environ.EnvironService;
 import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 import com.dcall.core.configuration.generic.entity.user.User;
-
-import java.io.File;
 
 public class UserServiceImpl implements UserService {
     private final HashServiceProvider hashServiceProvider;
@@ -79,10 +78,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void initRepository(final RuntimeContext context, final boolean create) { // temporaire : ne gere pas la creation de nouveaux users..
+    public void initRepository(final RuntimeContext context, final boolean create) {
+        final boolean isGitRepository = versionServiceProvider.gitService().isGitRepository(versionServiceProvider.gitService().getSystemRepository());
         if (context.systemContext().getRepository() == null &&
-                (create || versionServiceProvider.gitService().isGitRepository(versionServiceProvider.gitService().getSystemRepository()))) {
+                ((create && !isGitRepository) || (!create && isGitRepository))) {
             context.systemContext().setRepository(versionServiceProvider.gitService().createSystemRepository(context));
+        }
+        else if (create) {
+            context.systemContext().setRepository(versionServiceProvider.gitService().createSystemRepository(context));
+            versionServiceProvider.gitService()
+                    .commitSystemRepository(context, context.systemContext().getRepository(),
+                            GitMessage.getLocalSnapshotUserCreatedMsg(context.userContext().getUser()));
         }
     }
 
