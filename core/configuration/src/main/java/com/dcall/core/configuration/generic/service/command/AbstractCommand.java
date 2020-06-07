@@ -55,7 +55,7 @@ public abstract class AbstractCommand implements GenericCommandService {
             final boolean auto_commit = Boolean.valueOf(context.userContext().getEnviron().getEnv().get(EnvironConstant.COMMIT_MODE).toString());
             final GitService gitService = getContext().serviceContext().serviceProvider().versionServiceProvider().gitService();
 
-            if (GitCommitMode.AUTO.equals(auto_commit) && repository != null)
+            if (GitCommitMode.AUTO.mode() == auto_commit && repository != null)
                 return gitService.commitSystemRepository(getContext(), repository, commitMessage(msg));
         }
 

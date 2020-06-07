@@ -4,8 +4,6 @@
 
 Note : All commands and futur applications must hold a 'help' file which generally is used as 'help <command_name>'
 
-- Local commands available -
-
 [ Terminal - Keyboard controls ]
 
     Arrow Left          - move cursor to the left of current cursor position
@@ -27,6 +25,7 @@ Note : All commands and futur applications must hold a 'help' file which general
     CTRL + Arrow Down   - move down cursor on the next displayed line of current input line with the same cursor position
     CTRL + Right        - move cursor to the next word at its start/end index depending of your current cursor position
     CTRL + Left         - move cursor to the previous word at its start/end index depending of your current cursor position
+
 
 [ Built-in ]
 

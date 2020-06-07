@@ -1,5 +1,7 @@
 [ Built-in : identity ] (v.${project.version})
 
+> Identity command allows you to print and set your user identity properties securely.
+
     ~ identity
     [ print all the current user properties composing its identity if no arguments. ]
 
