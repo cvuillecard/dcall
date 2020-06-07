@@ -1,0 +1,10 @@
+[ Built-in : identity ] (v.${project.version})
+
+    ~ identity
+    [ print all the current user properties composing its identity if no arguments. ]
+
+    ~ identity set <property_name> <property_value>
+    [ set the 'property_name' with 'property_value' and print the property ]
+
+    ~ identity get <property_name>
+    [ print the property value of 'property_name' ]

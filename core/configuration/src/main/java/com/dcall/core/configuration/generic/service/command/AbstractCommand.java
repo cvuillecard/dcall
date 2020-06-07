@@ -3,10 +3,12 @@ package com.dcall.core.configuration.generic.service.command;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.exception.FunctionalException;
 import com.dcall.core.configuration.utils.FileUtils;
+import com.dcall.core.configuration.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
 public abstract class AbstractCommand implements GenericCommandService {
@@ -48,9 +50,10 @@ public abstract class AbstractCommand implements GenericCommandService {
      * @return byte[] datas -> result of 'execute' methods (each command erase last value)
      */
     @Override
-    public byte[] run(final String... params) {
+    public byte[]
+    run(final String... params) {
         try {
-            LOG.debug("cmd params : " + params);
+            LOG.debug("cmd params : " + StringUtils.listToString(Arrays.asList(params)));
             if (this.context == null || this.helpFile == null) {
                 throw new FunctionalException("Missing initialization of Abstract Command > AbstractCommand.init(final RuntimeContext context, final String helpFile) has not been called");
             }

@@ -42,6 +42,7 @@ public final class GUIProcessor {
         GUIProcessor.runtimeContext = runtimeContext;
         services = runtimeContext.serviceContext().serviceProvider();
         userService = services.userServiceProvider().userService();
+        bus.init(runtimeContext);
     }
 
     private static void init(final RuntimeContext runtimeContext) {

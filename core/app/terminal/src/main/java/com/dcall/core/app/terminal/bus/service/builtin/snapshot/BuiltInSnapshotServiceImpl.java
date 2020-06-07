@@ -12,7 +12,6 @@ public class BuiltInSnapshotServiceImpl extends AbstractCommand implements Built
 
     @Override
     public byte[] execute(final String... params) {
-
         return new byte[0];
     }
 

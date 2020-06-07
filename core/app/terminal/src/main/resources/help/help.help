@@ -6,8 +6,32 @@ Note : All commands and futur applications must hold a 'help' file which general
 
 - Local commands available -
 
+[ Terminal - Keyboard controls ]
+
+    Arrow Left          - move cursor to the left of current cursor position
+    Arrow Right         - move cursor to the right of current cursor position
+    Arrow Up            - take previous command as input cli in the command history
+    Arrow Down          - take next command as input cli in the command history
+    Page Up             - scroll up the screen
+    Page Down           - scroll down the screen
+    Enter               - Treats the current input line and print a new prompt
+    Delete              - delete previous character in current input line
+
+    CTRL + C            - safe exit the terminal (see also 'exit') - Please prefer the command or keyboard control to exit safely.
+    CTRL + A            - move cursor at start of current input line
+    CTRL + E            - move cursor at end of current input line
+    CTRL + K            - Cut current input line in the clipboard
+    CTRL + Y            - Paste value in the clipboard if there is one
+    CTRL + L            - clear screen and replace current input line on the top of screen
+    CTRL + Arrow Up     - move up cursor on the previous displayed line of current input line with the same cursor position
+    CTRL + Arrow Down   - move down cursor on the next displayed line of current input line with the same cursor position
+    CTRL + Right        - move cursor to the next word at its start/end index depending of your current cursor position
+    CTRL + Left         - move cursor to the previous word at its start/end index depending of your current cursor position
+
 [ Built-in ]
 
-identity    - command used to print user identity, and set identity properties (see also 'help identity')
-snapshot    - command used to take a snapshot of local repository (see also 'help snapshot')
-rollback    - command used to rollback changes on local repository (see also 'help rollback')
+    reset       - clear the screen and erase input/output history (this also free buffer space)
+    exit        - Safe exit of terminal ()
+    identity    - command used to print user identity, and set identity properties (see also 'help identity')
+    snapshot    - command used to take a snapshot of local repository (see also 'help snapshot')
+    rollback    - command used to rollback changes on local repository (see also 'help rollback')

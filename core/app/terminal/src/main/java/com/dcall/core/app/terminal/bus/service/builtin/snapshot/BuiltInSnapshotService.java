@@ -1,4 +1,5 @@
 package com.dcall.core.app.terminal.bus.service.builtin.snapshot;
 
-public interface BuiltInSnapshotService {
-}
+import com.dcall.core.configuration.generic.service.command.GenericCommandService;
+
+public interface BuiltInSnapshotService extends GenericCommandService {}

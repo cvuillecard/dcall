@@ -10,7 +10,7 @@ public final class HelpUtils {
         return HELP_DIR + name + FILE_EXT;
     }
 
-    public static String getBuiltInHelp(final String name, final String[] params) {
-        return params != null && params.length > 0 ? HELP_DIR + BUILTIN_DIR + name + FILE_EXT : HELP_DIR + HELP + FILE_EXT;
+    public static String getBuiltInHelp(final String name) {
+        return HELP_DIR + BUILTIN_DIR + name + FILE_EXT;
     }
 }
