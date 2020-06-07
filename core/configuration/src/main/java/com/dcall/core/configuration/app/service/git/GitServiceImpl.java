@@ -124,8 +124,8 @@ public class GitServiceImpl implements GitService {
         try {
             return Git.cloneRepository().setURI(getGitPath(src)).setDirectory(new File(dest))
                     .setCloneAllBranches(true)
-                    .setBranchesToClone(Arrays.asList(getBranch(GitConstant.MASTER)))
-                    .setBranch(getBranch(null))
+                    .setBranchesToClone(Arrays.asList(branchRefName(GitConstant.MASTER)))
+                    .setBranch(branchRefName(null))
                     .call();
         }
         catch (GitAPIException e) {
@@ -330,10 +330,20 @@ public class GitServiceImpl implements GitService {
     }
 
     @Override
-    public String getBranch(final String branch) {
+    public String branchRefName(final String branch) {
         if (branch != null && !branch.isEmpty())
             return GitConstant.BRANCH_REFS  + branch;
         return GitConstant.BRANCH_REFS + GitConstant.MASTER;
+    }
+
+    @Override
+    public String getRefHash(final GitRepository repo, final String name) {
+        try {
+            return repo.getGit().getRepository().getRefDatabase().findRef(name).getObjectId().name();
+        } catch (IOException e) {
+            LOG.error(e.getMessage());
+        }
+        return null;
     }
 
     @Override

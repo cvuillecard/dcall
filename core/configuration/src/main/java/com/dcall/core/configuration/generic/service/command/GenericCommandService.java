@@ -7,7 +7,8 @@ public interface GenericCommandService {
     String getHelp();
     byte[] getDatas();
 
+    GenericCommandService init(final RuntimeContext context, final String helpFile);
     byte[] usage();
     byte[] run(final String... params);
-    GenericCommandService init(final RuntimeContext context, final String helpFile);
+    byte[] handleException(Exception e);
 }

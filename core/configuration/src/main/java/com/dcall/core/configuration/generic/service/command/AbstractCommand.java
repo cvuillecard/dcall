@@ -28,14 +28,13 @@ public abstract class AbstractCommand implements GenericCommandService {
     @Override
     public byte[] usage() {
         try {
-            Objects.requireNonNull(helpFile);
-            datas = FileUtils.getInstance().readAllBytes(Thread.currentThread().getContextClassLoader().getResourceAsStream(helpFile));
+            Objects.requireNonNull(this.helpFile);
+            this.datas = FileUtils.getInstance().readAllBytes(Thread.currentThread().getContextClassLoader().getResourceAsStream(this.helpFile));
         } catch (IOException e) {
-            datas = e.getMessage().getBytes();
-            LOG.error(e.getMessage());
+            return handleException(e);
         }
 
-        return datas;
+        return this.datas;
     }
 
     /**
@@ -44,14 +43,13 @@ public abstract class AbstractCommand implements GenericCommandService {
      * If params is null or empty, then abstract execute() is called in subclass, otherwise the method execute(final String... params)
      * is called and datas is returned as the result of the command.
      *
-     * Note : errors should be returned by the 'execute' methods implemented in the subclass to be used later (for printing or other)
+     * Note : exception's messages are returned as datas
      *
      * @param params
      * @return byte[] datas -> result of 'execute' methods (each command erase last value)
      */
     @Override
-    public byte[]
-    run(final String... params) {
+    public byte[] run(final String... params) {
         try {
             LOG.debug("cmd params : " + StringUtils.listToString(Arrays.asList(params)));
             if (this.context == null || this.helpFile == null) {
@@ -59,18 +57,28 @@ public abstract class AbstractCommand implements GenericCommandService {
             }
             this.datas = params != null && params.length > 0 ? this.execute(params) : this.execute();
         }
-        catch (FunctionalException e) {
-            e.log();
-            datas = e.getMessage().getBytes();
+        catch (Exception e) {
+            return handleException(e);
         }
 
         return this.datas;
     }
 
-    public abstract byte[] execute(final String... params);
-    public abstract byte[] execute();
+    @Override
+    public byte[] handleException(final Exception e) {
+        if (this.datas == null) {
+            final String msg = e.getMessage() != null ? e.getMessage() : e.toString();
+            LOG.debug(msg);
+            this.datas = msg.getBytes();
+        }
 
-    @Override public byte[] getDatas() { return datas; }
-    @Override public RuntimeContext getContext() { return context; }
-    @Override public String getHelp() { return helpFile; }
+        return datas;
+    }
+
+    public abstract byte[] execute(final String... params) throws Exception;
+    public abstract byte[] execute() throws Exception;
+
+    @Override public byte[] getDatas() { return this.datas; }
+    @Override public RuntimeContext getContext() { return this.context; }
+    @Override public String getHelp() { return this.helpFile; }
 }

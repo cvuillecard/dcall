@@ -13,20 +13,14 @@ public final class BuiltInServiceImpl extends AbstractCommand implements BuiltIn
 
     @Override
     public byte[] execute(final String... params) {
-        try {
-            final String cmdName = params[0];
-            final BuiltInAction cmd = BuiltInAction.valueOf(cmdName);
-            final String[] args = Arrays.copyOfRange(params, 1, params.length);
+        final String cmdName = params[0];
+        final BuiltInAction cmd = BuiltInAction.valueOf(cmdName);
+        final String[] args = Arrays.copyOfRange(params, 1, params.length);
 
-            if (cmd != null) {
-                return cmd.getAction()
-                        .init(getContext(), HelpUtils.getBuiltInHelp(cmdName))
-                        .run(args);
-            }
-        }
-        catch (Exception e) {
-            LOG.debug(e.getMessage());
-            return execute();
+        if (cmd != null) {
+            return cmd.getAction()
+                    .init(getContext(), HelpUtils.getBuiltInHelp(cmdName))
+                    .run(args);
         }
         return execute();
     }

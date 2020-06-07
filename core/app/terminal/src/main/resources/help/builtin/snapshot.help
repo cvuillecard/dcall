@@ -1,0 +1,11 @@
+[ Built-in : snapshot ] (v.${project.version})
+
+> Snapshot command allows you to save (locally actually) modifications made on your user repository via the terminal.
+
+    ~ snapshot
+    [ commit a user snapshot and print the hash commit and the user default snapshot message by default if no arguments ]
+
+    ~ snapshot with message
+    [ commit a user snapshot and print the hash commit with the message given in arguments ]
+
++ See also 'rollback'

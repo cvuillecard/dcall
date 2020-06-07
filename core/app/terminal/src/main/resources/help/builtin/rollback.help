@@ -1,0 +1,12 @@
+[ Built-in : rollback ] (v.${project.version})
+
+> Rollback command allows you to rollback (locally actually) modifications made on your user repository to a previous
+state via the terminal.
+
+    ~ rollback
+    [ rollback to the last snapshot by default if no arguments ]
+
+    ~ rollback <id>
+    [ rollback to the last snapshot with the id given in argument.]
+
++ See also 'snapshot'

@@ -51,6 +51,8 @@ public interface GitService {
     String getGitPath(final String repo);
     String getCanonicalPath(final Git git);
     boolean isGitRepository(final String dirPath);
-    String getBranch(String branch);
+    String branchRefName(final String branch);
+    String getRefHash(final GitRepository repo, final String name);
+
     String getSystemRepository();
 }

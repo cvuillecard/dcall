@@ -8,12 +8,14 @@ import com.dcall.core.configuration.generic.entity.cipher.AbstractCipherResource
 import com.dcall.core.configuration.generic.entity.cipher.CipherAES;
 import com.dcall.core.configuration.generic.entity.identity.Identity;
 import com.dcall.core.configuration.generic.entity.identity.IdentityBean;
+import com.dcall.core.configuration.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Properties;
 
@@ -64,5 +66,22 @@ public class IdentityServiceImpl implements IdentityService {
         }
 
         return null;
+    }
+
+    @Override
+    public Identity updateUserIdentity(final Identity identity) {
+        try {
+            if (identity != null && identity instanceof AbstractCipherResource) {
+                final AbstractCipherResource resource = (AbstractCipherResource) identity;
+                FileUtils.getInstance().remove(resource.getPath());
+                identity.getProperties().store(new FileWriter(resource.getPath()), identity.getUser().getEmail() + " - identity ");
+                AESProvider.encryptFile(resource.getPath(), resource.getPath(), resource.getCipher().getCipherIn());
+            }
+        }
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+
+        return identity;
     }
 }

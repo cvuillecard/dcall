@@ -3,8 +3,8 @@
     ~ identity
     [ print all the current user properties composing its identity if no arguments. ]
 
-    ~ identity set <property_name> <property_value>
-    [ set the 'property_name' with 'property_value' and print the property ]
+    ~ identity set <key=value> <..>
+    [ set the identity properties given as key=value ]
 
-    ~ identity get <property_name>
-    [ print the property value of 'property_name' ]
+    ~ identity get <key> <..>
+    [ print the identity properties with given keys ]
