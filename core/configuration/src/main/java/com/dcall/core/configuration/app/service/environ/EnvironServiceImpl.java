@@ -1,7 +1,9 @@
 package com.dcall.core.configuration.app.service.environ;
 
 import com.dcall.core.configuration.app.constant.EnvironConstant;
+import com.dcall.core.configuration.app.constant.GitCommitMode;
 import com.dcall.core.configuration.app.constant.SaltDef;
+import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.security.aes.AESProvider;
@@ -90,8 +92,9 @@ public class EnvironServiceImpl implements EnvironService {
                 userProps.setProperty(EnvironConstant.USER_HOME, userHome);
                 userProps.setProperty(EnvironConstant.USER_WORKSPACE, context.getUser().getWorkspace());
                 userProps.setProperty(EnvironConstant.USER_CONF, userPwd);
-                userProps.setProperty(EnvironConstant.USER_IDENTITY_PROP, ((AbstractCipherResource<String>) identity).getPath());
-                userProps.setProperty(EnvironConstant.USER_CERT, ((AbstractCipherResource<String>) certificate).getPath());
+                userProps.setProperty(EnvironConstant.USER_IDENTITY_PROP, ((AbstractCipherResource) identity).getPath());
+                userProps.setProperty(EnvironConstant.USER_CERT, ((AbstractCipherResource) certificate).getPath());
+                userProps.setProperty(EnvironConstant.COMMIT_MODE, String.valueOf(GitCommitMode.MANUAL.mode()));
 
                 userProps.store(new FileWriter(userPropsPath), context.getUser().getEmail() + " - env properties");
                 AESProvider.encryptFile(userPropsPath, userPropsPath, cipher.getCipherIn());
@@ -140,4 +143,20 @@ public class EnvironServiceImpl implements EnvironService {
     }
 
     @Override public HashServiceProvider getHashServiceProvider() { return hashServiceProvider; }
+
+    @Override public String getEnv(final Environ environ, final String key) {
+        return (key != null && !key.isEmpty() && environ.getEnv().get(key) != null) ? environ.getEnv().get(key).toString() : null;
+    }
+
+    @Override
+    public Environ setEnv(final Environ environ, final String key, final String value) {
+        environ.getEnv().put(key, value);
+        return environ;
+    }
+
+    @Override
+    // TODO : use a PropertyBean
+    public Environ updateUserEnviron(final RuntimeContext context) {
+        return null;
+    }
 }

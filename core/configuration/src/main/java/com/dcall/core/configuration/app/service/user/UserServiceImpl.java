@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
             context.systemContext().setRepository(versionServiceProvider.gitService().createSystemRepository(context));
             versionServiceProvider.gitService()
                     .commitSystemRepository(context, context.systemContext().getRepository(),
-                            GitMessage.getLocalSnapshotUserCreatedMsg(context.userContext().getUser()));
+                            GitMessage.getLocalSnapshotUserMsg(context.userContext().getUser(), "New User"));
         }
     }
 

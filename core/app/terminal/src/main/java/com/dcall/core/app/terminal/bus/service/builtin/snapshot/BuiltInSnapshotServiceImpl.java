@@ -30,7 +30,7 @@ public class BuiltInSnapshotServiceImpl extends AbstractCommand implements Built
         final VersionServiceProvider provider = getContext().serviceContext().serviceProvider().versionServiceProvider();
 
         if (repository != null) {
-            final String defaultMsg = GitMessage.getLocalSnapshotCommitMsg(this.getContext().userContext().getUser());
+            final String defaultMsg = commitMessage("Snapshot");
             final String commitMsg = msg != null && !msg.isEmpty() ?  defaultMsg + " - " + msg : defaultMsg;
             final String revMsg =  provider.gitService().commitSystemRepository(getContext(), repository, commitMsg).getFullMessage();
 

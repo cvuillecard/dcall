@@ -8,12 +8,8 @@ import java.util.Locale;
 
 public final class GitMessage {
 
-    public static String getLocalSnapshotCommitMsg(final User user) {
-        return getFormatedMessage(user, "LOCAL", "Snapshot");
-    }
-
-    public static String getLocalSnapshotUserCreatedMsg(final User user) {
-        return getFormatedMessage(user, "LOCAL", "New User");
+    public static String getLocalSnapshotUserMsg(final User user, final String msg) {
+        return getFormatedMessage(user, "LOCAL", msg);
     }
 
     public static String getMountPointMsg(final User user) {
@@ -26,5 +22,4 @@ public final class GitMessage {
 
         return prefix + " < " + DateUtils.getDateFormated("yyyy/MM/dd", today) + " at " + DateUtils.getTime(locale, today)  + " > " + suffix + " : " + user.getLogin();
     }
-
 }
