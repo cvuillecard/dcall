@@ -1,9 +1,9 @@
-package com.dcall.core.configuration.generic.list;
+package com.dcall.core.configuration.utils.list;
 
 import java.util.Arrays;
 import java.util.Objects;
 
-public abstract class AbstractList implements com.dcall.core.configuration.generic.list.List {
+public abstract class AbstractList implements com.dcall.core.configuration.utils.list.List {
     private List next = null;
     private List prev = null;
     private Object data = null;

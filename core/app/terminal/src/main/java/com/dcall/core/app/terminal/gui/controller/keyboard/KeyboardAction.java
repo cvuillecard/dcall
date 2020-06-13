@@ -46,5 +46,5 @@ public enum KeyboardAction {
     public String getKeyControl() { return keyControl; }
     public Runnable getFunction() { return function; }
 
-    public int intValue() { return keyControl != null ? (int)keyControl.toCharArray()[0] : -1; }
+    public int intValue() { return keyControl != null ? keyControl.toCharArray()[0] : -1; }
 }

@@ -1,4 +1,4 @@
-package com.dcall.core.configuration.generic.list;
+package com.dcall.core.configuration.utils.list;
 
 import java.io.Serializable;
 
