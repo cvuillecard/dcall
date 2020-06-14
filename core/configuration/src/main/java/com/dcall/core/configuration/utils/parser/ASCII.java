@@ -2,19 +2,19 @@ package com.dcall.core.configuration.utils.parser;
 
 public final class ASCII {
     // alpha
-    private static final int A = 'A';
-    private static final int Z = 'Z';
-    private static final int a = 'a';
-    private static final int z = 'z';
+    private static final int A = 65; // 'A'
+    private static final int Z = 90; // 'Z'
+    private static final int a = 97; // 'a'
+    private static final int z = 122; // 'z'
     // num
-    private static final int zero = '0';
-    private static final int nine = '9';
+    private static final int zero = 48; // '0'
+    private static final int nine = 57; // '9'
     // backslash
-    private static final int backspace = '\b';
-    private static final int carriage_return = '\r';
-    private static final int new_line = '\n';
-    private static final int tab = '\t';
-    private static final int NUL = '\0';
+    private static final int backspace = 8; // '\b'
+    private static final int horizontal_tab = 9; // '\t'
+    private static final int new_line = 10; // '\n'
+    private static final int carriage_return = 13; // '\r'
+    private static final int NUL = 0; // '\0'
     // special
     private static final int space = 32;
     private static final int openParenthesis = 40;
@@ -41,7 +41,7 @@ public final class ASCII {
     public static boolean isUnaryOperator(final char c) { return isAnd(c) || isOr(c); }
     public static boolean isArithmeticOperator(final char c) { return isMul(c) || isPlus(c) || isMinus(c) || isDiv(c); }
     public static boolean isOperator(final char c) { return isUnaryOperator(c) || isArithmeticOperator(c); }
-    public static boolean isTab(final char c) { return c == tab; }
+    public static boolean isTab(final char c) { return c == horizontal_tab; }
     public static boolean isNewLine(final char c) { return c == new_line || c == carriage_return; }
     public static boolean isBlank(final char c) { return isSpace(c) || isTab(c); }
     public static boolean isAlpha(final char c) { return (c >= A && c <= Z) || (c >= a && c <= z); }

@@ -16,6 +16,7 @@ public final class Parser {
         return c -> !ASCII.isOperator(c) && !ASCII.isParenthesis(c);
     }
 
+    // could be modified to be specialized with any token for counting open/close delimiters in string
     public int endParenthesisIdx(final CharSequence seq, int idx) {
         int openParenthesis = 1;
         int closeParenthesis = 0;
@@ -42,6 +43,7 @@ public final class Parser {
             int idx = 0;
             while ((idx = IterStringUtils.iter(seq, idx, c -> ASCII.isBlank(c) || ASCII.isCloseParenthesis(c))) < seq.length()) {
                 BTree<CharSequence> operator = null;
+
                 if (ASCII.isOperator(seq.charAt(idx))) {
                     operator = new Node<>(seq.subSequence(idx, idx + 1));
                     if (ptr != null && operator.getLeft() == null)
@@ -49,28 +51,19 @@ public final class Parser {
                     idx++;
                     idx = IterStringUtils.iter(seq, idx, c -> ASCII.isBlank(c));
                 }
+
                 if (ASCII.isOpenParenthesis(seq.charAt(idx))) {
                     idx++;
                     int end = endParenthesisIdx(seq, idx);
                     if (end  > idx) {
-                        final BTree<CharSequence> exp = parse(seq.subSequence(idx, end));
-                        if (operator != null) {
-                            operator.setRight(exp);
-                            ptr = operator;
-                        } else
-                            ptr = exp;
+                        ptr = updateRef(ptr, operator, parse(seq.subSequence(idx, end)));
                         idx = end;
                     }
                 }
                 else {
                     int end = IterStringUtils.iter(seq, idx, isNotToken());
                     if (end > idx) {
-                        final Node exp = new Node(seq.subSequence(idx, end));
-                        if (operator != null) {
-                            operator.setRight(exp);
-                            ptr = operator;
-                        } else
-                            ptr = exp;
+                        ptr = updateRef(ptr, operator, new Node(seq.subSequence(idx, end)));
                         idx = end;
                     }
                 }
@@ -81,6 +74,16 @@ public final class Parser {
         }
 
         return ptr;
+    }
+
+    private BTree<CharSequence> updateRef(BTree<CharSequence> ref, final BTree<CharSequence> operator, final BTree<CharSequence> exp) {
+        if (operator != null) {
+            operator.setRight(exp);
+            ref = operator;
+        } else
+            ref = exp;
+
+        return ref;
     }
 
 }

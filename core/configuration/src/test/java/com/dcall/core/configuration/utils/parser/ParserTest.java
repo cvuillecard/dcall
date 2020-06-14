@@ -30,7 +30,7 @@ public class ParserTest {
     }
 
     @Test
-    public void should_parse_string_as_btree_parseExp() {
+    public void should_parse_string_as_btree_parse() {
         final String empty = "";
         final String exp1 = "env set auto_commit=true";
         final String exp2 = "(identity get email)";
