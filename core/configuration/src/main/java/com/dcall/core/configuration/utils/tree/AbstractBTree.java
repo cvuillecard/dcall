@@ -25,4 +25,20 @@ public abstract class AbstractBTree<T> implements BTree<T> {
     @Override public BTree<T> setLeft(final BTree<T> left) { this.left = left; left.setParent(this); return this; }
     @Override public BTree<T> setRight(final BTree<T> right) { this.right = right; right.setParent(this); return this; }
     @Override public BTree<T> setParent(final BTree<T> parent) { this.parent= parent; return this; }
+
+    @Override
+    public BTree<T> firstLeft() {
+        BTree<T> ptr = this;
+        while (ptr.getLeft() != null) ptr = ptr.getLeft();
+
+        return ptr;
+    }
+
+    @Override
+    public BTree<T> firstRight() {
+        BTree<T> ptr = this;
+        while (ptr.getRight() != null) ptr = ptr.getRight();
+
+        return ptr;
+    }
 }

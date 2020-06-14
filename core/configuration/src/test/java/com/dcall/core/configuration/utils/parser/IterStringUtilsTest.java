@@ -34,7 +34,7 @@ public final class IterStringUtilsTest {
         final int nbSpaces = spacesStr.length();
         final CharSequence str = alphaNumWithSpaces;
         int idx = 0;
-        idx = IterStringUtils.iter(alphaNumWithSpaces, idx, c -> ASCII.isSpace(c));
+        idx = IterStringUtils.iterFront(alphaNumWithSpaces, idx, c -> ASCII.isSpace(c));
 
         Assert.assertEquals(nbSpaces, idx);
         Assert.assertTrue(ASCII.isAlphaNum(str.charAt(idx)));
@@ -45,7 +45,7 @@ public final class IterStringUtilsTest {
         final int nbAlpha = alphaStr.length();
         final CharSequence str = alphaNumStr;
         int idx = 0;
-        idx = IterStringUtils.iter(str, idx, c -> ASCII.isAlpha(c));
+        idx = IterStringUtils.iterFront(str, idx, c -> ASCII.isAlpha(c));
 
         Assert.assertEquals(nbAlpha, idx);
     }
@@ -53,8 +53,8 @@ public final class IterStringUtilsTest {
     @Test
     public void should_iterate_num_in_str_iterAlpha() {
         timer.startTimer();
-        Assert.assertEquals(numStr.length(), IterStringUtils.iter(numStr, 0, c -> ASCII.isNum(c)));
-        timer.stopTimer().logTime("should_iterate_num_in_str_iterAlpha -> with IterStringUtils.iter(..)");
+        Assert.assertEquals(numStr.length(), IterStringUtils.iterFront(numStr, 0, c -> ASCII.isNum(c)));
+        timer.stopTimer().logTime("should_iterate_num_in_str_iterAlpha -> with IterStringUtils.iterFront(..)");
 
         timer.startTimer();
         int i = 0;
@@ -69,7 +69,7 @@ public final class IterStringUtilsTest {
         final int nbAlphaNum = alphaNumStr.length();
         final CharSequence str = alphaNumStr;
         int idx = 0;
-        idx = IterStringUtils.iter(str, idx, c -> ASCII.isAlphaNum(c));
+        idx = IterStringUtils.iterFront(str, idx, c -> ASCII.isAlphaNum(c));
 
         Assert.assertEquals(nbAlphaNum, idx);
     }
@@ -79,7 +79,7 @@ public final class IterStringUtilsTest {
         final int nbSymbols = notAlphaNumStr.length();
         final CharSequence str = notAlphaNumStr;
         int idx = 0;
-        idx = IterStringUtils.iter(str, idx, c -> !ASCII.isAlphaNum(c));
+        idx = IterStringUtils.iterFront(str, idx, c -> !ASCII.isAlphaNum(c));
 
         Assert.assertEquals(nbSymbols, idx);
     }
@@ -91,25 +91,25 @@ public final class IterStringUtilsTest {
         int idx = 0;
 
         // when backslash continue iteration
-        idx = IterStringUtils.iter(str, idx, c -> ASCII.isBackslash(c));
+        idx = IterStringUtils.iterFront(str, idx, c -> ASCII.isBackslash(c));
 
         Assert.assertEquals(nbBackslash, idx);
         Assert.assertFalse(ASCII.isBackslash(str.charAt(idx)));
         Assert.assertTrue(ASCII.isSpace(str.charAt(idx)));
 
         // when space continue iteration
-        idx = IterStringUtils.iter(str, idx, c -> ASCII.isBlank(c));
+        idx = IterStringUtils.iterFront(str, idx, c -> ASCII.isBlank(c));
 
         Assert.assertFalse(ASCII.isSpace(str.charAt(idx)));
         Assert.assertFalse(ASCII.isAlphaNum(str.charAt(idx)));
 
         // when not alpha num continue iteration
-        idx = IterStringUtils.iter(str, idx, c -> !ASCII.isAlphaNum(c));
+        idx = IterStringUtils.iterFront(str, idx, c -> !ASCII.isAlphaNum(c));
 
         Assert.assertTrue(ASCII.isAlphaNum(str.charAt(idx)));
 
         // when alpha num continue iteration
-        idx = IterStringUtils.iter(str, idx, c -> ASCII.isAlphaNum(c));
+        idx = IterStringUtils.iterFront(str, idx, c -> ASCII.isAlphaNum(c));
         Assert.assertEquals(str.length(), idx);
     }
 
@@ -119,7 +119,7 @@ public final class IterStringUtilsTest {
         final int nbAlpha = alphaStr.length();
         final int nbNum = numStr.length();
         final CharSequence str = notBackslashStr;
-        int idx = IterStringUtils.iter(str, 0, c -> !ASCII.isAlphaNum(c));
+        int idx = IterStringUtils.iterFront(str, 0, c -> !ASCII.isAlphaNum(c));
 
         CharSequence alpha = IterStringUtils.accumulate(str, idx, c -> ASCII.isAlpha(c));
         CharSequence num = IterStringUtils.accumulate(str, idx + alpha.length(), c -> ASCII.isNum(c));
@@ -161,7 +161,7 @@ public final class IterStringUtilsTest {
     @Test
     public void should_accumulate_alpha_num_using_accumulateList() {
         timer.startTimer();
-        List<CharSequence> list = IterStringUtils.accumulateList(totoStr, 0, c -> ASCII.isAlphaNum(c));
+        final List<CharSequence> list = IterStringUtils.accumulateList(totoStr, 0, c -> ASCII.isAlphaNum(c));
         timer.stopTimer();
 
         timer.logTime("should_accumulate_alpha_num_accumulateList");
@@ -184,8 +184,8 @@ public final class IterStringUtilsTest {
         int idx = 0;
         int end = 0;
 
-        while ((idx = IterStringUtils.iter(totoStr, idx, c -> ASCII.isBlank(c))) < totoStr.length()) {
-            end = IterStringUtils.iter(totoStr, idx, c -> ASCII.isAlphaNum(c));
+        while ((idx = IterStringUtils.iterFront(totoStr, idx, c -> ASCII.isBlank(c))) < totoStr.length()) {
+            end = IterStringUtils.iterFront(totoStr, idx, c -> ASCII.isAlphaNum(c));
             if (end > idx) {
                 list.add(totoStr.subSequence(idx, end));
                 idx = end;
@@ -210,17 +210,16 @@ public final class IterStringUtilsTest {
     public void should_accumulate_alpha_num_using_inner_while() {
         timer.startTimer();
         final List<String> list = new ArrayList<>();
-        final CharSequence strArray = totoStr;
+        final CharSequence str = totoStr;
 
         int i = 0;
-        while (i < strArray.length()) {
-            final StringBuilder sb = new StringBuilder();
-            while (i < strArray.length() && ASCII.isSpace(strArray.charAt(i))) i++;
-            while (i < strArray.length() && ASCII.isAlphaNum(strArray.charAt(i)))
-                sb.append(strArray.charAt(i++));
-            final String s = sb.toString();
-            if (s.length() > 0)
-                list.add(s);
+        while (i < str.length()) {
+            while (i < str.length() && ASCII.isSpace(str.charAt(i))) i++;
+            int start = i;
+            while (i < str.length() && ASCII.isAlphaNum(str.charAt(i)))
+                i++;
+            if (i > start)
+                list.add(str.subSequence(start, i).toString());
         }
         timer.stopTimer();
 

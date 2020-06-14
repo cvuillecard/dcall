@@ -12,4 +12,7 @@ public interface BTree<T> {
     BTree<T> setLeft(final BTree<T> left);
     BTree<T> setRight(final BTree<T> right);
     BTree<T> setParent(final BTree<T> parent);
+
+    BTree<T> firstLeft();
+    BTree<T> firstRight();
 }
