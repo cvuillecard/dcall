@@ -72,7 +72,7 @@ public class ParserTest {
         final String exp4 = "((identity get email & identity get surname) & identity get age)";
         final String exp5 = "((identity get email & identity get surname) & (identity get age))";
 
-        BTree<CharSequence> NUL = parser.parse("");
+        BTree<CharSequence> NUL = parser.parse(empty);
         BTree<CharSequence> tree1 = parser.parse(exp1);
         BTree<CharSequence> tree2 = parser.parse(exp2);
         BTree<CharSequence> tree3 = parser.parse(exp3);
@@ -92,5 +92,32 @@ public class ParserTest {
         Assert.assertEquals("identity get surname", tree3.getParent().getRight().getData());
 
         //todo not finished
+    }
+
+    @Test
+    public void should_parse_string_as_btree_parseExp() {
+        final String empty = "";
+        final String exp1 = "env set auto_commit=true";
+        final String exp2 = "(identity get email)";
+        final String exp3 = "(identity get email) & (identity get surname)";
+        final String exp4 = "((identity get email & identity get surname) & identity get age)";
+        final String exp5 = "((identity get email & identity get surname) & (identity get age))";
+        final String exp6 = " 1 + ( 2 * ( 3 + 4 ))";
+        final String exp7 = " 1 + ((2 + 3) * ( 4 + 5 ))";
+        final String exp8 = " 1 + (((2 + 3) * ( 4 + 5 )) / 3)";
+
+        BTree<CharSequence> NUL = parser.parse(empty);
+        BTree<CharSequence> tree1 = parser.parseExp(exp1);
+        BTree<CharSequence> tree2 = parser.parseExp(exp2);
+        BTree<CharSequence> tree3 = parser.parseExp(exp3);
+        BTree<CharSequence> tree4 = parser.parseExp(exp4);
+        BTree<CharSequence> tree5 = parser.parseExp(exp5);
+        BTree<CharSequence> tree6 = parser.parseExp(exp6);
+        BTree<CharSequence> tree7 = parser.parseExp(exp7);
+        BTree<CharSequence> tree8 = parser.parseExp(exp8);
+
+        Assert.assertTrue(NUL == null);
+        Assert.assertEquals(exp1, tree1.getData());
+        Assert.assertEquals(exp2.substring(1, exp2.length() - 1), tree2.getData().toString());
     }
 }
