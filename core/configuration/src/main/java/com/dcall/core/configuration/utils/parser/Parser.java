@@ -4,8 +4,6 @@ import com.dcall.core.configuration.utils.tree.BTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -36,7 +34,7 @@ public final class Parser {
         return idx - 1;
     }
 
-    public BTree<CharSequence> parseExp(final CharSequence seq) {
+    public BTree<CharSequence> parse(final CharSequence seq) {
         if (seq == null || seq.length() == 0) return null;
         BTree<CharSequence> ptr = null;
 
@@ -55,7 +53,7 @@ public final class Parser {
                     idx++;
                     int end = endParenthesisIdx(seq, idx);
                     if (end  > idx) {
-                        final BTree<CharSequence> exp = parseExp(seq.subSequence(idx, end));
+                        final BTree<CharSequence> exp = parse(seq.subSequence(idx, end));
                         if (operator != null) {
                             operator.setRight(exp);
                             ptr = operator;
@@ -85,41 +83,4 @@ public final class Parser {
         return ptr;
     }
 
-    public BTree<CharSequence> parse(final CharSequence seq) {
-        if (seq == null || seq.length() == 0) return null;
-        BTree<CharSequence> ptr = null;
-        BTree<CharSequence> first = null;
-
-        try {
-            int idx = 0;
-            while ((idx = IterStringUtils.iter(seq, idx, c -> ASCII.isBlank(c) || ASCII.isParenthesis(c))) < seq.length()) {
-                BTree<CharSequence> operator = null;
-                if (ASCII.isOperator(seq.charAt(idx))) {
-                    operator = new Node<>(seq.subSequence(idx, idx + 1));
-                    if (ptr != null && operator.getLeft() == null)
-                        operator.setLeft(ptr);
-                    idx++;
-                    idx = IterStringUtils.iter(seq, idx, c -> ASCII.isBlank(c) || ASCII.isParenthesis(c));
-                }
-                int end = IterStringUtils.iter(seq, idx, isNotToken());
-                if (end > idx) {
-                    final Node exp = new Node(seq.subSequence(idx, end));
-                    if (operator != null) {
-                        operator.setRight(exp);
-                        ptr = operator;
-                    }
-                    else
-                        ptr = exp;
-                    if (first == null)
-                        first = ptr;
-                    idx = end;
-                }
-            }
-        }
-        catch (Exception e) {
-            LOG.debug(e.getMessage());
-        }
-
-        return first;
-    }
 }
