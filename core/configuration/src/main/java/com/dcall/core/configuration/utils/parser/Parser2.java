@@ -1,5 +1,10 @@
 package com.dcall.core.configuration.utils.parser;
 
+import com.dcall.core.configuration.utils.parser.expression.Expression;
+import com.dcall.core.configuration.utils.parser.expression.Mutator;
+import com.dcall.core.configuration.utils.parser.expression.operand.Operand;
+import com.dcall.core.configuration.utils.parser.expression.operator.Operator;
+import com.dcall.core.configuration.utils.parser.expression.operator.OperatorType;
 import com.dcall.core.configuration.utils.tree.BTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +14,8 @@ import java.util.function.Predicate;
 /**
  *  Simple scannerless parser : simple parsing based on ASCII class for operators and token definition.
  */
-public final class Parser {
-    private static final Logger LOG = LoggerFactory.getLogger(Parser.class);
+public final class Parser2 {
+    private static final Logger LOG = LoggerFactory.getLogger(Parser2.class);
     private BTree first;
 
     /**
@@ -69,15 +74,16 @@ public final class Parser {
      * @param endIdx iteration's end index [exclusive]
      * @return the padding of operator parsed in char sequence
      */
-    public int parseOperator(final BTree<CharSequence> node, final CharSequence seq, final int idx, final int endIdx) {
+    public int parseOperator(final BTree<Expression> node, final CharSequence seq, final int idx, final int endIdx) {
         final int nextIdx = idx + 1;
+        final Operator operator = new Operator();
 
         if (nextIdx < endIdx && ASCII.isLogicalOperator(seq.charAt(idx), seq.charAt(nextIdx))) {
-            node.setData(seq.subSequence(idx, nextIdx + 1).toString());
+            node.setData(operator.setValue(seq.subSequence(idx, nextIdx + 1)).setOperatorType(OperatorType.LOGICAL));
             return 2;
         }
         else {
-            node.setData(seq.subSequence(idx, idx + 1));
+            node.setData(operator.setValue(seq.subSequence(idx, idx + 1)).setOperatorType(OperatorType.ARITHMETIC));
             return 1;
         }
     }
@@ -93,8 +99,9 @@ public final class Parser {
      * @param node the node pointer reference
      * @return 'ref' : the pointer updated
      */
-    private BTree<CharSequence> updateRef(BTree<CharSequence> ref, final BTree<CharSequence> operator, final BTree<CharSequence> node) {
+    private BTree<Expression> updateRef(BTree<Expression> ref, final BTree<Expression> operator, final BTree<Expression> node) {
         if (operator != null) {
+            ((Operator)operator.getData()).setRight(node.getData());
             operator.setRight(node);
             ref = operator;
         } else
@@ -114,19 +121,21 @@ public final class Parser {
      * @param endIdx the end idx [exclusive]
      * @return BTree - the BTree of expressions constructed
      */
-    public BTree<CharSequence> parse(final CharSequence seq, int idx, final int endIdx) {
+    public BTree<Expression> parse(final CharSequence seq, int idx, final int endIdx) {
         if (seq == null || seq.length() == 0) return null;
-        BTree<CharSequence> ptr = null;
+        BTree<Expression> ptr = null;
 
         try {
             while ((idx = IterStringUtils.iterFront(seq, idx, endIdx, c -> ASCII.isBlank(c) || ASCII.isCloseParenthesis(c))) < endIdx) {
-                BTree<CharSequence> operator = null;
+                BTree<Expression> operator = null;
 
                 if (ASCII.isOperator(seq.charAt(idx))) {
                     idx += parseOperator(operator = new Node<>(), seq, idx, endIdx);
                     idx = IterStringUtils.iterFront(seq, idx, endIdx, c -> ASCII.isBlank(c));
-                    if (ptr != null)
+                    if (ptr != null) {
                         operator.setLeft(ptr);
+                        ((Operator)operator.getData()).setLeft(ptr.getData());
+                    }
                 }
 
                 if (ASCII.isOpenParenthesis(seq.charAt(idx))) {
@@ -140,7 +149,8 @@ public final class Parser {
                 else {
                     int end = IterStringUtils.iterFront(seq, idx, endIdx, isNotToken());
                     if (end > idx) {
-                        ptr = updateRef(ptr, operator, new Node(seq.subSequence(idx, end)));
+                        Operand operand = new Operand(Mutator.mutate(seq.subSequence(idx, end)));
+                        ptr = updateRef(ptr, operator, new Node(operand));
                         idx = end;
                     }
                 }
@@ -155,5 +165,5 @@ public final class Parser {
 
     public BTree getFirst() { return first; }
 
-    Parser reset() { this.first = null; return this; }
+    Parser2 reset() { this.first = null; return this; }
 }
