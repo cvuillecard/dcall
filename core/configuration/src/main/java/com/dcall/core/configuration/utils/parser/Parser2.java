@@ -1,5 +1,6 @@
 package com.dcall.core.configuration.utils.parser;
 
+import com.dcall.core.configuration.utils.StringUtils;
 import com.dcall.core.configuration.utils.parser.expression.Expression;
 import com.dcall.core.configuration.utils.parser.expression.Mutator;
 import com.dcall.core.configuration.utils.parser.expression.operand.Operand;
@@ -149,7 +150,7 @@ public final class Parser2 {
                 else {
                     int end = IterStringUtils.iterFront(seq, idx, endIdx, isNotToken());
                     if (end > idx) {
-                        Operand operand = new Operand(Mutator.mutate(seq.subSequence(idx, end)));
+                        Operand operand = new Operand(Mutator.mutate(StringUtils.trim(seq.subSequence(idx, end))));
                         ptr = updateRef(ptr, operator, new Node(operand));
                         idx = end;
                     }

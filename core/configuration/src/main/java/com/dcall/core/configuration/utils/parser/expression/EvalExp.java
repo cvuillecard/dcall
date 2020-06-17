@@ -14,21 +14,28 @@ public final class EvalExp {
 
         while (ptr != null) {
             if (ptr.getData().getType().equals(ExpressionType.OPERATOR)) {
-                if (((Operator)ptr.getData()).getRight().getType().equals(ExpressionType.OPERATOR)) {
+                if (((Operator)ptr.getData()).getRight().getType().equals(ExpressionType.OPERATOR))
                     return eval(ptr.getRight().firstLeft(), ptr);
-                }
-                exp = ((Operator) ptr.getData()).run();
-                if (ptr.getParent() != null) {
-                    if (ptr.getParent() != parent)
-                        ((Operator) ptr.getParent().getData()).setLeft(exp);
-                    else
-                        ((Operator) ptr.getParent().getData()).setRight(exp);
-                }
+                updateParent(parent, ptr, (exp = ((Operator) ptr.getData()).run()));
             }
             ptr = ptr.getParent();
         }
 
         return exp;
+    }
+
+    private static void updateParent(final BTree<Expression> parent, final BTree<Expression> ptr, final Expression exp) {
+        if (ptr.getParent() != null) {
+            final Operator operator = (Operator) ptr.getParent().getData();
+            if (ptr.getParent() != parent) {
+                if (operator.getLeft().getType().equals(ExpressionType.OPERATOR))
+                    operator.setLeft(exp);
+                else
+                    operator.setRight(exp);
+            }
+            else
+                operator.setRight(exp);
+        }
     }
 
 }

@@ -30,6 +30,14 @@ public final class StringUtils {
         return seq.subSequence(startIdx, endIdx + 1);
     }
 
+    public static CharSequence trimLeft(final CharSequence seq) {
+        return seq.subSequence(0, IterStringUtils.iterFront(seq, 0, seq.length(), c -> ASCII.isBlank(c)));
+    }
+
+    public static CharSequence trimRight(final CharSequence seq) {
+        return seq.subSequence(0, IterStringUtils.iterBack(seq, seq.length() - 1, 0, c -> ASCII.isBlank(c)));
+    }
+
     public static boolean isEmpty(final String s) {
         return s == null || s.isEmpty();
     }
