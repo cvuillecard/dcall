@@ -3,8 +3,12 @@ package com.dcall.core.configuration.utils.parser;
 import com.dcall.core.configuration.utils.tree.BTree;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ParserTest {
+    private static final Logger LOG = LoggerFactory.getLogger(ParserTest.class);
+
     private static final Parser parser = new Parser();
 
     @Test
@@ -289,10 +293,33 @@ public class ParserTest {
         Assert.assertTrue(leftSum.getLeft().getLeft() == null && leftSum.getLeft().getRight() == null);
         Assert.assertTrue(leftSum.getRight().getLeft() == null && leftSum.getRight().getRight() == null);
 
-        Assert.assertEquals("1" , parser.getFirst().getData().toString().trim());
-        Assert.assertEquals("+" , parser.getFirst().getParent().getData());
-        Assert.assertEquals("3" , parser.getFirst().getParent().getRight().getData().toString().trim());
+        Assert.assertEquals("1", parser.getFirst().getData().toString().trim());
+        Assert.assertEquals("+", parser.getFirst().getParent().getData());
+        Assert.assertEquals("3", parser.getFirst().getParent().getRight().getData().toString().trim());
         Assert.assertEquals("/", parser.getFirst().getParent().getParent().getData());
         Assert.assertEquals("5", parser.getFirst().getParent().getParent().getRight().getData());
     }
+
+//    public CharSequence evalTree(final BTree<CharSequence> tree) {
+//        BTree<CharSequence> ptr = tree;
+//        BTree<CharSequence> last = null;
+//        BTree<CharSequence> visited = null;
+//        CharSequence res = "";
+//
+//        while (ptr != null && ptr != visited) {
+//            if (ptr.getRight() != null && ptr.getRight() != last) {
+//                res = res.toString() + evalTree(ptr.getRight().firstLeft());
+//                visited = ptr.getParent();
+//            }
+//            else {
+//                last = ptr;
+//                res = last.getData().toString() + res.toString();
+//            }
+//            ptr = ptr.getParent();
+//        }
+//        LOG.debug(res.toString());
+//
+//        return res;
+//    }
+
 }

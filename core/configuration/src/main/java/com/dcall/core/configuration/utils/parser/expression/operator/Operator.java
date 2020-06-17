@@ -28,13 +28,29 @@ public class Operator extends Expression {
     }
 
     public Expression run() {
-        if (left != null && right != null && resolver != null) {
-            return resolver.apply(this);
+        if (this.left instanceof Operand && this.right instanceof Operand) {
+            Operand left = (Operand)this.getLeft();
+            Operand right = (Operand) this.getRight();
+            Operand result = new Operand<>();
+            switch (this.getValue().toString()) {
+                case "+" : result.setValue((Long)left.getValue() + (Long)right.getValue()); break;
+                case "-" : result.setValue((Long)left.getValue() - (Long)right.getValue()); break;
+                case "*" : result.setValue((Long)left.getValue() * (Long)right.getValue()); break;
+                case "/" : result.setValue((Long)left.getValue() / (Long)right.getValue()); break;
+                default : break;
+            }
+            return result;
         }
+        else
+            LOG.debug("Cannot run operator with a left operator as left operand or an operator as right operand");
+//        if (left != null && right != null && resolver != null) {
+//            return resolver.apply(this);
+//        }
+//
+//        debugOperand();
 
-        debugOperand();
 
-        return null;
+        return this;
     }
 
     private void debugOperand() {
