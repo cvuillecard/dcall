@@ -29,7 +29,7 @@ public final class Parser2 {
     }
 
     /**
-     * Parses the char sequence and count the number of open tokens and close tokens given in parameters.
+     * Iterates the char sequence and count the number of open tokens and close tokens given in parameters.
      *
      * if the number of openToken is not equal to the number of closeToken then an exception is thrown else idx of last closeToken is returned.
      *
@@ -40,7 +40,7 @@ public final class Parser2 {
      * @param closeToken the int value of the token char closing
      * @return index of last closing token in char sequence
      */
-    public int parseTokenGroup(final CharSequence seq, int idx, final int endIdx, final int openToken, final int closeToken) {
+    public int iterTokenGroup(final CharSequence seq, int idx, final int endIdx, final int openToken, final int closeToken) {
         int nOpen = 1;
         int nClose = 0;
 
@@ -58,6 +58,21 @@ public final class Parser2 {
             );
 
         return idx - 1;
+    }
+
+    /**
+     * Check the operator type and set it as value on operator class.
+     *
+     * Actually : an operator composed of tow unary operators is considered as LOGICAL,
+     * and an unary operator as ARITHMETIC except for '&' or '|' operators considered as BITWISE
+     *
+     * Note : this behaviour is going to change
+     *
+     * @param operator
+     * @return
+     */
+    private OperatorType unaryOperatorType(final Operator operator) {
+        return ASCII.isBitwise(operator.getValue().charAt(0)) ? OperatorType.BITWISE : OperatorType.ARITHMETIC;
     }
 
     /**
@@ -84,7 +99,7 @@ public final class Parser2 {
             return 2;
         }
         else {
-            node.setData(operator.setValue(seq.subSequence(idx, idx + 1)).setOperatorType(OperatorType.ARITHMETIC));
+            node.setData(operator.setValue(seq.subSequence(idx, idx + 1)).setOperatorType(unaryOperatorType(operator)));
             return 1;
         }
     }
@@ -141,7 +156,7 @@ public final class Parser2 {
 
                 if (ASCII.isOpenParenthesis(seq.charAt(idx))) {
                     idx++;
-                    int endTokenIdx = parseTokenGroup(seq, idx, endIdx, ASCII.openParenthesis, ASCII.closeParenthesis);
+                    int endTokenIdx = iterTokenGroup(seq, idx, endIdx, ASCII.openParenthesis, ASCII.closeParenthesis);
                     if (endTokenIdx  > idx) {
                         ptr = updateRef(ptr, operator, parse(seq, idx, endTokenIdx));
                         idx = endTokenIdx;

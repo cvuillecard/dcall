@@ -38,12 +38,12 @@ public final class ASCII {
     public static boolean isDiv(final char c) { return c == div; }
     public static boolean isAnd(final char c) { return c == and; }
     public static boolean isOr(final char c) { return c == or; }
-    public static boolean isUnaryOperator(final char c) { return isAnd(c) || isOr(c); }
+    public static boolean isBitwise(final char c) { return isAnd(c) || isOr(c); }
     public static boolean isLogicalAnd(final char c, final char d) { return isAnd(c) && isAnd(d); }
     public static boolean isLogicalOr(final char c, final char d) { return isOr(c) && isOr(d); }
     public static boolean isLogicalOperator(final char c, final char d) { return isLogicalAnd(c, d) || isLogicalOr(c, d); }
     public static boolean isArithmeticOperator(final char c) { return isMul(c) || isPlus(c) || isMinus(c) || isDiv(c); }
-    public static boolean isOperator(final char c) { return isUnaryOperator(c) || isArithmeticOperator(c); }
+    public static boolean isOperator(final char c) { return isBitwise(c) || isArithmeticOperator(c); }
     public static boolean isTab(final char c) { return c == horizontal_tab; }
     public static boolean isNewLine(final char c) { return c == new_line || c == carriage_return; }
     public static boolean isBlank(final char c) { return isSpace(c) || isTab(c); }
