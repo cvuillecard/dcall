@@ -1,7 +1,7 @@
 package com.dcall.core.configuration.utils;
 
-import com.dcall.core.configuration.utils.parser.ASCII;
-import com.dcall.core.configuration.utils.parser.IterStringUtils;
+import com.dcall.core.configuration.generic.parser.ASCII;
+import com.dcall.core.configuration.generic.parser.IterStringUtils;
 
 import java.util.List;
 
@@ -40,5 +40,9 @@ public final class StringUtils {
 
     public static boolean isEmpty(final String s) {
         return s == null || s.isEmpty();
+    }
+
+    public static String[] toLowerCaseArray(final CharSequence seq) {
+        return seq.toString().trim().toLowerCase().split(" ");
     }
 }

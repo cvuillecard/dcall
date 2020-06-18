@@ -1,15 +1,17 @@
 package com.dcall.core.app.terminal.bus.handler;
 
 import com.dcall.core.app.terminal.bus.input.InputEntry;
-import com.dcall.core.app.terminal.bus.service.builtin.BuiltInService;
-import com.dcall.core.app.terminal.bus.service.builtin.BuiltInServiceImpl;
+import com.dcall.core.app.terminal.bus.parser.solver.BuiltInOperandSolver;
+import com.dcall.core.app.terminal.bus.parser.solver.BuiltInOperatorSolver;
+import com.dcall.core.configuration.app.service.builtin.BuiltInService;
+import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.app.terminal.vertx.constant.URIConfig;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.service.message.MessageService;
 import com.dcall.core.configuration.app.service.message.MessageServiceImpl;
-import com.dcall.core.configuration.generic.service.command.AbstractCommand;
+import com.dcall.core.configuration.generic.parser.Parser;
 import com.dcall.core.configuration.generic.service.command.GenericCommandService;
 import com.dcall.core.configuration.utils.HelpUtils;
 import org.slf4j.Logger;
@@ -28,6 +30,11 @@ public final class IOHandler {
 
     public void init(final RuntimeContext context) {
         this.runtimeContext = context;
+        this.builtInService.setContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
+
+        ((BuiltInService)builtInService).setParser(
+                new Parser().setOperandSolver(new BuiltInOperandSolver()).setOperatorSolver(new BuiltInOperatorSolver(runtimeContext))
+        );
     }
 
     public boolean handleInput() {
@@ -37,7 +44,7 @@ public final class IOHandler {
 
         if (!lastInput.isEmpty() && !close()) {
             lockDisplay();
-            final byte[] builtInResult = builtInService.init(runtimeContext, HelpUtils.getHelpPath(HelpUtils.HELP)).run(lastInputToArray());
+            final byte[] builtInResult = builtInService.run(new String[] { lastInput.trim().toLowerCase() });
 
             if (builtInResult == null)
                 sendLastInput();
@@ -65,7 +72,6 @@ public final class IOHandler {
     }
 
     public void sendLastInput() {
-//        lockDisplay();
         messageService.sendInputMessage(URIConfig.CMD_LOCAL_PROCESSOR_CONSUMER, lastInput.getBytes(),
                 null,
                 failed -> {

@@ -22,9 +22,10 @@ public abstract class AbstractCommand implements GenericCommandService {
     private RuntimeContext context;
     private String helpFile;
     private byte[] datas;
+    private String[] params;
 
     @Override
-    public AbstractCommand init(final RuntimeContext context, final String helpFile) {
+    public GenericCommandService init(final RuntimeContext context, final String helpFile) {
         this.context = context;
         this.helpFile = helpFile;
 
@@ -76,7 +77,8 @@ public abstract class AbstractCommand implements GenericCommandService {
     @Override
     public byte[] run(final String... params) {
         try {
-            LOG.debug("cmd params : " + StringUtils.listToString(Arrays.asList(params)));
+            if (params != null)
+                LOG.debug("cmd params : " + StringUtils.listToString(Arrays.asList(params)));
             if (this.context == null || this.helpFile == null) {
                 throw new FunctionalException("Missing initialization of Abstract Command > AbstractCommand.init(final RuntimeContext context, final String helpFile) has not been called");
             }
@@ -87,6 +89,11 @@ public abstract class AbstractCommand implements GenericCommandService {
         }
 
         return this.datas;
+    }
+
+    @Override
+    public byte[] run() {
+        return this.run(this.params);
     }
 
     @Override
@@ -101,8 +108,15 @@ public abstract class AbstractCommand implements GenericCommandService {
     public abstract byte[] execute(final String... params) throws Exception;
     public abstract byte[] execute() throws Exception;
 
+    // getter
     @Override public RuntimeContext getContext() { return this.context; }
     @Override public String getHelp() { return this.helpFile; }
+    @Override public String[] getParams() { return params; }
     @Override public byte[] getDatas() { return this.datas; }
 
+    // setter
+    @Override public GenericCommandService setContext(final RuntimeContext context) { this.context = context; return this; }
+    @Override public GenericCommandService setHelp(final String helpFile) { this.helpFile = helpFile; return this; }
+    @Override public GenericCommandService setParams(String[] params) { this.params = params; return this; }
+    @Override public GenericCommandService setDatas(byte[] datas) { this.datas = datas; return this; }
 }
