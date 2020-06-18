@@ -32,4 +32,9 @@ public class Operand<T> extends Expression {
     // setter
     public Operand<T> setValue(final T value) { this.value = value; return this; }
     public Operand<T> setMutator(final Function<CharSequence, T> mutator) { this.mutator = mutator; return this; }
+
+    @Override
+    public String toString() {
+        return this.value.toString();
+    }
 }
