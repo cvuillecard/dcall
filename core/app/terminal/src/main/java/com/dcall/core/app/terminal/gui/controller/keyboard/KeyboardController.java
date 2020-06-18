@@ -380,13 +380,16 @@ public final class KeyboardController {
 
     public static void handleCharacter() {
         if (!keyPressed.isCtrlDown() && !keyPressed.isAltDown()) {
+            final ScreenMetrics screenMetrics = ScreenController.metrics();
+            final ScrollMetrics scrollMetrics = ScreenController.scrollMetrics();
             final String character = keyPressed.getCharacter().toString();
 
             bus.input().current().add(character);
 
-            handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
-
-            DisplayController.displayCharacter(bus.input().current(), ScreenController.metrics(), character);
+            if (hasScrolled(screenMetrics, scrollMetrics))
+                handleScrollOnKeyPress(ScreenController.metrics(), ScreenController.scrollMetrics());
+            else
+                DisplayController.displayCharacter(bus.input().current(), ScreenController.metrics(), character);
         }
     }
 
@@ -429,8 +432,15 @@ public final class KeyboardController {
     }
 
     private static void handleScrollOnKeyPress(ScreenMetrics metrics, ScrollMetrics scrollMetrics) {
-        if (scrollMetrics.currEntry != null && metrics.currY > metrics.maxY)
+        if (hasScrolled(metrics, scrollMetrics)) {
+            metrics.currX = metrics.screenPosX(bus.input().current().posX());
+            metrics.currY = metrics.screenPosY(bus.input().current().posY());
             clearScreen();
+        }
+    }
+
+    private static boolean hasScrolled(ScreenMetrics metrics, ScrollMetrics scrollMetrics) {
+        return scrollMetrics.currEntry != null && metrics.currY > metrics.maxY;
     }
 
     public static void handleNextInput(final boolean isRunningTask) {
