@@ -28,6 +28,7 @@ public final class ArithmeticOperatorSolver implements OperatorSolver {
                 case "-" : result.setValue((Long)left.getValue() - (Long)right.getValue()); break;
                 case "*" : result.setValue((Long)left.getValue() * (Long)right.getValue()); break;
                 case "/" : result.setValue((Long)left.getValue() / (Long)right.getValue()); break;
+                case "%" : result.setValue((Long)left.getValue() % (Long)right.getValue()); break;
                 default : break;
             }
             return result;

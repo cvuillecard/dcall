@@ -23,6 +23,6 @@ public class UserContext {
     public UserContext setUser(final User user) { this.user = user; return this; }
     public UserContext setUserHash(final UserHash<String> userHash) { this.userHash = userHash; return this; }
     public UserContext setEnviron(final Environ environ) { this.environ = environ; return this; }
-    public UserContext setIdentity(Identity identity) { this.identity = identity; return this; }
+    public UserContext setIdentity(final Identity identity) { this.identity = identity; return this; }
     public UserContext setCertificate(final Certificate certificate) { this.certificate = certificate; return this; }
 }

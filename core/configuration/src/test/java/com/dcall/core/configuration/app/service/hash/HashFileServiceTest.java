@@ -31,7 +31,7 @@ public class HashFileServiceTest extends Platform {
         final String hashSalt = HashProvider.seedMd5(salt.getBytes());
         final String root = service.createRootDirectory(pwd, salt);
         final List<String> root2 = service.createDirectories(pwd, salt, "root");
-        final String rootHashPath = service.getHashPath(pwd, HashProvider.seedMd5(salt.getBytes()), "root");
+        final String rootHashPath = service.getHashPath(pwd, hashSalt, "root");
         final String hash = service.getFileHash(pwd, hashSalt, "root");
 
         Assert.assertEquals(MD5_LENGTH, hash.length());

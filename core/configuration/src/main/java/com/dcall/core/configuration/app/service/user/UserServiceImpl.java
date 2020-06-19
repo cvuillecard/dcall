@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
         if (!hasConfiguration)
             context.userContext().getUser().reset();
         else
-            environService.configureEnviron(context.userContext(), false);
+            environService.createUserEnviron(context.userContext(), false);
 
         return hasConfiguration;
     }

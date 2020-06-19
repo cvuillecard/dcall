@@ -5,9 +5,10 @@ import com.dcall.core.configuration.generic.service.command.GenericCommandServic
 
 public interface BuiltInIdentityService extends GenericCommandService {
     Identity getUserIdentity();
-    byte[] getUserProperties(final String... keys);
-    byte[] setUserProperties(final String... args);
+    byte[] getUserIdentity(final String... keys);
+    byte[] setUserIdentity(final String... args);
     byte[] identity(final String... params);
     String entryToString(final String k, final String v);
     String usageSet();
+    String usageDel();
 }

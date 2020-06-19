@@ -88,7 +88,7 @@ public final class GUIProcessor {
                         if (option.equals(LoginOption.NEW_USER) && userService.hasIdentity(runtimeContext.userContext().getUser())) {
                             DisplayController.printWaiting(ScreenController.metrics(), TermAttributes.USER_CREATE_WAIT);
                             userService.encodePassword(runtimeContext.userContext().getUser());
-                            services.environService().configureEnviron(runtimeContext.userContext(), true);
+                            services.environService().createUserEnviron(runtimeContext.userContext(), true);
                             userService.initRepository(runtimeContext, true);
                         }
                         else if (option.equals(LoginOption.LOGIN) && !userService.hasConfiguration(runtimeContext))

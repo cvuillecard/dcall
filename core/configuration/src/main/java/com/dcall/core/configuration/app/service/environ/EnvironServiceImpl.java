@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.Iterator;
 import java.util.Properties;
 
 public class EnvironServiceImpl implements EnvironService {
@@ -33,21 +32,6 @@ public class EnvironServiceImpl implements EnvironService {
     public EnvironServiceImpl(final HashServiceProvider hashServiceProvider) { this.hashServiceProvider = hashServiceProvider; }
 
     @Override
-    public Environ configureEnviron(final UserContext context, final boolean create) {
-        final Environ<String> env = new EnvironBean();
-        final Properties userProps = createUserProps(context, create);
-
-        final Iterator it = userProps.keySet().iterator();
-
-        while (it.hasNext()) {
-            final String k = (String) it.next();
-            env.getEnv().put(k, userProps.getProperty(k));
-        }
-
-        return context.setEnviron(env).getEnviron();
-    }
-
-    @Override
     public boolean hasConfiguration(final UserContext context) {
         return hashServiceProvider.hashFileService().exists(
                 initHash(context).getPwd(),
@@ -56,7 +40,16 @@ public class EnvironServiceImpl implements EnvironService {
         );
     }
 
-    private Properties createUserProps(final UserContext context, final boolean create) {
+    @Override
+    public Environ createEnviron(final UserContext context, final String path) {
+        final String environPath = hashServiceProvider.hashFileService().getHashPath(path, context.getUserHash().getMd5Salt(), EnvironConstant.USER_PROP_FILENAME);
+        final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(context.getUserHash().getSalt(), EnvironConstant.USER_PROP_FILENAME, environPath, null);
+
+        return new EnvironBean(environPath, cipher, context.getUser());
+    }
+
+    @Override
+    public Environ createUserEnviron(final UserContext context, final boolean create) {
         if (create) {
             FileUtils.getInstance().createDirectory(getConfigDirectory());
             initHash(context);
@@ -66,48 +59,45 @@ public class EnvironServiceImpl implements EnvironService {
         final String userPwd = create ?
                 hashService.createDirectories(userHash.getPwd(), userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_CONF)).get(0) :
                 hashService.getHashPath(userHash.getPwd(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_CONF));
-        final String userPropsPath = hashService.getHashPath(userPwd, userHash.getMd5Salt(), EnvironConstant.USER_PROP_FILENAME);
-        final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(userHash.getSalt(), EnvironConstant.USER_PROP_FILENAME, userPropsPath, null);
-
-        final File userPropFile = new File(userPropsPath);
-        Properties userProps = new Properties();
+        final Environ environ = context.setEnviron(createEnviron(context, userPwd)).getEnviron();
+        final AbstractCipherResource cipherEnv = (AbstractCipherResource) environ;
 
         if (!create)
-            userProps = loadUserProperties(context, userPropsPath, cipher);
+            environ.setProperties(loadEnvironProperties(context));
 
         final String userHome = hashService.getHashPath(context.getUser().getWorkspace(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_HOME));
         final String userCert = hashService.getHashPath(userHome, userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_CERT));
 
         try {
-            if (create && !userPropFile.exists()) {
+            if (create && !(new File(cipherEnv.getPath())).exists()) {
                 FileUtils.getInstance().createDirectory(context.getUser().getWorkspace());
                hashService.createDirectories(context.getUser().getWorkspace(), userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_HOME));
                hashService.createDirectories(userHome, userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_CERT));
-                final Identity identity = hashServiceProvider.identityService().createUserIdentity(context, userHome, userHash.getSalt());
-                final Certificate certificate = hashServiceProvider.certificateService().createUserCertificate(context, userCert, userHash.getSalt());
+                final Identity identity = hashServiceProvider.identityService().createUserIdentity(context, userHome);
+                final Certificate certificate = hashServiceProvider.certificateService().createUserCertificate(context, userCert);
 
                 context.setIdentity(hashServiceProvider.identityService().getUserIdentity(context, identity))
                         .setCertificate(hashServiceProvider.certificateService().getUserCertificate(context, certificate));
 
-                userProps.setProperty(EnvironConstant.USER_HOME, userHome);
-                userProps.setProperty(EnvironConstant.USER_WORKSPACE, context.getUser().getWorkspace());
-                userProps.setProperty(EnvironConstant.USER_CONF, userPwd);
-                userProps.setProperty(EnvironConstant.USER_IDENTITY_PROP, ((AbstractCipherResource) identity).getPath());
-                userProps.setProperty(EnvironConstant.USER_CERT, ((AbstractCipherResource) certificate).getPath());
-                userProps.setProperty(EnvironConstant.COMMIT_MODE, String.valueOf(GitCommitMode.MANUAL.mode()));
+                environ.getProperties().setProperty(EnvironConstant.USER_HOME, userHome);
+                environ.getProperties().setProperty(EnvironConstant.USER_WORKSPACE, context.getUser().getWorkspace());
+                environ.getProperties().setProperty(EnvironConstant.USER_CONF, userPwd);
+                environ.getProperties().setProperty(EnvironConstant.USER_IDENTITY_PROP, ((AbstractCipherResource) identity).getPath());
+                environ.getProperties().setProperty(EnvironConstant.USER_CERT, ((AbstractCipherResource) certificate).getPath());
+                environ.getProperties().setProperty(EnvironConstant.COMMIT_MODE, String.valueOf(GitCommitMode.MANUAL.mode()));
 
-                userProps.store(new FileWriter(userPropsPath), context.getUser().getEmail() + " - env properties");
-                AESProvider.encryptFile(userPropsPath, userPropsPath, cipher.getCipherIn());
+                environ.getProperties().store(new FileWriter(cipherEnv.getPath()), context.getUser().getEmail() + " - env properties");
+                AESProvider.encryptFile(cipherEnv.getPath(), cipherEnv.getPath(), cipherEnv.getCipher().getCipherIn());
                 // verification
                 // hashServiceProvider.hashFileService().exists(user.getWorkspace(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_HOME))
                 // hashService.exists(userHome, userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_CERT))
             }
             else
-                context.setIdentity(hashServiceProvider.identityService().createUserIdentity(context, userHome, userHash.getSalt()))
-                    .setCertificate(hashServiceProvider.certificateService().createUserCertificate(context, userCert, userHash.getSalt()));
+                context.setIdentity(hashServiceProvider.identityService().createUserIdentity(context, userHome))
+                    .setCertificate(hashServiceProvider.certificateService().createUserCertificate(context, userCert));
 
 
-            return userProps;
+            return environ;
         }
         catch (Exception e) {
             LOG.error(e.getMessage());
@@ -116,11 +106,13 @@ public class EnvironServiceImpl implements EnvironService {
         return null;
     }
 
-    private Properties loadUserProperties(final UserContext context, final String userPropsPath, final CipherAES<String> cipher) {
+    @Override
+    public Properties loadEnvironProperties(final UserContext context) {
         try {
+            final AbstractCipherResource cipherEnv = (AbstractCipherResource) context.getEnviron();
             final Properties props = new Properties();
 
-            props.load(new ByteArrayInputStream(AESProvider.decryptFileBytes(Paths.get(userPropsPath), cipher.getCipherOut())));
+            props.load(new ByteArrayInputStream(AESProvider.decryptFileBytes(Paths.get(cipherEnv.getPath()), cipherEnv.getCipher().getCipherOut())));
             context.getUser().setWorkspace(props.getProperty(EnvironConstant.USER_WORKSPACE));
 
             return props;
@@ -144,19 +136,30 @@ public class EnvironServiceImpl implements EnvironService {
 
     @Override public HashServiceProvider getHashServiceProvider() { return hashServiceProvider; }
 
-    @Override public String getEnv(final Environ environ, final String key) {
-        return (key != null && !key.isEmpty() && environ.getEnv().get(key) != null) ? environ.getEnv().get(key).toString() : null;
+    @Override public String getEnvProperty(final Environ environ, final String key) {
+        return (key != null && !key.isEmpty() && environ.getProperties().get(key) != null) ? environ.getProperties().get(key).toString() : null;
     }
 
     @Override
-    public Environ setEnv(final Environ environ, final String key, final String value) {
-        environ.getEnv().put(key, value);
+    public Environ setEnvProperty(final Environ environ, final String key, final String value) {
+        environ.getProperties().put(key, value);
         return environ;
     }
 
-    @Override
-    // TODO : use a PropertyBean
-    public Environ updateUserEnviron(final RuntimeContext context) {
-        return null;
+    @Override //todo create PropertyService -> same code in IdentityServiceImpl.updateUserIdentity()
+    public Environ updateEnviron(final Environ environ) {
+        try {
+            if (environ != null && environ instanceof AbstractCipherResource) {
+                final AbstractCipherResource resource = (AbstractCipherResource) environ;
+                FileUtils.getInstance().remove(resource.getPath());
+                environ.getProperties().store(new FileWriter(resource.getPath()), environ.getUser().getEmail() + " - identity ");
+                AESProvider.encryptFile(resource.getPath(), resource.getPath(), resource.getCipher().getCipherIn());
+            }
+        }
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+
+        return environ;
     }
 }

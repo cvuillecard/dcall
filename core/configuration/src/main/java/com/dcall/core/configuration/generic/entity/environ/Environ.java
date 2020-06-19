@@ -1,10 +1,5 @@
 package com.dcall.core.configuration.generic.entity.environ;
 
-import com.dcall.core.configuration.generic.entity.Entity;
+import com.dcall.core.configuration.generic.entity.property.UserProperty;
 
-import java.util.Map;
-
-public interface Environ<ID> extends Entity<ID> {
-    Map<String, String> getEnv();
-    Environ<String> setEnv(final Map<String, String> env);
-}
+public interface Environ extends UserProperty {}

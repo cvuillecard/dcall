@@ -1,17 +1,22 @@
 package com.dcall.core.configuration.app.service.environ;
 
-import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.generic.entity.environ.Environ;
 
+import java.util.Properties;
+
 public interface EnvironService {
-    Environ configureEnviron(final UserContext context, final boolean create);
     boolean hasConfiguration(final UserContext context);
+
+    Environ createEnviron(UserContext context, String path);
+    Environ createUserEnviron(UserContext context, boolean create);
+    Properties loadEnvironProperties(UserContext context);
+
     String getConfigDirName();
     String getConfigDirectory();
     HashServiceProvider getHashServiceProvider();
-    String getEnv(final Environ environ, final String key);
-    Environ setEnv(final Environ environ, final String key, final String value);
-    Environ updateUserEnviron(final RuntimeContext context);
+    String getEnvProperty(final Environ environ, final String key);
+    Environ setEnvProperty(final Environ environ, final String key, final String value);
+    Environ updateEnviron(final Environ environ);
 }

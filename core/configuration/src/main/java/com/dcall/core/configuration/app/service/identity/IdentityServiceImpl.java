@@ -27,9 +27,9 @@ public class IdentityServiceImpl implements IdentityService {
     public IdentityServiceImpl(final HashServiceProvider hashServiceProvider) { this.hashServiceProvider = hashServiceProvider; }
 
     @Override
-    public Identity createUserIdentity(final UserContext context, final String path, final String salt) {
+    public Identity createUserIdentity(final UserContext context, final String path) {
         final String identityPath = hashServiceProvider.hashFileService().getHashPath(path, context.getUserHash().getMd5Salt(), EnvironConstant.USER_IDENTITY_FILENAME);
-        final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(salt, EnvironConstant.USER_IDENTITY_FILENAME, identityPath, null);
+        final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(context.getUserHash().getSalt(), EnvironConstant.USER_IDENTITY_FILENAME, identityPath, null);
         final Identity identity = new IdentityBean(identityPath, cipher, context.getUser());
 
         final File f = new File(identityPath);
@@ -57,9 +57,11 @@ public class IdentityServiceImpl implements IdentityService {
         try {
             final Properties props = new Properties();
             final AbstractCipherResource<String> cipherResource = (AbstractCipherResource<String>) identity;
-            props.load(new ByteArrayInputStream(AESProvider.decryptFileBytes(Paths.get(cipherResource.getPath()), cipherResource.getCipher().getCipherOut())));
 
-            return identity.setProperties(props);
+            props.load(new ByteArrayInputStream(AESProvider.decryptFileBytes(Paths.get(cipherResource.getPath()), cipherResource.getCipher().getCipherOut())));
+            identity.setProperties(props);
+
+            return identity;
         }
         catch (Exception e) {
             LOG.error(e.getMessage());

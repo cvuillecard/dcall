@@ -5,8 +5,11 @@
     ~ identity
     [ print all the current user properties composing its identity if no arguments. ]
 
+    ~ identity get <key> <..>
+    [ print the identity properties given as keys ]
+
     ~ identity set <key=value> <..>
     [ set the identity properties given as key=value ]
 
-    ~ identity get <key> <..>
-    [ print the identity properties with given keys ]
+    ~ identity del <key> <..>
+        [ delete the identity properties given as keys ]

@@ -37,12 +37,12 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public Certificate createUserCertificate(final UserContext context, final String path, final String salt) {
+    public Certificate createUserCertificate(final UserContext context, final String path) {
         try {
             final String certPath = hashServiceProvider.hashFileService().getHashPath(path, context.getUserHash().getMd5Salt(), EnvironConstant.USER_KEYSTORE_FILENAME);
 
             if (!new File(certPath).exists()) {
-                final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(salt, EnvironConstant.USER_KEYSTORE_FILENAME, certPath, null);
+                final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(context.getUserHash().getSalt(), EnvironConstant.USER_KEYSTORE_FILENAME, certPath, null);
 
                 RSAProvider.createKeyStore(
                         RSAProvider.KeyStoreType.PKCS12,
@@ -59,7 +59,7 @@ public class CertificateServiceImpl implements CertificateService {
                 return new CertificateBean(certPath, cipher);
             }
             else {
-                final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(salt, EnvironConstant.USER_KEYSTORE_FILENAME, certPath, Cipher.DECRYPT_MODE);
+                final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(context.getUserHash().getSalt(), EnvironConstant.USER_KEYSTORE_FILENAME, certPath, Cipher.DECRYPT_MODE);
                 return getUserCertificate(context, new CertificateBean(certPath, cipher));
             }
         } catch (Exception e) {
@@ -70,10 +70,10 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public Certificate getUserCertificate(final UserContext context, final String path, final String salt) {
+    public Certificate getUserCertificate(final UserContext context, final String path) {
         try {
             if (new File(path).exists()) {
-                final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(salt, EnvironConstant.USER_KEYSTORE_FILENAME, path, Cipher.DECRYPT_MODE);
+                final CipherAES<String> cipher = hashServiceProvider.cipherService().createCipherAES(context.getUserHash().getSalt(), EnvironConstant.USER_KEYSTORE_FILENAME, path, Cipher.DECRYPT_MODE);
 
                 return new CertificateBean(path, cipher, loadUserKeyPair(context, path, cipher));
             }

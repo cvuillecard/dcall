@@ -12,23 +12,28 @@ import org.slf4j.LoggerFactory;
 public final class BuiltInServiceImpl extends AbstractCommand implements BuiltInService {
     private static final Logger LOG = LoggerFactory.getLogger(BuiltInServiceImpl.class);
     private Parser parser = new Parser();
+    private BTree<Expression> expr = null;
 
     @Override
     public byte[] execute(final String... input) {
         final String line = input[0];
 
-        parser.reset().parse(line, 0, line.length());
-        final BTree<Expression> node = parser.getFirst();
+        this.parser.reset().parse(line, 0, line.length());
+        this.expr = parser.getFirst();
 
-        if (node.getParent() != null)
-            return (byte[])((Operand)EvalExp.eval(node, node.getParent())).getValue();
-        else
-            return parser.getOperatorSolver().execute((Operand) node.getData());
+        return this.execute();
     }
 
     @Override
     public byte[] execute() {
-        return null;
+
+        if (expr.getParent() != null) {
+            final Operand exp = ((Operand) EvalExp.eval(expr, expr.getParent()));
+            byte[] res = exp.getValue() instanceof byte[] ? (byte[]) exp.getValue() : exp.toString().getBytes();
+            return res;
+        }
+        else
+            return parser.getOperatorSolver().execute((Operand) expr.getData());
     }
 
     @Override
