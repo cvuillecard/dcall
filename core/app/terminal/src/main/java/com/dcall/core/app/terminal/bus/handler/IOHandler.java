@@ -65,6 +65,9 @@ public final class IOHandler {
             inputHandler.reset();
             outputHandler.reset();
 
+            if (DisplayController.isLocked())
+                unlockDisplay();
+
             return true;
         }
 

@@ -282,6 +282,10 @@ public final class DisplayController {
         lock = false;
     }
 
+    public static boolean isLocked() {
+        return lock && !dataReady;
+    }
+
     public static boolean getLock() {
         return lock;
     }

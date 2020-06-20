@@ -104,11 +104,16 @@ public final class GUIProcessor {
         Vertx.currentContext().executeBlocking(future -> future.complete(ScreenController.isUp()), handler -> {
             if (handler.succeeded()) {
                 if (handler.result().equals(true)) {
-                    if (DisplayController.getLock())
-                        KeyboardController.handleNextInput(true);
-                    else
-                        KeyboardController.handleKeyboard(false);
-
+                    try {
+                        if (DisplayController.getLock())
+                            KeyboardController.handleNextInput(true);
+                        else
+                            KeyboardController.handleKeyboard(false);
+                    }
+                    catch (StackOverflowError e) {
+                        KeyboardController.enter();
+                        reset();
+                    }
                     handleIO();
                 } else
                     GUIProcessor.close();
@@ -116,6 +121,14 @@ public final class GUIProcessor {
                 LOG.error(GUIProcessor.class.getName() + " > IOHandler() : " + handler.cause().getMessage());
             }
         });
+    }
+
+    private static void reset() {
+        bus().reset();
+        ScreenController.resetScreenSize();
+        ScreenController.scrollMetrics().reset();
+        ScreenController.getScreen().clear();
+        GUIProcessor.prompt(ScreenController.metrics());
     }
 
     private static void close() {

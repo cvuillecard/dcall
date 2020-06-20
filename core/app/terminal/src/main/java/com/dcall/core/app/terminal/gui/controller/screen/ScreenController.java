@@ -141,7 +141,7 @@ public final class ScreenController {
         metrics.currY = metrics.currY > metrics.maxY ? metrics.maxY : metrics.currY;
     }
 
-    private static void resetScreenSize() {
+    public static void resetScreenSize() {
         TermAttributes.FRAME_NB_COLS = TermAttributes.DEF_FRAME_NB_COLS;
         TermAttributes.FRAME_NB_ROWS = TermAttributes.DEF_FRAME_NB_ROWS;
         metrics.width = TermAttributes.FRAME_NB_COLS;
