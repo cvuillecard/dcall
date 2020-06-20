@@ -111,7 +111,6 @@ public final class GUIProcessor {
                             KeyboardController.handleKeyboard(false);
                     }
                     catch (StackOverflowError e) {
-                        KeyboardController.enter();
                         reset();
                     }
                     handleIO();
@@ -125,7 +124,7 @@ public final class GUIProcessor {
 
     private static void reset() {
         bus().reset();
-        ScreenController.resetScreenSize();
+        ScreenController.resetScreenMetrics();
         ScreenController.scrollMetrics().reset();
         ScreenController.getScreen().clear();
         GUIProcessor.prompt(ScreenController.metrics());

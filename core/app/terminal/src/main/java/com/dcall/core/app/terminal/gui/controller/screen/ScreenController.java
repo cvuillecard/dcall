@@ -83,7 +83,7 @@ public final class ScreenController {
                     super.onResized(terminal, newSize);
                     LOG.debug(" *** Window resized to : " + terminal.getTerminalSize().getColumns() + " x " + terminal.getTerminalSize().getRows());
 
-                    setScreenSize(terminal.getTerminalSize().getColumns(), terminal.getTerminalSize().getRows());
+                    setScreenMetrics(terminal.getTerminalSize().getColumns(), terminal.getTerminalSize().getRows());
                     ((SwingTerminalFrame)ScreenController.terminal).setTitle(TermAttributes.FRAME_TITLE + " (" + metrics.width + 'x' + metrics.height + ')');
 
                     DisplayController.resize(ScreenController.metrics());
@@ -116,7 +116,7 @@ public final class ScreenController {
 
             screen = new TerminalScreen(terminal);
 
-            resetScreenSize();
+            initScreenMetrics();
 
             screen.startScreen();
             screen.setCursorPosition(null);
@@ -129,7 +129,7 @@ public final class ScreenController {
         }
     }
 
-    private static void setScreenSize(final int nbCols, final int nbRows) {
+    private static void setScreenMetrics(final int nbCols, final int nbRows) {
         TermAttributes.FRAME_NB_COLS = nbCols;
         TermAttributes.FRAME_NB_ROWS = nbRows;
         metrics.width = nbCols;
@@ -141,9 +141,13 @@ public final class ScreenController {
         metrics.currY = metrics.currY > metrics.maxY ? metrics.maxY : metrics.currY;
     }
 
-    public static void resetScreenSize() {
+    public static void initScreenMetrics() {
         TermAttributes.FRAME_NB_COLS = TermAttributes.DEF_FRAME_NB_COLS;
         TermAttributes.FRAME_NB_ROWS = TermAttributes.DEF_FRAME_NB_ROWS;
+        resetScreenMetrics();
+    }
+
+    public static void resetScreenMetrics() {
         metrics.width = TermAttributes.FRAME_NB_COLS;
         metrics.height = TermAttributes.FRAME_NB_ROWS;
         metrics.maxX = metrics.width - TermAttributes.MARGIN;

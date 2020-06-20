@@ -20,8 +20,8 @@ public final class InputHandler {
     private InputEntry<String> lastInput = null;
 
     public final void reset() {
-        this.entries.clear();
         this.lastInput = null;
+        this.entries.clear();
         this.entryIdx = 0;
 
 //        System.gc();
