@@ -26,14 +26,18 @@ public final class BuiltInServiceImpl extends AbstractCommand implements BuiltIn
 
     @Override
     public byte[] execute() {
-
-        if (expr.getParent() != null) {
-            final Operand exp = ((Operand) EvalExp.eval(expr, expr.getParent()));
-            byte[] res = exp.getValue() instanceof byte[] ? (byte[]) exp.getValue() : exp.toString().getBytes();
-            return res;
+        try {
+            if (expr.getParent() != null) {
+                final Operand exp = ((Operand) EvalExp.eval(expr, expr.getParent()));
+                byte[] res = exp.getValue() instanceof byte[] ? (byte[]) exp.getValue() : exp.toString().getBytes();
+                return res;
+            } else
+                return parser.getOperatorSolver().execute((Operand) expr.getData());
         }
-        else
-            return parser.getOperatorSolver().execute((Operand) expr.getData());
+        catch (StackOverflowError e){
+            LOG.debug(e.toString());
+            return e.toString().getBytes();
+        }
     }
 
     @Override
