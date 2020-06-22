@@ -25,8 +25,6 @@ public class ParserTest {
         final String exp5 = "0 + ((1 * 2) + (3 * 4)) "; // 14
         final String exp6 = "(((1 + 2) + 3 + (5 + 8) + 13) * 2) - ((2 * 1) + (2 * 10)) "; // 42
 
-        parser.setOperatorSolver(new ArithmeticOperatorSolver());
-
         BTree<Expression> tree0 = parser.reset().parse(exp0, 0, exp0.length()).firstLeft();
         BTree<Expression> tree1 = parser.reset().parse(exp1, 0, exp1.length()).firstLeft();
         BTree<Expression> tree2 = parser.reset().parse(exp2, 0, exp2.length()).firstLeft();

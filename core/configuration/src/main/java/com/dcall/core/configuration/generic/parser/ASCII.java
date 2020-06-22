@@ -46,9 +46,10 @@ public final class ASCII {
     public static boolean isLogicalOperator(final char c, final char d) { return isLogicalAnd(c, d) || isLogicalOr(c, d); }
     public static boolean isArithmeticOperator(final char c) { return isMul(c) || isPlus(c) || isMinus(c) || isDiv(c) || isModulus(c); }
     public static boolean isOperator(final char c) { return isBitwise(c) || isArithmeticOperator(c); }
-    public static boolean isTab(final char c) { return c == horizontal_tab; }
+    public static boolean isHorizontalTab(final char c) { return c == horizontal_tab; }
+    public static boolean isCarriageReturn(final char c) { return c == carriage_return; }
     public static boolean isNewLine(final char c) { return c == new_line || c == carriage_return; }
-    public static boolean isBlank(final char c) { return isSpace(c) || isTab(c); }
+    public static boolean isBlank(final char c) { return isSpace(c) || isHorizontalTab(c) || isCarriageReturn(c) || isNewLine(c); }
     public static boolean isAlpha(final char c) { return (c >= A && c <= Z) || (c >= a && c <= z); }
     public static boolean isNum(final char c) { return c >= zero && c <= nine; }
     public static boolean isAlphaNum(final char c) { return isAlpha(c) || isNum(c); }

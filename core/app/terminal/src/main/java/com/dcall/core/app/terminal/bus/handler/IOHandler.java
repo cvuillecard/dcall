@@ -12,7 +12,6 @@ import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.service.message.MessageService;
 import com.dcall.core.configuration.app.service.message.MessageServiceImpl;
 import com.dcall.core.configuration.generic.parser.Parser;
-import com.dcall.core.configuration.generic.service.command.GenericCommandService;
 import com.dcall.core.configuration.utils.HelpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +24,14 @@ public final class IOHandler {
     private final MessageService messageService = new MessageServiceImpl();
     private final InputHandler inputHandler = new InputHandler();
     private final OutputHandler outputHandler = new OutputHandler();
-    private final GenericCommandService builtInService = new BuiltInServiceImpl();
+    private final BuiltInService builtInService = new BuiltInServiceImpl();
     private String lastInput = null;
 
     public void init(final RuntimeContext context) {
         this.runtimeContext = context;
         this.builtInService.setContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
 
-        ((BuiltInService)builtInService).setParser(
-                new Parser().setOperandSolver(new BuiltInOperandSolver()).setOperatorSolver(new BuiltInOperatorSolver(runtimeContext))
-        );
+        builtInService.setParser(new Parser(new BuiltInOperatorSolver(runtimeContext), new BuiltInOperandSolver()));
     }
 
     public boolean handleInput() {

@@ -1,5 +1,8 @@
 package com.dcall.core.configuration.generic.parser;
 
+import com.dcall.core.configuration.generic.parser.expression.operator.solver.arithmetic.ArithmeticOperatorSolver;
+import com.dcall.core.configuration.generic.parser.expression.token.DefaultTokenSolver;
+import com.dcall.core.configuration.generic.parser.expression.token.TokenSolver;
 import com.dcall.core.configuration.utils.StringUtils;
 import com.dcall.core.configuration.generic.parser.expression.Expression;
 import com.dcall.core.configuration.generic.parser.expression.operand.solver.OperandSolver;
@@ -15,53 +18,49 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Predicate;
 
 /**
- *  Simple scannerless parser : simple parsing based on ASCII class for operators and token definition.
+ *  Simple scanner less parser which parse a char sequence and produces a binary tree of expressions parsed.
+ *  The operator, token and operand definitions are used to identify what is an expression.
+ *
+ *  Important : This implementation needs an operator token between each expressions to construct a valid expression's tree.
+ *
+ *  If the sequence is constituted by one string considered as operand, the tree will only have one element.
+ *
+ *  The parser will always try to return a valid tree with the input char sequence except if sequence syntax is malformed
+ *  (according the token/operator/operand implementations. See the classes linked below)
+ *
+ *  If no implementations are given for token/operator/operand solvers, then the default implementation will be used as defined in default constructor 'parser()'
+ *
+ * @see com.dcall.core.configuration.generic.parser.expression.Expression
+ * @see com.dcall.core.configuration.generic.parser.expression.operator.Operator
+ * @see com.dcall.core.configuration.generic.parser.expression.operand.Operand
+ *
+ * @see com.dcall.core.configuration.generic.parser.expression.token.TokenSolver
+ * @see com.dcall.core.configuration.generic.parser.expression.operator.solver.OperatorSolver
+ * @see com.dcall.core.configuration.generic.parser.expression.operand.solver.OperandSolver
  */
 public final class Parser {
     private static final Logger LOG = LoggerFactory.getLogger(Parser.class);
     private BTree<Expression> first;
+    private TokenSolver tokenSolver;
     private OperatorSolver operatorSolver;
     private OperandSolver operandSolver;
 
-    /**
-     * Condition defining when a char is not considered as token
-     *
-     * @return condition
-     */
-    private Predicate<Character> isNotToken() {
-        return c -> !ASCII.isOperator(c) && !ASCII.isParenthesis(c);
+    public Parser() {
+        this.tokenSolver = new DefaultTokenSolver();
+        this.operatorSolver = new ArithmeticOperatorSolver();
+        this.operandSolver = new StringOperandSolver();
     }
 
-    /**
-     * Iterates the char sequence and count the number of open tokens and close tokens given in parameters.
-     *
-     * if the number of openToken is not equal to the number of closeToken then an exception is thrown else idx of last closeToken is returned.
-     *
-     * @param seq char sequence iterated
-     * @param idx start index of the defined 'openToken' in char sequence [inclusive]
-     * @param endIdx iteration's end index [exclusive]
-     * @param openToken the int value of the token char opening
-     * @param closeToken the int value of the token char closing
-     * @return index of last closing token in char sequence
-     */
-    public int iterTokenGroup(final CharSequence seq, int idx, final int endIdx, final int openToken, final int closeToken) {
-        int nOpen = 1;
-        int nClose = 0;
+    public Parser(final OperatorSolver operatorSolver, final OperandSolver operandSolver) {
+        this.tokenSolver = new DefaultTokenSolver();
+        this.operatorSolver = operatorSolver;
+        this.operandSolver = operandSolver;
+    }
 
-        while (idx < endIdx && nOpen != nClose) {
-            if (openToken == seq.charAt(idx))
-                nOpen++;
-            else if (closeToken == seq.charAt(idx))
-                nClose++;
-            idx++;
-        }
-
-        if (nOpen != nClose)
-            throw new IllegalArgumentException(
-                    "Bad syntax : Missing open('"+ (char) openToken + "') or close('"+ (char) closeToken +"') token in expression > "+ seq.toString()
-            );
-
-        return idx - 1;
+    public Parser(final TokenSolver tokenSolver, final OperatorSolver operatorSolver, final OperandSolver operandSolver) {
+        this.tokenSolver = tokenSolver;
+        this.operatorSolver = operatorSolver;
+        this.operandSolver = operandSolver;
     }
 
     /**
@@ -96,10 +95,7 @@ public final class Parser {
      */
     public int parseOperator(final BTree<Expression> node, final CharSequence seq, final int idx, final int endIdx) {
         final int nextIdx = idx + 1;
-        final Operator operator = new Operator();
-
-        if (operatorSolver != null)
-            operator.setSolver(operatorSolver::solve);
+        final Operator operator = new Operator().setSolver(operatorSolver::solve);
 
         if (nextIdx < endIdx && ASCII.isLogicalOperator(seq.charAt(idx), seq.charAt(nextIdx))) {
             node.setData(operator.setValue(seq.subSequence(idx, nextIdx + 1)).setOperatorType(OperatorType.LOGICAL));
@@ -149,28 +145,28 @@ public final class Parser {
         BTree<Expression> ptr = null;
 
         try {
-            while ((idx = IterStringUtils.iterFront(seq, idx, endIdx, c -> ASCII.isBlank(c) || ASCII.isCloseParenthesis(c))) < endIdx) {
+            while ((idx = IterStringUtils.iterFront(seq, idx, endIdx, c -> tokenSolver.isBlank().test(c) || tokenSolver.isCloseToken().test(c))) < endIdx) {
                 BTree<Expression> operator = null;
 
-                if (ASCII.isOperator(seq.charAt(idx))) {
+                if (tokenSolver.isOperator().test(seq.charAt(idx))) {
                     idx += parseOperator(operator = new Node<>(), seq, idx, endIdx);
-                    idx = IterStringUtils.iterFront(seq, idx, endIdx, c -> ASCII.isBlank(c));
+                    idx = IterStringUtils.iterFront(seq, idx, endIdx, tokenSolver.isBlank());
                     if (ptr != null) {
                         operator.setLeft(ptr);
                         ((Operator)operator.getData()).setLeft(ptr.getData());
                     }
                 }
 
-                if (ASCII.isOpenParenthesis(seq.charAt(idx))) {
+                if (tokenSolver.isOpenToken().test(seq.charAt(idx))) {
                     idx++;
-                    int endTokenIdx = iterTokenGroup(seq, idx, endIdx, ASCII.openParenthesis, ASCII.closeParenthesis);
+                    int endTokenIdx = tokenSolver.iterTokenGroup(seq, idx, endIdx);
                     if (endTokenIdx  > idx) {
                         ptr = updateRef(ptr, operator, parse(seq, idx, endTokenIdx));
                         idx = endTokenIdx;
                     }
                 }
                 else {
-                    int end = IterStringUtils.iterFront(seq, idx, endIdx, isNotToken());
+                    int end = IterStringUtils.iterFront(seq, idx, endIdx, tokenSolver.isNotToken());
                     if (end > idx) {
                         ptr = updateRef(ptr, operator, new Node(parseOperand(seq, idx, end)));
                         idx = end;
@@ -186,9 +182,6 @@ public final class Parser {
     }
 
     private Operand parseOperand(CharSequence seq, int idx, int end) {
-        if (operandSolver == null)
-            this.setOperandSolver(new StringOperandSolver());
-
         return new Operand(operandSolver.solve(StringUtils.trim(seq.subSequence(idx, end))));
     }
 
@@ -197,10 +190,12 @@ public final class Parser {
     public Parser reset() { this.first = null; return this; }
 
     // getter
+    public TokenSolver getTokenSolver() { return tokenSolver; }
     public OperatorSolver getOperatorSolver() { return operatorSolver; }
     public OperandSolver getOperandSolver() { return operandSolver; }
 
     // setter
+    public Parser setTokenSolver(final TokenSolver tokenSolver) { this.tokenSolver = tokenSolver; return this; }
     public Parser setOperatorSolver(OperatorSolver operatorSolver) { this.operatorSolver = operatorSolver; return this; }
     public Parser setOperandSolver(final OperandSolver operandSolver) { this.operandSolver = operandSolver; return this; }
 }
