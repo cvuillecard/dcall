@@ -4,7 +4,7 @@ import com.dcall.core.configuration.generic.parser.ASCII;
 
 import java.util.function.Predicate;
 
-public class DefaultTokenSolver implements TokenSolver {
+public class ArithmeticTokenSolver implements TokenSolver {
     @Override
     public Predicate<Character> isBlank() {
         return c -> ASCII.isBlank(c);

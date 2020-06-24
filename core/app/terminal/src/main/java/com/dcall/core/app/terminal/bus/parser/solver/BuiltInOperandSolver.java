@@ -42,7 +42,7 @@ public final class BuiltInOperandSolver implements OperandSolver {
         final List<String> cmdArgs = new ArrayList<>();
         final int endOptionIdx = IterStringUtils.iterFront(seq, 0, c -> !ASCII.isSpace(c));
         final String option = seq.subSequence(0, endOptionIdx).toString();
-        final Pattern pattern = Pattern.compile("([\\w-]+)=((.*?)([\\w-]+)(.*?)\\3)");
+        final Pattern pattern = Pattern.compile("([\\w-]+)=((.*?)([ \\w-]+)(.*?)\\3)");
         final Matcher matcher = pattern.matcher(seq.toString());
 
         while (matcher.find()) {

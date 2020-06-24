@@ -1,7 +1,7 @@
 package com.dcall.core.configuration.generic.parser;
 
 import com.dcall.core.configuration.generic.parser.expression.operator.solver.arithmetic.ArithmeticOperatorSolver;
-import com.dcall.core.configuration.generic.parser.expression.token.DefaultTokenSolver;
+import com.dcall.core.configuration.generic.parser.expression.token.ArithmeticTokenSolver;
 import com.dcall.core.configuration.generic.parser.expression.token.TokenSolver;
 import com.dcall.core.configuration.utils.StringUtils;
 import com.dcall.core.configuration.generic.parser.expression.Expression;
@@ -14,8 +14,6 @@ import com.dcall.core.configuration.generic.parser.expression.operator.solver.Op
 import com.dcall.core.configuration.utils.tree.BTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.Predicate;
 
 /**
  *  Simple scanner less parser which parse a char sequence and produces a binary tree of expressions parsed.
@@ -46,13 +44,13 @@ public final class Parser {
     private OperandSolver operandSolver;
 
     public Parser() {
-        this.tokenSolver = new DefaultTokenSolver();
+        this.tokenSolver = new ArithmeticTokenSolver();
         this.operatorSolver = new ArithmeticOperatorSolver();
         this.operandSolver = new StringOperandSolver();
     }
 
     public Parser(final OperatorSolver operatorSolver, final OperandSolver operandSolver) {
-        this.tokenSolver = new DefaultTokenSolver();
+        this.tokenSolver = new ArithmeticTokenSolver();
         this.operatorSolver = operatorSolver;
         this.operandSolver = operandSolver;
     }
