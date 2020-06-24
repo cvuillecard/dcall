@@ -146,7 +146,7 @@ public final class Parser {
             while ((idx = IterStringUtils.iterFront(seq, idx, endIdx, c -> tokenSolver.isBlank().test(c) || tokenSolver.isCloseToken().test(c))) < endIdx) {
                 BTree<Expression> operator = null;
 
-                if (tokenSolver.isOperator(seq, idx)) {
+                if (tokenSolver.isOperator().test(seq.charAt(idx))) {
                     idx += parseOperator(operator = new Node<>(), seq, idx, endIdx);
                     idx = IterStringUtils.iterFront(seq, idx, endIdx, tokenSolver.isBlank());
                     if (ptr != null) {
@@ -155,7 +155,7 @@ public final class Parser {
                     }
                 }
 
-                if (tokenSolver.isOpenToken(seq, idx)) {
+                if (tokenSolver.isOpenToken().test(seq.charAt(idx))) {
                     idx++;
                     int endTokenIdx = tokenSolver.iterTokenGroup(seq, idx, endIdx);
                     if (endTokenIdx  > idx) {

@@ -6,34 +6,29 @@ import java.util.function.Predicate;
 
 public class ArithmeticTokenSolver implements TokenSolver {
     @Override
-    public Predicate<Character> isBlank() { return c -> ASCII.isBlank(c); }
+    public Predicate<Character> isBlank() {
+        return c -> ASCII.isBlank(c);
+    }
 
     @Override
-    public boolean isBlank(final CharSequence seq, final int idx) {  return isBlank().test(seq.charAt(idx)); }
+    public Predicate<Character> isNotToken() {
+        return c -> !ASCII.isOperator(c) && !ASCII.isParenthesis(c);
+    }
 
     @Override
-    public Predicate<Character> isNotToken() { return c -> !ASCII.isOperator(c) && !ASCII.isParenthesis(c); }
+    public Predicate<Character> isOpenToken() {
+        return c -> ASCII.isOpenParenthesis(c);
+    }
 
     @Override
-    public boolean isNotToken(final CharSequence seq, final int idx) { return isNotToken().test(seq.charAt(idx)); }
+    public Predicate<Character> isCloseToken() {
+        return c -> ASCII.isCloseParenthesis(c);
+    }
 
     @Override
-    public Predicate<Character> isOpenToken() { return c -> ASCII.isOpenParenthesis(c); }
-
-    @Override
-    public boolean isOpenToken(final CharSequence seq, final int idx) { return isOpenToken().test(seq.charAt(idx)); }
-
-    @Override
-    public Predicate<Character> isCloseToken() { return c -> ASCII.isCloseParenthesis(c); }
-
-    @Override
-    public boolean isCloseToken(final CharSequence seq, final int idx) { return isCloseToken().test(seq.charAt(idx)); }
-
-    @Override
-    public Predicate<Character> isOperator() { return c -> ASCII.isOperator(c); }
-
-    @Override
-    public boolean isOperator(final CharSequence seq, final int idx) { return isOperator().test(seq.charAt(idx)); }
+    public Predicate<Character> isOperator() {
+        return c -> ASCII.isOperator(c);
+    }
 
     @Override
     public int iterTokenGroup(final CharSequence seq, int idx, final int endIdx) {
