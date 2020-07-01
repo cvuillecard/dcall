@@ -2,6 +2,7 @@ package com.dcall.core.configuration.app.service.environ;
 
 import com.dcall.core.configuration.app.constant.EnvironConstant;
 import com.dcall.core.configuration.app.constant.GitCommitMode;
+import com.dcall.core.configuration.app.constant.InterpretMode;
 import com.dcall.core.configuration.app.constant.SaltDef;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.user.UserContext;
@@ -85,6 +86,7 @@ public class EnvironServiceImpl implements EnvironService {
                 environ.getProperties().setProperty(EnvironConstant.USER_IDENTITY_PROP, ((AbstractCipherResource) identity).getPath());
                 environ.getProperties().setProperty(EnvironConstant.USER_CERT, ((AbstractCipherResource) certificate).getPath());
                 environ.getProperties().setProperty(EnvironConstant.COMMIT_MODE, String.valueOf(GitCommitMode.MANUAL.mode()));
+                environ.getProperties().setProperty(EnvironConstant.INTERPRET_MODE, InterpretMode.LOCAL.mode());
 
                 environ.getProperties().store(new FileWriter(cipherEnv.getPath()), context.getUser().getEmail() + " - env properties");
                 AESProvider.encryptFile(cipherEnv.getPath(), cipherEnv.getPath(), cipherEnv.getCipher().getCipherIn());

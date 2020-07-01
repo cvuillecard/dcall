@@ -16,7 +16,8 @@ public class BuiltInEnvServiceImpl extends AbstractCommand implements BuiltInEnv
     private static final List<String> lockProperties = Arrays.asList(
             EnvironConstant.USER_HOME, EnvironConstant.USER_WORKSPACE,
             EnvironConstant.USER_CONF, EnvironConstant.USER_IDENTITY_PROP,
-            EnvironConstant.USER_CERT, EnvironConstant.COMMIT_MODE
+            EnvironConstant.USER_CERT, EnvironConstant.COMMIT_MODE,
+            EnvironConstant.INTERPRET_MODE
     );
 
     @Override
