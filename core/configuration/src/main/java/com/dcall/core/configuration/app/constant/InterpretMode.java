@@ -1,9 +1,9 @@
 package com.dcall.core.configuration.app.constant;
 
-public enum InterpretMode { LOCAL("local"), REMOTE("remote");
-    private final String mode;
+public enum InterpretMode { LOCAL(true), REMOTE(false);
+    private final boolean mode;
 
-    InterpretMode(final String mode) { this.mode = mode; }
+    InterpretMode(final boolean mode) { this.mode = mode; }
 
-    public String mode() { return mode; }
+    public boolean mode() { return mode; }
 }

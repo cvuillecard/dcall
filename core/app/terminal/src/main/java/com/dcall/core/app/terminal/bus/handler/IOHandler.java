@@ -1,8 +1,10 @@
 package com.dcall.core.app.terminal.bus.handler;
 
 import com.dcall.core.app.terminal.bus.input.InputEntry;
-import com.dcall.core.app.terminal.bus.parser.solver.BuiltInOperandSolver;
-import com.dcall.core.app.terminal.bus.parser.solver.BuiltInOperatorSolver;
+import com.dcall.core.configuration.generic.parser.expression.operand.solver.impl.BuiltInOperandSolver;
+import com.dcall.core.configuration.generic.parser.expression.operator.solver.impl.BuiltInOperatorSolver;
+import com.dcall.core.configuration.app.constant.EnvironConstant;
+import com.dcall.core.configuration.app.constant.InterpretMode;
 import com.dcall.core.configuration.app.service.builtin.BuiltInService;
 import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
@@ -39,16 +41,23 @@ public final class IOHandler {
 
         output().addEntry();
 
-        if (!lastInput.isEmpty() && !close()) {
+        final boolean exit = isExit();
+        if (!lastInput.isEmpty() && !close(exit)) {
             lockDisplay();
-            final byte[] builtInResult = builtInService.run(new String[] { lastInput.trim().toLowerCase() });
+            byte[] builtInResult = null;
+            final boolean isLocalMode = Boolean.valueOf(runtimeContext.userContext().getEnviron().getProperties().getProperty(EnvironConstant.INTERPRET_MODE));
 
-            if (builtInResult == null)
+            if (isLocalMode && !exit)
+                builtInResult = builtInService.run(new String[] { lastInput.trim().toLowerCase() });
+
+            if (exit)
+                output().addToEntry("Interpreter switched to local mode.");
+            else if (builtInResult == null)
                 sendLastInput();
-            else {
+            else
                 output().addToEntry(new String(builtInResult));
-                unlockDisplay();
-            }
+
+            unlockDisplay();
 
             return true;
         }
@@ -72,12 +81,12 @@ public final class IOHandler {
     }
 
     public void sendLastInput() {
-        messageService.sendInputMessage(URIConfig.CMD_LOCAL_PROCESSOR_CONSUMER, lastInput.getBytes(),
+        messageService.sendInputMessage(URIConfig.CMD_LOCAL_PROCESSOR_CONSUMER, lastInput.toLowerCase().getBytes(),
                 null,
                 failed -> {
                     if (!failed.cause().getMessage().isEmpty())
                         output().addToEntry(failed.cause().getMessage());
-                }, () -> unlockDisplay());
+                }, null);
     }
 
     private void lockDisplay() {
@@ -90,13 +99,23 @@ public final class IOHandler {
         DisplayController.setDataReady(true);
     }
 
-    private boolean close() {
-        final boolean close = lastInput.trim().toLowerCase().equals("exit");
+    private boolean close(final boolean isExit) {
+        if (isExit) {
+            final boolean isLocalMode = Boolean.valueOf(runtimeContext.userContext().getEnviron().getProperties().getProperty(EnvironConstant.INTERPRET_MODE));
 
-        if (close)
-            ScreenController.stop();
+            if (isLocalMode)
+                ScreenController.stop();
+            else {
+                runtimeContext.userContext().getEnviron().getProperties().setProperty(EnvironConstant.INTERPRET_MODE, String.valueOf(InterpretMode.LOCAL.mode()));
+                return false;
+            }
+        }
 
-        return close;
+        return isExit;
+    }
+
+    private boolean isExit() {
+        return lastInput.trim().toLowerCase().equals("exit");
     }
 
     // GETTERS

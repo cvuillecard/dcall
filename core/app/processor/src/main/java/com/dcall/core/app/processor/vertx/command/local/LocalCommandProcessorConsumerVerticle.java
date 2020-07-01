@@ -1,12 +1,17 @@
 package com.dcall.core.app.processor.vertx.command.local;
 
-import com.dcall.core.app.processor.bean.local.controller.command.LocalCommandController;
 import com.dcall.core.app.processor.vertx.command.CommandProcessorConsumerVerticle;
 import com.dcall.core.app.processor.vertx.constant.URIConfig;
 import com.dcall.core.configuration.app.context.RuntimeContext;
+import com.dcall.core.configuration.app.service.builtin.BuiltInService;
+import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
 import com.dcall.core.configuration.generic.entity.message.MessageBean;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
+import com.dcall.core.configuration.generic.parser.Parser;
+import com.dcall.core.configuration.generic.parser.expression.operand.solver.impl.BuiltInOperandSolver;
+import com.dcall.core.configuration.generic.parser.expression.operator.solver.impl.BuiltInOperatorSolver;
+import com.dcall.core.configuration.utils.HelpUtils;
 import com.dcall.core.configuration.utils.URIUtils;
 import com.dcall.core.configuration.app.vertx.cluster.HazelcastCluster;
 import io.vertx.core.AbstractVerticle;
@@ -31,7 +36,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(LocalCommandProcessorConsumerVerticle.class);
 
     private final int BUF_SIZE = 8192;
-    private final LocalCommandController commandController = new LocalCommandController();
+    private final BuiltInService builtInService = new BuiltInServiceImpl();
 
     private void execute(final Message<Object> handler, final com.dcall.core.configuration.generic.entity.message.Message<String> msg) {
         if (handler != null) {
@@ -48,7 +53,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
             try {
                 final com.dcall.core.configuration.generic.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
 
-                final byte[] result = commandController.execute(this.runtimeContext, new String(sender.getMessage()));
+                final byte[] result = builtInService.setContext(runtimeContext).run(new String(sender.getMessage()));
 
                 sendChunk(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, sender, result, getNbChunk(result), resp);
             }
@@ -109,6 +114,9 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
+        this.builtInService.setContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
+        this.builtInService.setParser(new Parser(new BuiltInOperatorSolver(runtimeContext), new BuiltInOperandSolver()));
+
         final MessageConsumer<Object> consumer = vertx.eventBus().consumer(LocalCommandProcessorConsumerVerticle.class.getName());
 
         consumer.handler(handler -> {

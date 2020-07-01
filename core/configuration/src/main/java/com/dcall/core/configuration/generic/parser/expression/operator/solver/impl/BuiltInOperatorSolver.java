@@ -1,4 +1,4 @@
-package com.dcall.core.app.terminal.bus.parser.solver;
+package com.dcall.core.configuration.generic.parser.expression.operator.solver.impl;
 
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.generic.parser.ASCII;
