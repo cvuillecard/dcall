@@ -1,13 +1,13 @@
 package com.dcall.core.configuration.generic.parser;
 
-import com.dcall.core.configuration.generic.parser.expression.operator.solver.arithmetic.ArithmeticOperatorSolver;
-import com.dcall.core.configuration.generic.parser.expression.token.ArithmeticTokenSolver;
+import com.dcall.core.configuration.generic.parser.expression.operator.solver.impl.ArithmeticOperatorSolver;
+import com.dcall.core.configuration.generic.parser.expression.token.impl.ArithmeticTokenSolver;
 import com.dcall.core.configuration.generic.parser.expression.token.TokenSolver;
 import com.dcall.core.configuration.utils.StringUtils;
 import com.dcall.core.configuration.generic.parser.expression.Expression;
 import com.dcall.core.configuration.generic.parser.expression.operand.solver.OperandSolver;
 import com.dcall.core.configuration.generic.parser.expression.operand.Operand;
-import com.dcall.core.configuration.generic.parser.expression.operand.solver.StringOperandSolver;
+import com.dcall.core.configuration.generic.parser.expression.operand.solver.impl.StringOperandSolver;
 import com.dcall.core.configuration.generic.parser.expression.operator.Operator;
 import com.dcall.core.configuration.generic.parser.expression.operator.OperatorType;
 import com.dcall.core.configuration.generic.parser.expression.operator.solver.OperatorSolver;
@@ -130,6 +130,38 @@ public final class Parser {
         return ref;
     }
 
+
+    /**
+     * Iterate the sequence and returns the last closing group token index according to the given token opening group index in parameter (idx).
+     *
+     * Note : the condition behaviour defining which characters are open group tokens and close group tokens is defined by
+     * isOpenToken() and isCloseToken() methods of the TokenSolver implementation.
+     *
+     * @param seq
+     * @param idx
+     * @param endIdx
+     * @return the index of the last closing token in bounds defined by idx as open index, and endIdx the last iterative index
+     */
+    private int iterTokenGroup(final CharSequence seq, int idx, final int endIdx) {
+        int nOpen = 1;
+        int nClose = 0;
+
+        while (idx < endIdx && nOpen != nClose) {
+            if (tokenSolver.isOpenToken().test(seq.charAt(idx)))
+                nOpen++;
+            else if (tokenSolver.isCloseToken().test(seq.charAt(idx)))
+                nClose++;
+            idx++;
+        }
+
+        if (nOpen != nClose)
+            throw new IllegalArgumentException(
+                    "Bad syntax : Missing open or close token in expression > "+ seq.toString()
+            );
+
+        return idx - 1;
+    }
+
     /**
      * Parse a char sequence in specified bounds and produces a binary tree of expressions
      *
@@ -157,7 +189,7 @@ public final class Parser {
 
                 if (tokenSolver.isOpenToken().test(seq.charAt(idx))) {
                     idx++;
-                    int endTokenIdx = tokenSolver.iterTokenGroup(seq, idx, endIdx);
+                    int endTokenIdx = iterTokenGroup(seq, idx, endIdx);
                     if (endTokenIdx  > idx) {
                         ptr = updateRef(ptr, operator, parse(seq, idx, endTokenIdx));
                         idx = endTokenIdx;

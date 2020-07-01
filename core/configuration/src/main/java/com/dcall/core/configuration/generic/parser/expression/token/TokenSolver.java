@@ -37,18 +37,4 @@ public interface TokenSolver {
      * @return condition
      */
     Predicate<Character> isOperator();
-
-    /**
-     * Iterate the sequence and returns the last closing group token index according to the given token opening group index in parameter (idx).
-     *
-     * Note : the condition behaviour defining which characters are open group tokens and close group tokens is defined by
-     * isOpenToken() and isCloseToken() methods of the TokenSolver implementation.
-     *
-     * @param seq
-     * @param idx
-     * @param endIdx
-     * @return the index of the last closing token in bounds defined by idx as open index, and endIdx the last iterative index
-     */
-    int iterTokenGroup(final CharSequence seq, int idx, final int endIdx);
-
 }

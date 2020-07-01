@@ -1,4 +1,4 @@
-package com.dcall.core.configuration.generic.parser.expression.operator.solver.arithmetic;
+package com.dcall.core.configuration.generic.parser.expression.operator.solver.impl;
 
 import com.dcall.core.configuration.generic.parser.expression.Expression;
 import com.dcall.core.configuration.generic.parser.expression.operand.Operand;

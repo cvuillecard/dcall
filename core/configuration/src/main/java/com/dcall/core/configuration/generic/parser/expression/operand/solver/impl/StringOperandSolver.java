@@ -1,7 +1,8 @@
-package com.dcall.core.configuration.generic.parser.expression.operand.solver;
+package com.dcall.core.configuration.generic.parser.expression.operand.solver.impl;
 
 import com.dcall.core.configuration.generic.parser.ASCII;
 import com.dcall.core.configuration.generic.parser.IterStringUtils;
+import com.dcall.core.configuration.generic.parser.expression.operand.solver.OperandSolver;
 
 public final class StringOperandSolver implements OperandSolver {
     @Override

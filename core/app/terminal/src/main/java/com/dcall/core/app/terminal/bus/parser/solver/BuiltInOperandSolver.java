@@ -4,7 +4,7 @@ import com.dcall.core.configuration.app.constant.BuiltInAction;
 import com.dcall.core.configuration.generic.parser.ASCII;
 import com.dcall.core.configuration.generic.parser.IterStringUtils;
 import com.dcall.core.configuration.generic.parser.expression.operand.solver.OperandSolver;
-import com.dcall.core.configuration.generic.parser.expression.operand.solver.StringOperandSolver;
+import com.dcall.core.configuration.generic.parser.expression.operand.solver.impl.StringOperandSolver;
 import com.dcall.core.configuration.utils.HelpUtils;
 import com.dcall.core.configuration.utils.StringUtils;
 import org.slf4j.Logger;

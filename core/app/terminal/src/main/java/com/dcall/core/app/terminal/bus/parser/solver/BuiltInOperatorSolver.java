@@ -6,7 +6,7 @@ import com.dcall.core.configuration.generic.parser.expression.Expression;
 import com.dcall.core.configuration.generic.parser.expression.operand.Operand;
 import com.dcall.core.configuration.generic.parser.expression.operator.Operator;
 import com.dcall.core.configuration.generic.parser.expression.operator.solver.OperatorSolver;
-import com.dcall.core.configuration.generic.parser.expression.operator.solver.arithmetic.ArithmeticOperatorSolver;
+import com.dcall.core.configuration.generic.parser.expression.operator.solver.impl.ArithmeticOperatorSolver;
 import com.dcall.core.configuration.generic.service.command.GenericCommandService;
 
 public final class BuiltInOperatorSolver implements OperatorSolver {
