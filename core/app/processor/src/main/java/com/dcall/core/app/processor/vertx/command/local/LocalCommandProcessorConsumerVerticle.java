@@ -1,8 +1,7 @@
 package com.dcall.core.app.processor.vertx.command.local;
 
-import com.dcall.core.app.processor.vertx.command.CommandProcessorConsumerVerticle;
-import com.dcall.core.app.processor.vertx.constant.URIConfig;
 import com.dcall.core.configuration.app.context.RuntimeContext;
+import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import com.dcall.core.configuration.app.service.builtin.BuiltInService;
 import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
 import com.dcall.core.configuration.generic.entity.message.MessageBean;
@@ -37,6 +36,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
 
     private final int BUF_SIZE = 8192;
     private final BuiltInService builtInService = new BuiltInServiceImpl();
+    private VertxURIContext uriContext;
 
     private void execute(final Message<Object> handler, final com.dcall.core.configuration.generic.entity.message.Message<String> msg) {
         if (handler != null) {
@@ -55,7 +55,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
 
                 final byte[] result = builtInService.setContext(runtimeContext).run(new String(sender.getMessage()));
 
-                sendChunk(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, sender, result, getNbChunk(result), resp);
+                sendChunk(uriContext.getRemoteConsumerUri(), sender, result, getNbChunk(result), resp);
             }
             catch (Exception e) {
                 handleError(handler, e.getMessage(), sender);
@@ -67,12 +67,12 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         }, res -> {
             if (res.succeeded()) {
                 try {
-                    handler.reply(this.getClass().getSimpleName() + " > SUCCESS");
+                    handler.reply(uriContext.getLocalConsumerUri() + " > SUCCESS");
                 } catch (Exception e) {
                     LOG.error(e.getMessage());
                 }
             } else {
-                LOG.debug(this.getClass().getSimpleName() + " > FAILURE");
+                LOG.debug(uriContext.getLocalConsumerUri() + " > FAILURE");
                 handler.reply(res.cause());
             }
         });
@@ -109,19 +109,36 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
 
         handler.fail(-1, "");
 
-        sendChunk(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, sender, bytes, getNbChunk(bytes), resp);
+        sendChunk(uriContext.getRemoteConsumerUri(), sender, bytes, getNbChunk(bytes), resp);
+    }
+
+    private void configure() {
+        configurebuiltInService();
+        configureURI();
+    }
+
+    private void configurebuiltInService() {
+        this.builtInService.setContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
+        this.builtInService.setParser(new Parser(new BuiltInOperatorSolver(runtimeContext), new BuiltInOperandSolver()));
+    }
+
+    private void configureURI() {
+        uriContext = this.runtimeContext.systemContext().routeContext().getVertxContext().getVertxURIContext();
+
+        uriContext.setBaseRemoteAppUri(uriContext.getLocalUri("terminal.vertx"));
+
+        uriContext.setLocalConsumerUri(LocalCommandProcessorConsumerVerticle.class.getName());
+        uriContext.setRemoteConsumerUri(uriContext.getRemoteUri("InputConsumerVerticle"));
     }
 
     @Override
     public void start() {
-        this.builtInService.setContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
-        this.builtInService.setParser(new Parser(new BuiltInOperatorSolver(runtimeContext), new BuiltInOperandSolver()));
-
-        final MessageConsumer<Object> consumer = vertx.eventBus().consumer(LocalCommandProcessorConsumerVerticle.class.getName());
+        configure();
+        final MessageConsumer<Object> consumer = vertx.eventBus().consumer(uriContext.getLocalConsumerUri());
 
         consumer.handler(handler -> {
             final com.dcall.core.configuration.generic.entity.message.Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
-            LOG.info(CommandProcessorConsumerVerticle.class.getSimpleName() + " > received from : " + msg.getId() + " body : " + handler.body().toString());
+            LOG.info(uriContext.getLocalConsumerUri() + " > received from : " + msg.getId() + " body : " + handler.body().toString());
             execute(handler, msg);
         });
     }

@@ -166,14 +166,12 @@ public final class RSAProvider {
     }
 
     public static String sign(final String plainText, final PrivateKey privateKey) throws Exception {
-        final Signature privateSignature = Signature.getInstance(_SIGALG);
+        final Signature privateSign = Signature.getInstance(_SIGALG);
 
-        privateSignature.initSign(privateKey);
-        privateSignature.update(plainText.getBytes(_UTF_8));
+        privateSign.initSign(privateKey);
+        privateSign.update(plainText.getBytes(_UTF_8));
 
-        byte[] signature = privateSignature.sign();
-
-        return Base64.getEncoder().encodeToString(signature);
+        return Base64.getEncoder().encodeToString(privateSign.sign());
     }
 
     public static boolean verify(final String plainText, final String signature, final PublicKey publicKey) throws Exception {

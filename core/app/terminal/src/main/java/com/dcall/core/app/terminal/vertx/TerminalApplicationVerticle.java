@@ -15,5 +15,7 @@ public class TerminalApplicationVerticle extends AbstractVerticle {
     @Autowired private RuntimeContext runtimeContext;
 
     @Override
-    public void start() { GUIProcessor.start(runtimeContext); }
+    public void start() {
+        GUIProcessor.start(runtimeContext);
+    }
 }

@@ -1,12 +1,14 @@
 package com.dcall.core.app.processor.vertx.command;
 
-import com.dcall.core.app.processor.vertx.constant.URIConfig;
+import com.dcall.core.configuration.app.context.RuntimeContext;
+import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +21,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Scope(SCOPE_PROTOTYPE)
 public class CommandProcessorConsumerVerticle extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(CommandProcessorConsumerVerticle.class);
-
+    @Autowired private RuntimeContext runtimeContext;
+    private VertxURIContext uriContext;
     private final int BUF_SIZE = 2048;
     private InputStreamReader inputStreamReader;
 
@@ -42,7 +45,7 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
     private void handleError(final Message<Object> handler, final String msgError) {
         LOG.error(msgError);
         handler.fail(-1, "");
-        vertx.eventBus().send(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, msgError, r -> {
+        vertx.eventBus().send(uriContext.getRemoteConsumerUri(), msgError, r -> {
             if (r.succeeded())
                 LOG.info(r.result().body().toString());
             else
@@ -57,7 +60,7 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
             try {
                 int nread;
                 while ((nread = inputStreamReader.read(buffer, 0, BUF_SIZE)) > 0) {
-                    vertx.eventBus().send(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, new String(buffer).substring(0, nread), r -> {
+                    vertx.eventBus().send(uriContext.getRemoteConsumerUri(), new String(buffer).substring(0, nread), r -> {
                         if (r.succeeded())
                             LOG.info(r.result().body().toString());
                         else
@@ -83,13 +86,23 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
         });
     }
 
+    private void configureURI() {
+        uriContext = this.runtimeContext.systemContext().routeContext().getVertxContext().getVertxURIContext();
+
+        uriContext.setBaseRemoteAppUri(uriContext.getLocalUri("terminal.vertx"));
+
+        uriContext.setLocalConsumerUri(CommandProcessorConsumerVerticle.class.getName());
+        uriContext.setRemoteConsumerUri(uriContext.getRemoteUri("InputConsumerVerticle"));
+    }
+
     @Override
     public void start() {
+        configureURI();
         final MessageConsumer<Object> consumer = vertx.eventBus()
-                .consumer(CommandProcessorConsumerVerticle.class.getName());
+                .consumer(uriContext.getLocalConsumerUri());
 
         consumer.handler(handler -> {
-            LOG.info(CommandProcessorConsumerVerticle.class.getSimpleName() + " > received : "
+            LOG.info(uriContext.getLocalConsumerUri() + " > received : "
                     + handler.body().toString());
             execute(handler);
         });

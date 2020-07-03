@@ -7,15 +7,15 @@ import com.dcall.core.configuration.app.context.system.SystemContext;
 import com.dcall.core.configuration.app.context.user.UserContext;
 
 public class RuntimeContext {
-    private final ClusterContext clusterContext = new ClusterContext();
-    private final DataContext dataContext = new DataContext();
     private final UserContext userContext = new UserContext();
     private final SystemContext systemContext = new SystemContext();
+    private final DataContext dataContext = new DataContext();
+    private final ClusterContext clusterContext = new ClusterContext(userContext);
     private final ServiceContext serviceContext = new ServiceContext();
 
-    public ClusterContext clusterContext() { return clusterContext; }
-    public DataContext dataContext() { return dataContext; }
     public UserContext userContext() { return userContext; }
-    public ServiceContext serviceContext() { return serviceContext; }
     public SystemContext systemContext() { return systemContext; }
+    public DataContext dataContext() { return dataContext; }
+    public ClusterContext clusterContext() { return clusterContext; }
+    public ServiceContext serviceContext() { return serviceContext; }
 }

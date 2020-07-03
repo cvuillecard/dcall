@@ -79,14 +79,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void initRepository(final RuntimeContext context, final boolean create) {
         final boolean isGitRepository = versionServiceProvider.gitService().isGitRepository(versionServiceProvider.gitService().getSystemRepository());
-        if (context.systemContext().getRepository() == null &&
+        if (context.systemContext().versionContext().getRepository() == null &&
                 ((create && !isGitRepository) || (!create && isGitRepository))) {
-            context.systemContext().setRepository(versionServiceProvider.gitService().createSystemRepository(context));
+            context.systemContext().versionContext().setRepository(versionServiceProvider.gitService().createSystemRepository(context));
         }
         else if (create) {
-            context.systemContext().setRepository(versionServiceProvider.gitService().createSystemRepository(context));
+            context.systemContext().versionContext().setRepository(versionServiceProvider.gitService().createSystemRepository(context));
             versionServiceProvider.gitService()
-                    .commitSystemRepository(context, context.systemContext().getRepository(),
+                    .commitSystemRepository(context, context.systemContext().versionContext().getRepository(),
                             GitMessage.getLocalSnapshotUserMsg(context.userContext().getUser(), "New User"));
         }
     }

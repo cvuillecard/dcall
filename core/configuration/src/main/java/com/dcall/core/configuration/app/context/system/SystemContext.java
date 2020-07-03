@@ -1,10 +1,12 @@
 package com.dcall.core.configuration.app.context.system;
 
-import com.dcall.core.configuration.generic.entity.repository.GitRepository;
+import com.dcall.core.configuration.app.context.route.RouteContext;
+import com.dcall.core.configuration.app.context.version.VersionContext;
 
 public final class SystemContext {
-    GitRepository repository = null;
+    private RouteContext routeContext = new RouteContext();
+    private VersionContext versionContext = new VersionContext();
 
-    public SystemContext setRepository(final GitRepository repository) { this.repository = repository; return this; }
-    public GitRepository getRepository() { return this.repository; }
+    public RouteContext routeContext() { return routeContext; }
+    public VersionContext versionContext() { return versionContext; }
 }

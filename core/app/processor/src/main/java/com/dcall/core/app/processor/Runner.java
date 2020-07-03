@@ -19,7 +19,6 @@ public final class Runner {
                 true,
                 configurator.getPeers().toArray(new String[configurator.getPeers().size()]),
                 LocalCommandProcessorConsumerVerticle.class
-//                 CommandProcessorConsumerVerticle.class
         );
     }
 }

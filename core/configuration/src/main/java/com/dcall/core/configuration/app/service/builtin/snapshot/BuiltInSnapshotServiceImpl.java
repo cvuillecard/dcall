@@ -25,7 +25,7 @@ public class BuiltInSnapshotServiceImpl extends AbstractCommand implements Built
 
     @Override
     public byte[] snapshot(final String msg) {
-        final GitRepository repository = getContext().systemContext().getRepository();
+        final GitRepository repository = getContext().systemContext().versionContext().getRepository();
         final VersionServiceProvider provider = getContext().serviceContext().serviceProvider().versionServiceProvider();
 
         if (repository != null) {

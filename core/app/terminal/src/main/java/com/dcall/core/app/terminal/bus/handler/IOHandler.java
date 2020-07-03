@@ -1,6 +1,7 @@
 package com.dcall.core.app.terminal.bus.handler;
 
 import com.dcall.core.app.terminal.bus.input.InputEntry;
+import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import com.dcall.core.configuration.generic.parser.expression.operand.solver.impl.BuiltInOperandSolver;
 import com.dcall.core.configuration.generic.parser.expression.operator.solver.impl.BuiltInOperatorSolver;
 import com.dcall.core.configuration.app.constant.EnvironConstant;
@@ -9,7 +10,6 @@ import com.dcall.core.configuration.app.service.builtin.BuiltInService;
 import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
-import com.dcall.core.app.terminal.vertx.constant.URIConfig;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.service.message.MessageService;
 import com.dcall.core.configuration.app.service.message.MessageServiceImpl;
@@ -81,7 +81,9 @@ public final class IOHandler {
     }
 
     public void sendLastInput() {
-        messageService.sendInputMessage(URIConfig.CMD_LOCAL_PROCESSOR_CONSUMER, lastInput.toLowerCase().getBytes(),
+        final VertxURIContext uriContext = this.runtimeContext.systemContext().routeContext().getVertxContext().getVertxURIContext();
+
+        messageService.sendInputMessage(uriContext.getRemoteConsumerUri(), lastInput.toLowerCase().getBytes(),
                 null,
                 failed -> {
                     if (!failed.cause().getMessage().isEmpty())
@@ -122,7 +124,4 @@ public final class IOHandler {
     public final InputHandler input() { return this.inputHandler; }
     public final OutputHandler output() { return this.outputHandler; }
     public final List<InputEntry<String>> entries(final boolean isInput) { return isInput ? input().entries() : output().entries(); }
-
-    // UTILS
-    private String[] lastInputToArray() { return lastInput.trim().toLowerCase().split(" "); }
 }

@@ -52,7 +52,7 @@ public abstract class AbstractCommand implements GenericCommandService {
     @Override
     public RevCommit commit(final String msg) {
         if (context != null) {
-            final GitRepository repository = getContext().systemContext().getRepository();
+            final GitRepository repository = getContext().systemContext().versionContext().getRepository();
             final boolean auto_commit = Boolean.valueOf(context.userContext().getEnviron().getProperties().get(EnvironConstant.COMMIT_MODE).toString());
             final GitService gitService = getContext().serviceContext().serviceProvider().versionServiceProvider().gitService();
 

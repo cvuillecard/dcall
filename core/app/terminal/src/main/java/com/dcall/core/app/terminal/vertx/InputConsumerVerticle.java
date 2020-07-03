@@ -1,8 +1,8 @@
 package com.dcall.core.app.terminal.vertx;
 
 import com.dcall.core.app.terminal.gui.GUIProcessor;
-import com.dcall.core.app.terminal.vertx.constant.URIConfig;
 import com.dcall.core.configuration.app.context.RuntimeContext;
+import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import com.dcall.core.configuration.generic.entity.message.Message;
 import com.dcall.core.configuration.generic.entity.message.MessageBean;
 import com.dcall.core.configuration.utils.URIUtils;
@@ -24,9 +24,23 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 public final class InputConsumerVerticle extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(InputConsumerVerticle.class);
 
+    @Autowired private RuntimeContext runtimeContext;
+
+    private VertxURIContext configureURI() {
+        final VertxURIContext uriContext = this.runtimeContext.systemContext().routeContext().getVertxContext().getVertxURIContext();
+
+        uriContext.setBaseRemoteAppUri(uriContext.getLocalUri("processor.vertx.command"));
+
+        uriContext.setLocalConsumerUri(InputConsumerVerticle.class.getName());
+        uriContext.setRemoteConsumerUri(uriContext.getRemoteUri("local.LocalCommandProcessorConsumerVerticle"));
+
+        return uriContext;
+    }
+
+
     @Override
     public void start() {
-        vertx.eventBus().consumer(URIUtils.getUri(URIConfig.URI_CLIENT_TERMINAL_CONSUMER, HazelcastCluster.getLocalUuid()), handler -> {
+        vertx.eventBus().consumer(URIUtils.getUri(configureURI().getLocalConsumerUri(), HazelcastCluster.getLocalUuid()), handler -> {
             LOG.info(" Terminal > data received : \n" + handler.body().toString());
             final Message<String> resp = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
             GUIProcessor.bus().output().addToEntry(new String(resp.getMessage()));
