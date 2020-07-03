@@ -11,6 +11,8 @@ public interface EnvironService {
 
     Environ createEnviron(UserContext context, String path);
     Environ createUserEnviron(UserContext context, boolean create);
+    String createPublicId(UserContext context);
+
     Properties loadEnvironProperties(UserContext context);
 
     String getConfigDirName();

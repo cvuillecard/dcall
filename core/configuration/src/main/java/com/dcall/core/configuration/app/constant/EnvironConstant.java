@@ -14,6 +14,7 @@ public final class EnvironConstant {
     public static final String USER_IDENTITY_PROP = "user_identity_prop";
     public static final String COMMIT_MODE = "auto_commit";
     public static final String INTERPRET_MODE = "local_interpret";
+    public static final String PUBLIC_ID = "public_id";
 
     public static final String USER_PROP_FILENAME = "env.properties";
     public static String USER_IDENTITY_FILENAME = "identity.properties";

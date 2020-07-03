@@ -114,7 +114,8 @@ public final class RSAProvider {
             case PRIVATE: return encodeKey(keyPair.getPrivate());
             default: break;
         }
-        throw new NullPointerException("publicKeyToString failed to encode to string " + keyType.name() + " key.");
+        
+        return null;
     }
 
     public static KeyPair getKeyPairFromFileKeyStore(final String keyStoreFullPath, final RSAProvider.KeyStoreType storeType, final String alias, final String storePass, final String keyPass) throws Exception {

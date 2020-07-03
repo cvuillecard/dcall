@@ -7,7 +7,7 @@ import com.dcall.core.configuration.app.entity.user.User;
 
 public final class UserHashBean implements UserHash<String> {
     private String id;
-    private String pwd;
+    private String pwd; // path working directory
     private String salt;
     private String md5Salt;
 

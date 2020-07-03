@@ -41,7 +41,7 @@ public final class FingerPrintConsumerVerticle extends AbstractVerticle {
             final com.dcall.core.configuration.app.entity.message.Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
             if (!msg.getId().equals(HazelcastCluster.getLocalUuid())) {
                 final FingerPrint<String> fingerPrint = SerializationUtils.deserialize(msg.getMessage());
-                LOG.info(uriContext.getLocalConsumerUri() + " > received public key from : " + msg.getId() + " body : " + RSAProvider.encodeKey(fingerPrint.getPublicKey()));
+                LOG.info(" > received public key from : " + msg.getId() + " < [ public_id :" + fingerPrint.getId() + " ] + [ public key : " + RSAProvider.encodeKey(fingerPrint.getPublicKey()) + " ]");
             }
         });
     }

@@ -8,6 +8,7 @@ import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.security.aes.AESProvider;
+import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.service.hash.HashFileService;
 import com.dcall.core.configuration.app.entity.certificate.Certificate;
 import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
@@ -87,6 +88,7 @@ public class EnvironServiceImpl implements EnvironService {
                 environ.getProperties().setProperty(EnvironConstant.USER_CERT, ((AbstractCipherResource) certificate).getPath());
                 environ.getProperties().setProperty(EnvironConstant.COMMIT_MODE, String.valueOf(GitCommitMode.MANUAL.mode()));
                 environ.getProperties().setProperty(EnvironConstant.INTERPRET_MODE, String.valueOf(InterpretMode.LOCAL.mode()));
+                environ.getProperties().setProperty(EnvironConstant.PUBLIC_ID, createPublicId(context));
 
                 environ.getProperties().store(new FileWriter(cipherEnv.getPath()), context.getUser().getEmail() + " - env properties");
                 AESProvider.encryptFile(cipherEnv.getPath(), cipherEnv.getPath(), cipherEnv.getCipher().getCipherIn());
@@ -106,6 +108,11 @@ public class EnvironServiceImpl implements EnvironService {
         }
 
         return null;
+    }
+
+    @Override
+    public String createPublicId(final UserContext context) {
+        return HashProvider.signSha512(context.getUserHash().getMd5Salt(), EnvironConstant.PUBLIC_ID);
     }
 
     @Override
