@@ -1,7 +1,7 @@
 package com.dcall.core.configuration.app.service.builtin.snapshot;
 
 import com.dcall.core.configuration.app.provider.version.VersionServiceProvider;
-import com.dcall.core.configuration.generic.entity.repository.GitRepository;
+import com.dcall.core.configuration.app.entity.repository.GitRepository;
 import com.dcall.core.configuration.generic.service.command.AbstractCommand;
 import com.dcall.core.configuration.utils.StringUtils;
 import org.eclipse.jgit.lib.Constants;

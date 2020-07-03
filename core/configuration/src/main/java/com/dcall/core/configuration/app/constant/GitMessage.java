@@ -1,6 +1,6 @@
 package com.dcall.core.configuration.app.constant;
 
-import com.dcall.core.configuration.generic.entity.user.User;
+import com.dcall.core.configuration.app.entity.user.User;
 import com.dcall.core.configuration.utils.DateUtils;
 
 import java.util.Date;

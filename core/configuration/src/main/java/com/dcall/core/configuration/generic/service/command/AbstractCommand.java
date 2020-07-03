@@ -6,7 +6,7 @@ import com.dcall.core.configuration.app.constant.GitMessage;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.exception.FunctionalException;
 import com.dcall.core.configuration.app.service.git.GitService;
-import com.dcall.core.configuration.generic.entity.repository.GitRepository;
+import com.dcall.core.configuration.app.entity.repository.GitRepository;
 import com.dcall.core.configuration.utils.FileUtils;
 import com.dcall.core.configuration.utils.StringUtils;
 import org.eclipse.jgit.revwalk.RevCommit;

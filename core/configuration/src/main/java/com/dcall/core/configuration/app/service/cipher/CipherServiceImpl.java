@@ -1,7 +1,7 @@
 package com.dcall.core.configuration.app.service.cipher;
 
 import com.dcall.core.configuration.app.security.hash.HashProvider;
-import com.dcall.core.configuration.generic.entity.cipher.CipherAESBean;
+import com.dcall.core.configuration.app.entity.cipher.CipherAESBean;
 
 public class CipherServiceImpl implements CipherService {
     @Override

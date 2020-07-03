@@ -3,10 +3,10 @@ package com.dcall.core.app.terminal.vertx;
 import com.dcall.core.app.terminal.gui.GUIProcessor;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
-import com.dcall.core.configuration.generic.entity.message.Message;
-import com.dcall.core.configuration.generic.entity.message.MessageBean;
+import com.dcall.core.configuration.app.entity.message.Message;
+import com.dcall.core.configuration.app.entity.message.MessageBean;
 import com.dcall.core.configuration.utils.URIUtils;
-import com.dcall.core.configuration.app.vertx.cluster.HazelcastCluster;
+import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
 import io.vertx.core.AbstractVerticle;
 
 import io.vertx.core.buffer.Buffer;

@@ -1,10 +1,10 @@
 package com.dcall.core.configuration.app.context.user;
 
-import com.dcall.core.configuration.generic.entity.certificate.Certificate;
-import com.dcall.core.configuration.generic.entity.environ.Environ;
-import com.dcall.core.configuration.generic.entity.hash.UserHash;
-import com.dcall.core.configuration.generic.entity.identity.Identity;
-import com.dcall.core.configuration.generic.entity.user.User;
+import com.dcall.core.configuration.app.entity.certificate.Certificate;
+import com.dcall.core.configuration.app.entity.environ.Environ;
+import com.dcall.core.configuration.app.entity.hash.UserHash;
+import com.dcall.core.configuration.app.entity.identity.Identity;
+import com.dcall.core.configuration.app.entity.user.User;
 
 public class UserContext {
     private User user = null;

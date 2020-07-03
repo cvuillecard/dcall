@@ -1,6 +1,6 @@
 package com.dcall.core.configuration.utils;
 
-import com.dcall.core.configuration.app.system.platform.Platform;
+import com.dcall.core.configuration.generic.system.platform.Platform;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.slf4j.Logger;

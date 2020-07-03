@@ -1,6 +1,6 @@
 package com.dcall.core.app.terminal;
 
-import com.dcall.core.configuration.app.vertx.VertxApplication;
+import com.dcall.core.configuration.generic.vertx.VertxApplication;
 import com.dcall.core.configuration.app.runner.RunnerConfigurator;
 
 import com.dcall.core.app.terminal.vertx.InputConsumerVerticle;

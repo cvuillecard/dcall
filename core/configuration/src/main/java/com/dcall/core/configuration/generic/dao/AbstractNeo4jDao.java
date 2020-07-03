@@ -1,6 +1,6 @@
 package com.dcall.core.configuration.generic.dao;
 
-import com.dcall.core.configuration.generic.entity.Entity;
+import com.dcall.core.configuration.app.entity.Entity;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;

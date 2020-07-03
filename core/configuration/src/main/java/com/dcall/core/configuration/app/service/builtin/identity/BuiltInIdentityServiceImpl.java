@@ -1,6 +1,6 @@
 package com.dcall.core.configuration.app.service.builtin.identity;
 
-import com.dcall.core.configuration.generic.entity.identity.Identity;
+import com.dcall.core.configuration.app.entity.identity.Identity;
 import com.dcall.core.configuration.generic.service.command.AbstractCommand;
 
 import java.util.ArrayList;

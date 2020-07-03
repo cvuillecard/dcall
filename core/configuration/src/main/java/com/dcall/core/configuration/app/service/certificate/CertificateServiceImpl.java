@@ -6,10 +6,10 @@ import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.security.aes.AESProvider;
 import com.dcall.core.configuration.app.security.rsa.RSAProvider;
-import com.dcall.core.configuration.generic.entity.certificate.Certificate;
-import com.dcall.core.configuration.generic.entity.certificate.CertificateBean;
-import com.dcall.core.configuration.generic.entity.cipher.AbstractCipherResource;
-import com.dcall.core.configuration.generic.entity.cipher.CipherAES;
+import com.dcall.core.configuration.app.entity.certificate.Certificate;
+import com.dcall.core.configuration.app.entity.certificate.CertificateBean;
+import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
+import com.dcall.core.configuration.app.entity.cipher.CipherAES;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

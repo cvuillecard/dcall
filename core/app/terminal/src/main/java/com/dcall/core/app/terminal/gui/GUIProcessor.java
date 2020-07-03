@@ -13,7 +13,7 @@ import com.dcall.core.app.terminal.gui.service.credential.window.UserCredentialD
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.provider.ServiceProvider;
 import com.dcall.core.configuration.app.service.user.UserService;
-import com.dcall.core.configuration.app.vertx.VertxApplication;
+import com.dcall.core.configuration.generic.vertx.VertxApplication;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
 import io.vertx.core.Vertx;

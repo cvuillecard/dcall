@@ -1,7 +1,7 @@
 package com.dcall.core.configuration.app.service.builtin.env;
 
 import com.dcall.core.configuration.app.constant.EnvironConstant;
-import com.dcall.core.configuration.generic.entity.environ.Environ;
+import com.dcall.core.configuration.app.entity.environ.Environ;
 import com.dcall.core.configuration.generic.service.command.AbstractCommand;
 
 import java.util.ArrayList;

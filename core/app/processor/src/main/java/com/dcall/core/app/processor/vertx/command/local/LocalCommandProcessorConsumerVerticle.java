@@ -4,7 +4,7 @@ import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import com.dcall.core.configuration.app.service.builtin.BuiltInService;
 import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
-import com.dcall.core.configuration.generic.entity.message.MessageBean;
+import com.dcall.core.configuration.app.entity.message.MessageBean;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.generic.parser.Parser;
@@ -12,7 +12,7 @@ import com.dcall.core.configuration.generic.parser.expression.operand.solver.imp
 import com.dcall.core.configuration.generic.parser.expression.operator.solver.impl.BuiltInOperatorSolver;
 import com.dcall.core.configuration.utils.HelpUtils;
 import com.dcall.core.configuration.utils.URIUtils;
-import com.dcall.core.configuration.app.vertx.cluster.HazelcastCluster;
+import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
@@ -38,7 +38,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
     private final BuiltInService builtInService = new BuiltInServiceImpl();
     private VertxURIContext uriContext;
 
-    private void execute(final Message<Object> handler, final com.dcall.core.configuration.generic.entity.message.Message<String> msg) {
+    private void execute(final Message<Object> handler, final com.dcall.core.configuration.app.entity.message.Message<String> msg) {
         if (handler != null) {
             try {
                 handleLocalCommand(handler, msg);
@@ -48,10 +48,10 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         }
     }
 
-    private void handleLocalCommand(final Message<Object> handler, final com.dcall.core.configuration.generic.entity.message.Message<String> sender) {
+    private void handleLocalCommand(final Message<Object> handler, final com.dcall.core.configuration.app.entity.message.Message<String> sender) {
         vertx.executeBlocking(future -> {
             try {
-                final com.dcall.core.configuration.generic.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
+                final com.dcall.core.configuration.app.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
 
                 final byte[] result = builtInService.setContext(runtimeContext).run(new String(sender.getMessage()));
 
@@ -82,7 +82,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         return (result.length / BUF_SIZE) + ((result.length % BUF_SIZE) > 0 ? 1 : 0);
     }
 
-    private void sendChunk(final String address, final com.dcall.core.configuration.generic.entity.message.Message<String> sender, final byte[] bytes, final int nbChunk, final com.dcall.core.configuration.generic.entity.message.Message<String> resp) {
+    private void sendChunk(final String address, final com.dcall.core.configuration.app.entity.message.Message<String> sender, final byte[] bytes, final int nbChunk, final com.dcall.core.configuration.app.entity.message.Message<String> resp) {
         for (int i = 0; i < nbChunk; i++) {
             final int startIdx = i * BUF_SIZE;
             final int idx = startIdx + BUF_SIZE;
@@ -99,11 +99,11 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         }
     }
 
-    private void handleError(final Message<Object> handler, final String msgError, final com.dcall.core.configuration.generic.entity.message.Message<String> sender) {
+    private void handleError(final Message<Object> handler, final String msgError, final com.dcall.core.configuration.app.entity.message.Message<String> sender) {
         final String error = "Failed to execute '" + new String(sender.getMessage()) + "' - ERROR : " + msgError;
         final byte[] bytes = error.getBytes();
         final String randId = HashProvider.seedSha512(bytes);
-        final com.dcall.core.configuration.generic.entity.message.Message<String> resp = new MessageBean(randId, bytes, bytes.length);
+        final com.dcall.core.configuration.app.entity.message.Message<String> resp = new MessageBean(randId, bytes, bytes.length);
 
         LOG.error(msgError);
 
@@ -137,7 +137,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
         final MessageConsumer<Object> consumer = vertx.eventBus().consumer(uriContext.getLocalConsumerUri());
 
         consumer.handler(handler -> {
-            final com.dcall.core.configuration.generic.entity.message.Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
+            final com.dcall.core.configuration.app.entity.message.Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
             LOG.info(uriContext.getLocalConsumerUri() + " > received from : " + msg.getId() + " body : " + handler.body().toString());
             execute(handler, msg);
         });

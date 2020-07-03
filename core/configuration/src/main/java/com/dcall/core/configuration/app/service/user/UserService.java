@@ -2,7 +2,7 @@ package com.dcall.core.configuration.app.service.user;
 
 import com.dcall.core.configuration.app.constant.LoginOption;
 import com.dcall.core.configuration.app.context.RuntimeContext;
-import com.dcall.core.configuration.generic.entity.user.User;
+import com.dcall.core.configuration.app.entity.user.User;
 
 public interface UserService {
     boolean hasIdentity(final User user);

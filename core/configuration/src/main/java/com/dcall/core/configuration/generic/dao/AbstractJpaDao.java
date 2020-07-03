@@ -1,6 +1,6 @@
 package com.dcall.core.configuration.generic.dao;
 
-import com.dcall.core.configuration.generic.entity.Entity;
+import com.dcall.core.configuration.app.entity.Entity;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

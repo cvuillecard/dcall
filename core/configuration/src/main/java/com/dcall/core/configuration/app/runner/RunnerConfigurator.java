@@ -1,7 +1,7 @@
 package com.dcall.core.configuration.app.runner;
 
 import com.dcall.core.configuration.app.constant.ClusterConstant;
-import com.dcall.core.configuration.generic.entity.cluster.Cluster;
+import com.dcall.core.configuration.app.entity.cluster.Cluster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

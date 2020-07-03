@@ -8,7 +8,7 @@ import com.dcall.core.configuration.app.provider.version.VersionServiceProvider;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.service.environ.EnvironService;
 import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
-import com.dcall.core.configuration.generic.entity.user.User;
+import com.dcall.core.configuration.app.entity.user.User;
 
 public class UserServiceImpl implements UserService {
     private final HashServiceProvider hashServiceProvider;

@@ -1,8 +1,8 @@
 package com.dcall.core.configuration.app.service.git;
 
 import com.dcall.core.configuration.app.context.RuntimeContext;
-import com.dcall.core.configuration.generic.entity.repository.GitRepository;
-import com.dcall.core.configuration.generic.entity.user.User;
+import com.dcall.core.configuration.app.entity.repository.GitRepository;
+import com.dcall.core.configuration.app.entity.user.User;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand;

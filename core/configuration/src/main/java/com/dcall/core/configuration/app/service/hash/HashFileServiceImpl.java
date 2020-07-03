@@ -1,7 +1,7 @@
 package com.dcall.core.configuration.app.service.hash;
 
 import com.dcall.core.configuration.app.exception.TechnicalException;
-import com.dcall.core.configuration.generic.entity.user.User;
+import com.dcall.core.configuration.app.entity.user.User;
 import com.dcall.core.configuration.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,6 @@
 package com.dcall.core.configuration.app.service.hash;
 
-import com.dcall.core.configuration.generic.entity.user.User;
+import com.dcall.core.configuration.app.entity.user.User;
 
 import java.util.Collection;
 import java.util.List;

@@ -12,7 +12,6 @@ import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
 import com.dcall.core.app.terminal.gui.controller.screen.ScreenController;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.service.message.MessageService;
-import com.dcall.core.configuration.app.service.message.MessageServiceImpl;
 import com.dcall.core.configuration.generic.parser.Parser;
 import com.dcall.core.configuration.utils.HelpUtils;
 import org.slf4j.Logger;
@@ -23,7 +22,7 @@ import java.util.List;
 public final class IOHandler {
     private static final Logger LOG = LoggerFactory.getLogger(IOHandler.class);
     private RuntimeContext runtimeContext;
-    private final MessageService messageService = new MessageServiceImpl();
+    private MessageService messageService;
     private final InputHandler inputHandler = new InputHandler();
     private final OutputHandler outputHandler = new OutputHandler();
     private final BuiltInService builtInService = new BuiltInServiceImpl();
@@ -31,8 +30,9 @@ public final class IOHandler {
 
     public void init(final RuntimeContext context) {
         this.runtimeContext = context;
-        this.builtInService.setContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
+        this.messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().getMessageService();
 
+        this.builtInService.setContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
         builtInService.setParser(new Parser(new BuiltInOperatorSolver(runtimeContext), new BuiltInOperandSolver()));
     }
 
@@ -83,7 +83,7 @@ public final class IOHandler {
     public void sendLastInput() {
         final VertxURIContext uriContext = this.runtimeContext.systemContext().routeContext().getVertxContext().getVertxURIContext();
 
-        messageService.sendInputMessage(uriContext.getRemoteConsumerUri(), lastInput.toLowerCase().getBytes(),
+        messageService.send(uriContext.getRemoteConsumerUri(), lastInput.toLowerCase().getBytes(),
                 null,
                 failed -> {
                     if (!failed.cause().getMessage().isEmpty())
