@@ -17,7 +17,7 @@ public final class MessageServiceProvider {
     public MessageServiceProvider(final UserServiceProvider userServiceProvider) {
         this.userServiceProvider = userServiceProvider;
         this.messageService = new MessageServiceImpl();
-        this.fingerPrintService = new FingerPrintServiceImpl();
+        this.fingerPrintService = new FingerPrintServiceImpl(messageService);
     }
 
     // getters

@@ -104,10 +104,14 @@ public final class RSAProvider {
         fos.close();
     }
 
+    public static String encodeKey(final Key key) {
+            return Base64.getEncoder().encodeToString(key.getEncoded());
+    }
+
     public static String encodeKey(final KeyPair keyPair, final RSAProvider.KeyType keyType) {
         switch (keyType) {
-            case PUBLIC: return Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
-            case PRIVATE: return Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded());
+            case PUBLIC: return encodeKey(keyPair.getPublic());
+            case PRIVATE: return encodeKey(keyPair.getPrivate());
             default: break;
         }
         throw new NullPointerException("publicKeyToString failed to encode to string " + keyType.name() + " key.");

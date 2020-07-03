@@ -70,8 +70,10 @@ public class UserServiceImpl implements UserService {
 
         if (!hasConfiguration)
             context.userContext().getUser().reset();
-        else
+        else {
             environService.createUserEnviron(context.userContext(), false);
+            context.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService().publishPublicUserCertificate(context.userContext());
+        }
 
         return hasConfiguration;
     }

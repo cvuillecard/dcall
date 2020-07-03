@@ -90,6 +90,7 @@ public final class GUIProcessor {
                             userService.encodePassword(runtimeContext.userContext().getUser());
                             services.environService().createUserEnviron(runtimeContext.userContext(), true);
                             userService.initRepository(runtimeContext, true);
+                            services.messageServiceProvider().fingerPrintService().publishPublicUserCertificate(runtimeContext.userContext());
                         }
                         else if (option.equals(LoginOption.LOGIN) && !userService.hasConfiguration(runtimeContext))
                             option = LoginOption.NEW_USER;
