@@ -16,9 +16,19 @@ public final class CipherAESBean implements CipherAES<String> {
     private Cipher cipherOut;
 
     public CipherAESBean() {}
+
     public CipherAESBean(final String password, final String salt) {
         try {
             final SecretKey key = AESProvider.getSecretKey(password, salt.getBytes());
+            cipherIn = AESProvider.initCipher(Cipher.ENCRYPT_MODE, key);
+            cipherOut = AESProvider.initCipher(Cipher.DECRYPT_MODE, key);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    public CipherAESBean(final SecretKey key) {
+        try {
             cipherIn = AESProvider.initCipher(Cipher.ENCRYPT_MODE, key);
             cipherOut = AESProvider.initCipher(Cipher.DECRYPT_MODE, key);
         } catch (Exception e) {

@@ -11,18 +11,14 @@ import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.util.function.Consumer;
 
 public class MessageServiceImpl implements MessageService {
     private static final Logger LOG = LoggerFactory.getLogger(MessageServiceImpl.class);
 
     @Override
-    public MessageService send(final String address, final byte[] datas, final Consumer<AsyncResult<Message<Object>>> onSuccess, Consumer<AsyncResult<Message<Object>>> onFail, final Runnable callback) {
-        final com.dcall.core.configuration.app.entity.message.Message<String> msg = new MessageBean(HazelcastCluster.getLocalUuid(), datas, datas.length);
+    public MessageService send(final String id, final String address, final byte[] datas, final Consumer<AsyncResult<Message<Object>>> onSuccess, Consumer<AsyncResult<Message<Object>>> onFail, final Runnable callback) {
+        final com.dcall.core.configuration.app.entity.message.Message<String> msg = new MessageBean(id, datas, datas.length);
 
         Vertx.currentContext().owner().eventBus()
                 .send(address, Json.encodeToBuffer(msg), res -> {
@@ -41,6 +37,12 @@ public class MessageServiceImpl implements MessageService {
                     }
                 });
 
+        return this;
+    }
+
+    @Override
+    public MessageService send(final String address, final byte[] datas, final Consumer<AsyncResult<Message<Object>>> onSuccess, Consumer<AsyncResult<Message<Object>>> onFail, final Runnable callback) {
+        send(HazelcastCluster.getLocalUuid(), address, datas, onSuccess, onFail, callback);
         return this;
     }
 

@@ -58,7 +58,6 @@ public class AESProviderTest {
     @Test
     public void should_encrypt_string_without_IV_encryptString() throws Exception {
         String msg = "message test";
-        String secret = Base64.getEncoder().encodeToString(_secret.getEncoded());
 
         // using SecretKey
         Cipher enc = AESProvider.initCipher(Cipher.ENCRYPT_MODE, _secret);
