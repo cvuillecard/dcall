@@ -79,8 +79,8 @@ public class EnvironServiceImpl implements EnvironService {
         final Environ environ = context.setEnviron(createEnviron(context, userPwd)).getEnviron();
         final AbstractCipherResource cipherEnv = (AbstractCipherResource) environ;
 
-        if (!create)
-            environ.setProperties(loadEnvironProperties(context));
+//        if (!create)
+//            environ.setProperties(loadEnvironProperties(context));
 
         final String userHome = hashService.getHashPath(context.getUser().getWorkspace(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_HOME));
         final String userCert = hashService.getHashPath(userHome, userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_CERT));
@@ -111,9 +111,11 @@ public class EnvironServiceImpl implements EnvironService {
                 // hashServiceProvider.hashFileService().exists(user.getWorkspace(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_HOME))
                 // hashService.exists(userHome, userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_CERT))
             }
-            else
+            else {
+                environ.setProperties(loadEnvironProperties(context));
                 context.setIdentity(hashServiceProvider.identityService().createUserIdentity(context, userHome))
-                    .setCertificate(hashServiceProvider.certificateService().createUserCertificate(context, userCert));
+                        .setCertificate(hashServiceProvider.certificateService().createUserCertificate(context, userCert));
+            }
 
 
             return environ;
