@@ -5,6 +5,8 @@ import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.entity.user.User;
 
 public interface UserService {
+    User createSystemUser();
+    UserService configureSystemUser(RuntimeContext context);
     boolean hasIdentity(final User user);
     boolean hasLogged(final User user);
     boolean hasUser(final User user);

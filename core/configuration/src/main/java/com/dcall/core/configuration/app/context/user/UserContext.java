@@ -19,6 +19,7 @@ public class UserContext {
     public Environ getEnviron() { return this.environ; }
     public Identity getIdentity() { return this.identity; }
     public Certificate getCertificate() { return this.certificate; }
+
     // setter
     public UserContext setUser(final User user) { this.user = user; return this; }
     public UserContext setUserHash(final UserHash<String> userHash) { this.userHash = userHash; return this; }

@@ -19,4 +19,7 @@ public final class EnvironConstant {
     public static final String USER_PROP_FILENAME = "env.properties";
     public static String USER_IDENTITY_FILENAME = "identity.properties";
     public static String USER_KEYSTORE_FILENAME = "user_keystore.p12";
+
+    public static String SYSTEM_MAIL_DOMAIN = "dcall.system.user";
+    public static String SYSTEM_LOGIN = "system";
 }

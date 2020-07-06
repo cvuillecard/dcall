@@ -2,6 +2,8 @@ package com.dcall.core.app.processor.vertx.command.local;
 
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
+import com.dcall.core.configuration.app.entity.user.User;
+import com.dcall.core.configuration.app.provider.ServiceProvider;
 import com.dcall.core.configuration.app.service.builtin.BuiltInService;
 import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
@@ -115,6 +117,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
     private void configure() {
         configurebuiltInService();
         configureURI();
+        runtimeContext.serviceContext().serviceProvider().userServiceProvider().userService().configureSystemUser(runtimeContext);
     }
 
     private void configurebuiltInService() {
@@ -134,6 +137,7 @@ public class LocalCommandProcessorConsumerVerticle extends AbstractVerticle {
     @Override
     public void start() {
         configure();
+
         final MessageConsumer<Object> consumer = vertx.eventBus().consumer(uriContext.getLocalConsumerUri());
 
         consumer.handler(handler -> {

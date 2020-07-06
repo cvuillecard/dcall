@@ -13,7 +13,7 @@ public final class UserHashBean implements UserHash<String> {
 
     public UserHashBean() {}
 
-    public UserHashBean(final String pwd, final User user, final SaltDef saltDef) {
+    public UserHashBean(final User user, final String pwd, final SaltDef saltDef) {
         this.pwd = pwd;
         this.setSalt(user, saltDef);
     }

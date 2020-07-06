@@ -1,14 +1,20 @@
 package com.dcall.core.configuration.app.service.user;
 
-import com.dcall.core.configuration.app.constant.GitMessage;
-import com.dcall.core.configuration.app.constant.LoginOption;
+import com.dcall.core.configuration.app.constant.*;
 import com.dcall.core.configuration.app.context.RuntimeContext;
+import com.dcall.core.configuration.app.entity.user.UserBean;
+import com.dcall.core.configuration.app.provider.ServiceProvider;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.provider.version.VersionServiceProvider;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.service.environ.EnvironService;
 import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 import com.dcall.core.configuration.app.entity.user.User;
+import com.dcall.core.configuration.utils.HostUtils;
+import com.dcall.core.configuration.utils.ResourceUtils;
+import org.apache.commons.codec.binary.Base64;
+
+import java.io.File;
 
 public class UserServiceImpl implements UserService {
     private final HashServiceProvider hashServiceProvider;
@@ -31,6 +37,36 @@ public class UserServiceImpl implements UserService {
         this.hashServiceProvider = versionServiceProvider.environService().getHashServiceProvider();
         this.environService = versionServiceProvider.environService();
         this.versionServiceProvider = versionServiceProvider;
+    }
+
+    @Override
+    public User createSystemUser() {
+        final User user = new UserBean();
+
+        user.setName(HostUtils.getName())
+                .setSurname(HostUtils.getMacAddress())
+                .setLogin(EnvironConstant.SYSTEM_LOGIN)
+                .setEmail(user.getName() + '.' + user.getSurname() + '@' + EnvironConstant.SYSTEM_MAIL_DOMAIN)
+                .setPassword(HashProvider.signSha512(HashProvider.createSalt512(user.getName(), user.getSurname(), user.getLogin()), user.getEmail()))
+                .setWorkspace(ResourceUtils.localProperties().getProperty(GitConstant.SYS_GIT_REPOSITORY) + File.separator + UserConstant.WORKSPACE);
+
+        return encodePassword(user);
+    }
+
+    @Override
+    public UserService configureSystemUser(final RuntimeContext context) {
+        final ServiceProvider services = context.serviceContext().serviceProvider();
+        final User user = services.userServiceProvider().userService().createSystemUser();
+
+        context.userContext().setUser(new UserBean(user));
+
+        if (!services.userServiceProvider().userService().hasConfiguration(context)) {
+            services.environService().configureUserEnviron(context.userContext().setUser(user), true);
+            services.userServiceProvider().userService().initRepository(context, true);
+            services.messageServiceProvider().fingerPrintService().publishPublicUserCertificate(context.userContext());
+        }
+
+        return this;
     }
 
     @Override
@@ -71,7 +107,7 @@ public class UserServiceImpl implements UserService {
         if (!hasConfiguration)
             context.userContext().getUser().reset();
         else {
-            environService.createUserEnviron(context.userContext(), false);
+            environService.configureUserEnviron(context.userContext(), false);
             context.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService().publishPublicUserCertificate(context.userContext());
         }
 

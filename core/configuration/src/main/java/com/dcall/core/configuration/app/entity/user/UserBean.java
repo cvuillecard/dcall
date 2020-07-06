@@ -14,6 +14,16 @@ public final class UserBean implements User<String> {
 
     public UserBean() {}
 
+    public UserBean(final User user) {
+        this.id = (String) user.getId();
+        this.name = user.getName();
+        this.surname = user.getSurname();
+        this.email = user.getEmail();
+        this.login = user.getLogin();
+        this.password = user.getPassword();
+        this.workspace = user.getWorkspace();
+    }
+
     public UserBean(@JsonProperty final String id, @JsonProperty final String name, @JsonProperty final String surname,
                     @JsonProperty final String email, @JsonProperty final String login, @JsonProperty final String password,
                     @JsonProperty final String workspace) {

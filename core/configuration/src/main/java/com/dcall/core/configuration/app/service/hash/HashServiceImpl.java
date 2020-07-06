@@ -9,6 +9,6 @@ public class HashServiceImpl implements HashService {
 
     @Override
     public UserHash createUserHash(final User user, final String pwd, final SaltDef saltDef) {
-        return new UserHashBean(pwd, user, saltDef);
+        return new UserHashBean(user, pwd, saltDef);
     }
 }

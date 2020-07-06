@@ -1,16 +1,14 @@
 package com.dcall.core.configuration.utils;
 
 import org.h2.tools.Server;
+import org.h2.util.New;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.stream.IntStream;
 
 public final class HostUtils {
@@ -63,4 +61,42 @@ public final class HostUtils {
         }
         return -1;
     }
+
+    public static String getName(final NetworkInterface iface) {
+        return iface.getName();
+    }
+
+    public static String getName() {
+        try {
+            return getName(NetworkInterface.getNetworkInterfaces().nextElement());
+        } catch (SocketException e) {
+            LOG.error(e.getMessage());
+        }
+        return null;
+    }
+
+    public static String getMacAddress(final NetworkInterface iface) {
+        try {
+            final byte[] mac = iface.getHardwareAddress();
+            final StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < mac.length; i++)
+                sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1 ? "-" : "")));
+
+            return sb.toString();
+        } catch (SocketException e) {
+            LOG.error(e.getMessage());
+        }
+        return null;
+    }
+
+    public static String getMacAddress() {
+        try {
+            return getMacAddress(NetworkInterface.getNetworkInterfaces().nextElement());
+        } catch (SocketException e) {
+            LOG.error(e.getMessage());
+        }
+        return null;
+    }
+
 }
