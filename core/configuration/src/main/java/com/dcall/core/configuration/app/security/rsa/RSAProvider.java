@@ -114,7 +114,7 @@ public final class RSAProvider {
             case PRIVATE: return encodeKey(keyPair.getPrivate());
             default: break;
         }
-        
+
         return null;
     }
 
@@ -152,22 +152,27 @@ public final class RSAProvider {
         return KeyFactory.getInstance(_ALGORITHM).generatePrivate(new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKey)));
     }
 
-    public static String encrypt(final String plainText, final PublicKey publicKey) throws Exception {
+    public static byte[] encrypt(final byte[] bytes, final PublicKey publicKey) throws Exception {
         Cipher encryptCipher = Cipher.getInstance(_ALGORITHM);
         encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
-        byte[] cipherText = encryptCipher.doFinal(plainText.getBytes(_UTF_8));
-
-        return Base64.getEncoder().encodeToString(cipherText);
+        return encryptCipher.doFinal(bytes);
     }
 
-    public static String decrypt(final String cipherText, final PrivateKey privateKey) throws Exception {
-        byte[] bytes = Base64.getDecoder().decode(cipherText);
-
+    public static byte[] decrypt(final byte[] bytes, final PrivateKey privateKey) throws Exception {
         Cipher decriptCipher = Cipher.getInstance(_ALGORITHM);
         decriptCipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-        return new String(decriptCipher.doFinal(bytes), _UTF_8);
+        return decriptCipher.doFinal(bytes);
+    }
+
+    public static String encryptString(final String plainText, final PublicKey publicKey) throws Exception {
+        return Base64.getEncoder().encodeToString(encrypt(plainText.getBytes(_UTF_8), publicKey));
+    }
+
+    public static String decryptString(final String cipherText, final PrivateKey privateKey) throws Exception {
+        byte[] bytes = Base64.getDecoder().decode(cipherText);
+        return new String(decrypt(bytes, privateKey));
     }
 
     public static String sign(final String plainText, final PrivateKey privateKey) throws Exception {

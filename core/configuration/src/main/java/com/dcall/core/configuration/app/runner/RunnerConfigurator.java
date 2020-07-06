@@ -1,7 +1,6 @@
 package com.dcall.core.configuration.app.runner;
 
 import com.dcall.core.configuration.app.constant.ClusterConstant;
-import com.dcall.core.configuration.app.entity.cluster.Cluster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,5 +116,5 @@ public final class RunnerConfigurator {
     public Set<String> getPeers() { return this.peers; }
     public String getGroupName() { return this.groupName == null ? ClusterConstant.GROUP_GATE : this.groupName; }
     @Deprecated // going to be deleted because not used by hazelcast
-    public String getGroupPassword() { return this.groupPassword == null ? ClusterConstant.GATE_PWD : this.groupPassword; }
+    public String getGroupPassword() { return this.groupPassword == null ? ClusterConstant.PUB_PWD : this.groupPassword; }
 }

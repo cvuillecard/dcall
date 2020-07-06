@@ -1,12 +1,18 @@
 package com.dcall.core.configuration.app.verticle.fingerprint;
 
+import com.dcall.core.configuration.app.constant.ClusterConstant;
 import com.dcall.core.configuration.app.context.RuntimeContext;
+import com.dcall.core.configuration.app.context.fingerprint.FingerPrintContext;
 import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
+import com.dcall.core.configuration.app.entity.cipher.CipherAES;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
+import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.security.rsa.RSAProvider;
+import com.dcall.core.configuration.app.service.cipher.CipherService;
 import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
 import com.dcall.core.configuration.utils.SerializationUtils;
+import com.dcall.core.configuration.utils.URIUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.MessageConsumer;
@@ -35,14 +41,36 @@ public final class FingerPrintConsumerVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        final MessageConsumer<Object> consumer = vertx.eventBus().consumer(uriContext().getLocalConsumerUri());
+        final FingerPrintContext fingerPrintContext = runtimeContext.clusterContext().fingerPrintContext();
 
-        consumer.handler(handler -> {
-            final com.dcall.core.configuration.app.entity.message.Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
+        final MessageConsumer<Object> publicConsumer = vertx.eventBus().consumer(uriContext().getLocalConsumerUri());
+        final MessageConsumer<Object> privateConsumer = vertx.eventBus().consumer(URIUtils.getUri(uriContext().getLocalConsumerUri(), HazelcastCluster.getLocalUuid()));
+
+        publicConsumer.handler(handler -> handleMessage(fingerPrintContext, (Buffer) handler.body(), true));
+        privateConsumer.handler(handler -> handleMessage(fingerPrintContext, (Buffer) handler.body(), false));
+
+    }
+
+    private void handleMessage(final FingerPrintContext fingerPrintContext, final Buffer buffer, final boolean isPublic) {
+        try {
+            final CipherService cipherService = runtimeContext.serviceContext().serviceProvider().hashServiceProvider().cipherService();
+            final com.dcall.core.configuration.app.entity.message.Message<String> msg = Json.decodeValue(buffer, MessageBean.class);
+
             if (!msg.getId().equals(HazelcastCluster.getLocalUuid())) {
-                final FingerPrint<String> fingerPrint = SerializationUtils.deserialize(msg.getMessage());
-                LOG.info(" > received public key from : " + msg.getId() + " < [ public_id :" + fingerPrint.getId() + " ] + [ public key : " + RSAProvider.encodeKey(fingerPrint.getPublicKey()) + " ]");
+                FingerPrint<String> fingerPrint = SerializationUtils.deserialize(isPublic ? msg.getMessage()
+                        : RSAProvider.decrypt(msg.getMessage(), runtimeContext.userContext().getCertificate().getKeyPair().getPrivate()));
+                if (fingerPrintContext.getFingerprints().get(msg.getId()) == null) {
+                    fingerPrintContext.getFingerprints().put(msg.getId(), fingerPrint);
+                    LOG.info(" > received public key from : " + msg.getId() + " < [ public_id :" + fingerPrint.getId() + " ] + [ public key : " + RSAProvider.encodeKey(fingerPrint.getPublicKey()) + " ]");
+
+                    runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService().sendCipherTransporter(runtimeContext, fingerPrint);
+                } else {
+                    fingerPrintContext.getFingerprints().get(msg.getId()).setCipherAES(fingerPrint.getCipherAES());
+                }
             }
-        });
+        }
+        catch (Exception e) {
+            LOG.debug(e.getMessage());
+        }
     }
 }

@@ -40,7 +40,7 @@ public class RSAProviderTest {
 
     @Test public void shoud_encrypt_message_with_public_key_encrypt() throws Exception {
         final String base64UncryptedDatas = Base64.getEncoder().encodeToString(_MESSAGE.getBytes(_UTF_8));
-        final String base64CryptedDatas = RSAProvider.encrypt(_MESSAGE, _keyPair.getPublic());
+        final String base64CryptedDatas = RSAProvider.encryptString(_MESSAGE, _keyPair.getPublic());
 
         Assert.assertNotNull(base64CryptedDatas);
         Assert.assertTrue(base64CryptedDatas.length() > 0);
@@ -49,8 +49,8 @@ public class RSAProviderTest {
     }
 
     @Test public void should_decrypt_message_with_private_key_decrypt() throws Exception {
-        final String base64EncodedCryptedDatas = RSAProvider.encrypt(_MESSAGE, _keyPair.getPublic());
-        final String decryptedDatas = RSAProvider.decrypt(base64EncodedCryptedDatas, _keyPair.getPrivate());
+        final String base64EncodedCryptedDatas = RSAProvider.encryptString(_MESSAGE, _keyPair.getPublic());
+        final String decryptedDatas = RSAProvider.decryptString(base64EncodedCryptedDatas, _keyPair.getPrivate());
 
         Assert.assertEquals(_MESSAGE, decryptedDatas);
     }
@@ -59,11 +59,11 @@ public class RSAProviderTest {
         final String publicKeyAsString = RSAProvider.encodeKey(_keyPair, RSAProvider.KeyType.PUBLIC);
         final PublicKey publicKeyFromString = RSAProvider.getPublicKey(publicKeyAsString);
 
-        final String base64EncodedCryptedDatas = RSAProvider.encrypt(_MESSAGE, publicKeyFromString);
+        final String base64EncodedCryptedDatas = RSAProvider.encryptString(_MESSAGE, publicKeyFromString);
 
         Assert.assertNotEquals(_MESSAGE, base64EncodedCryptedDatas);
 
-        final String dataDecrypted = RSAProvider.decrypt(base64EncodedCryptedDatas, _keyPair.getPrivate());
+        final String dataDecrypted = RSAProvider.decryptString(base64EncodedCryptedDatas, _keyPair.getPrivate());
 
         Assert.assertEquals(_MESSAGE, dataDecrypted);
     }
@@ -72,11 +72,11 @@ public class RSAProviderTest {
         final String privateKeyAsString = RSAProvider.encodeKey(_keyPair, RSAProvider.KeyType.PRIVATE);
         final PrivateKey privateKeyFromString = RSAProvider.getPrivateKey(privateKeyAsString);
 
-        final String base64EncodedCryptedDatas = RSAProvider.encrypt(_MESSAGE, _keyPair.getPublic());
+        final String base64EncodedCryptedDatas = RSAProvider.encryptString(_MESSAGE, _keyPair.getPublic());
 
         Assert.assertNotEquals(_MESSAGE, base64EncodedCryptedDatas);
 
-        final String dataDecrypted = RSAProvider.decrypt(base64EncodedCryptedDatas, privateKeyFromString);
+        final String dataDecrypted = RSAProvider.decryptString(base64EncodedCryptedDatas, privateKeyFromString);
 
         Assert.assertEquals(_MESSAGE, dataDecrypted);
     }
