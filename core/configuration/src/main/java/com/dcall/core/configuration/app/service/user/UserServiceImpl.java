@@ -62,6 +62,8 @@ public class UserServiceImpl implements UserService {
 
         if (!services.userServiceProvider().userService().hasConfiguration(context)) {
             services.environService().configureUserEnviron(context.userContext().setUser(user), true);
+            context.userContext().getEnviron().getProperties().setProperty(EnvironConstant.COMMIT_MODE, Boolean.TRUE.toString());
+            services.environService().updateEnviron(context.userContext().getEnviron());
             services.userServiceProvider().userService().initRepository(context, true);
             services.messageServiceProvider().fingerPrintService().publishPublicUserCertificate(context.userContext());
         }
