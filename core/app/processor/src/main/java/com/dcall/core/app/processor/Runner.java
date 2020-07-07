@@ -1,6 +1,6 @@
 package com.dcall.core.app.processor;
 
-import com.dcall.core.app.processor.vertx.command.local.LocalCommandProcessorConsumerVerticle;
+import com.dcall.core.app.processor.vertx.command.CommandProcessorConsumerVerticle;
 import com.dcall.core.configuration.app.runner.RunnerConfigurator;
 import com.dcall.core.configuration.app.verticle.fingerprint.FingerPrintConsumerVerticle;
 import com.dcall.core.configuration.generic.vertx.VertxApplication;
@@ -20,7 +20,7 @@ public final class Runner {
                 true,
                 configurator.getPeers().toArray(new String[configurator.getPeers().size()]),
                 FingerPrintConsumerVerticle.class,
-                LocalCommandProcessorConsumerVerticle.class
+                CommandProcessorConsumerVerticle.class
         );
     }
 }

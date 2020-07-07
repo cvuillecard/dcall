@@ -10,7 +10,6 @@ import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
 import com.dcall.core.configuration.utils.SerializationUtils;
 import com.dcall.core.configuration.utils.URIUtils;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
@@ -58,18 +57,13 @@ public final class FingerPrintConsumerVerticle extends AbstractVerticle {
                     fingerPrintContext.getFingerprints().get(msg.getId()).setSecretKey(SerializationUtils.deserialize(bytes));
                 } else
                     fingerPrintContext.getFingerprints().put(msg.getId(), SerializationUtils.deserialize(msg.getMessage()));
+                future.complete();
+
             } catch (Exception e) {
                 LOG.error(e.getMessage());
+                future.fail(e.getMessage());
             }
-            finally {
-                future.complete();
-            }
-        }, res -> {
-            if (res.succeeded())
-                handler.reply("> SUCCESS.");
-            else
-                handler.reply(res.cause().getMessage());
-        });
+        }, null);
     }
 
     private void handlePublicMessage(final FingerPrintContext fingerPrintContext, final Message<Object> handler) {
@@ -83,21 +77,15 @@ public final class FingerPrintConsumerVerticle extends AbstractVerticle {
                         fingerPrintContext.getFingerprints().put(msg.getId(), fingerPrint);
                         LOG.info(" > received public key from : " + msg.getId() + " < [ public_id :" + fingerPrint.getId() + " ] + [ public key : " + RSAProvider.encodeKey(fingerPrint.getPublicKey()) + " ]");
                     runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService().sendPublicUserCertificate(runtimeContext, msg);
-                    runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService().sendCipherTransporter(runtimeContext, fingerPrint, msg);
+                    runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService().sendSecretKey(runtimeContext, fingerPrint, msg);
                     }
                 }
+                future.complete();
             }
             catch (Exception e) {
                 LOG.debug(e.getMessage());
+                future.fail(e.getMessage());
             }
-            finally {
-                future.complete();
-            }
-        }, res -> {
-            if (res.succeeded())
-                handler.reply("> SUCCESS.");
-            else
-                handler.reply(res.cause().getMessage());
-        });
+        }, null);
     }
 }

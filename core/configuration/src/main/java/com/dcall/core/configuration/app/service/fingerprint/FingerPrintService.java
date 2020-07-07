@@ -11,5 +11,5 @@ public interface FingerPrintService {
 
     FingerPrintService sendPublicUserCertificate(final RuntimeContext runtimeContext, final Message<String> fromMessage);
 
-    FingerPrintService sendCipherTransporter(final RuntimeContext runtimeContext, final FingerPrint<String> fingerPrint, final Message<String> fromMessage);
+    FingerPrintService sendSecretKey(final RuntimeContext runtimeContext, final FingerPrint<String> fingerPrint, final Message<String> fromMessage);
 }

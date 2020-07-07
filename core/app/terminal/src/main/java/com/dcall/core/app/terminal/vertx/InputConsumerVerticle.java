@@ -29,10 +29,10 @@ public final class InputConsumerVerticle extends AbstractVerticle {
     private VertxURIContext configureURI() {
         final VertxURIContext uriContext = this.runtimeContext.systemContext().routeContext().getVertxContext().getVertxURIContext();
 
-        uriContext.setBaseRemoteAppUri(uriContext.getLocalUri("processor.vertx.command.local"));
+        uriContext.setBaseRemoteAppUri(uriContext.getLocalUri("processor.vertx.command"));
 
         uriContext.setLocalConsumerUri(InputConsumerVerticle.class.getName());
-        uriContext.setRemoteConsumerUri(uriContext.getRemoteUri("LocalCommandProcessorConsumerVerticle"));
+        uriContext.setRemoteConsumerUri(uriContext.getRemoteUri("CommandProcessorConsumerVerticle"));
 
         return uriContext;
     }
