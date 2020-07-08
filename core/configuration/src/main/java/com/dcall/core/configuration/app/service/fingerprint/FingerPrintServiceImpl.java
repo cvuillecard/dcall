@@ -1,9 +1,9 @@
 package com.dcall.core.configuration.app.service.fingerprint;
 
-import com.dcall.core.configuration.app.constant.EnvironConstant;
 import com.dcall.core.configuration.app.context.RuntimeContext;
-import com.dcall.core.configuration.app.context.cluster.ClusterContext;
 import com.dcall.core.configuration.app.context.user.UserContext;
+import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
+import com.dcall.core.configuration.app.entity.cipher.CipherAESBean;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrintBean;
 import com.dcall.core.configuration.app.entity.message.Message;
@@ -42,7 +42,7 @@ public class FingerPrintServiceImpl implements FingerPrintService {
 
     @Override
     public FingerPrintService sendPublicUserCertificate(final RuntimeContext runtimeContext, final Message<String> fromMessage) {
-        final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().getMessageService();
+        final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
         final FingerPrint<String> fingerPrint = new FingerPrintBean();
 
         fingerPrint.setId(HazelcastCluster.getLocalUuid());
@@ -62,7 +62,7 @@ public class FingerPrintServiceImpl implements FingerPrintService {
     public FingerPrintService sendSecretKey(final RuntimeContext runtimeContext, final FingerPrint<String> fromFingerPrint, final Message<String> fromMessage) {
         try {
             if (fromFingerPrint.getSecretKey() == null) {
-                final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().getMessageService();
+                final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
 
                 final String p = HashProvider.signSha512(runtimeContext.userContext().getUserHash().getSalt());
                 final String s = HashProvider.createSalt512(RSAProvider.encodeKey(fromFingerPrint.getPublicKey()), new String(HashProvider.random()));
@@ -84,5 +84,13 @@ public class FingerPrintServiceImpl implements FingerPrintService {
         }
 
         return this;
+    }
+
+    @Override
+    public FingerPrint updateCipherFingerPrint(final FingerPrint<String> fingerPrint) {
+        if (fingerPrint != null && fingerPrint.getSecretKey() != null)
+            ((AbstractCipherResource)fingerPrint).setCipher(new CipherAESBean(fingerPrint.getSecretKey()));
+
+        return fingerPrint;
     }
 }

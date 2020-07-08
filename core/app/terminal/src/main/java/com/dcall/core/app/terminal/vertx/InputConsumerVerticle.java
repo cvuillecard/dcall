@@ -41,10 +41,20 @@ public final class InputConsumerVerticle extends AbstractVerticle {
     @Override
     public void start() {
         vertx.eventBus().consumer(URIUtils.getUri(configureURI().getLocalConsumerUri(), HazelcastCluster.getLocalUuid()), handler -> {
-            LOG.info(" Terminal > data received : \n" + handler.body().toString());
-            final Message<String> resp = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
-            GUIProcessor.bus().output().addToEntry(new String(resp.getMessage()));
-            handler.reply(" Terminal > data consumed.");
+            try {
+                LOG.info(" Terminal > received : \n" + handler.body().toString());
+                final Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
+                final byte[] bytes = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService().decryptMessage(runtimeContext, msg);
+
+                GUIProcessor.bus().output().addToEntry(new String(bytes));
+
+                handler.reply(" Terminal > data consumed.");
+            }
+            catch (Exception e) {
+                handler.fail(-1, e.getMessage());
+                GUIProcessor.bus().output().addToEntry(new String(e.getMessage()));
+                LOG.error(e.getMessage());
+            }
         });
     }
 }

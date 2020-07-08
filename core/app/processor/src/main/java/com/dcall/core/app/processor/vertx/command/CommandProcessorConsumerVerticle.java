@@ -2,11 +2,17 @@ package com.dcall.core.app.processor.vertx.command;
 
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
+import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
+import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
+import com.dcall.core.configuration.app.security.aes.AESProvider;
+import com.dcall.core.configuration.app.security.rsa.RSAProvider;
 import com.dcall.core.configuration.app.service.builtin.BuiltInService;
 import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
+import com.dcall.core.configuration.app.service.fingerprint.FingerPrintService;
+import com.dcall.core.configuration.app.service.message.MessageService;
 import com.dcall.core.configuration.generic.parser.Parser;
 import com.dcall.core.configuration.generic.parser.expression.operand.solver.impl.BuiltInOperandSolver;
 import com.dcall.core.configuration.generic.parser.expression.operator.solver.impl.BuiltInOperatorSolver;
@@ -18,6 +24,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.Json;
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,11 +58,12 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
     private void handleLocalCommand(final Message<Object> handler, final com.dcall.core.configuration.app.entity.message.Message<String> sender) {
         vertx.executeBlocking(future -> {
             try {
+                final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
                 final com.dcall.core.configuration.app.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
 
                 final byte[] result = builtInService.setContext(runtimeContext).run(new String(sender.getMessage()));
-
-                sendChunk(uriContext.getRemoteConsumerUri(), sender, result, getNbChunk(result), resp);
+                final byte[] bytes = messageService.encryptMessage(runtimeContext, sender, result);
+                sendChunk(uriContext.getRemoteConsumerUri(), sender, bytes, getNbChunk(bytes), resp);
             }
             catch (Exception e) {
                 handleError(handler, e.getMessage(), sender);
@@ -85,8 +93,8 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
     private void sendChunk(final String address, final com.dcall.core.configuration.app.entity.message.Message<String> sender, final byte[] bytes, final int nbChunk, final com.dcall.core.configuration.app.entity.message.Message<String> resp) {
         for (int i = 0; i < nbChunk; i++) {
             final int startIdx = i * BUF_SIZE;
-            final int idx = startIdx + BUF_SIZE;
-            final int endIdx = (idx > bytes.length) ? bytes.length : idx;
+            final int nextIdx = startIdx + BUF_SIZE;
+            final int endIdx = (nextIdx > bytes.length) ? bytes.length : nextIdx;
 
             resp.setMessage(Arrays.copyOfRange(bytes, startIdx, endIdx)).setLength(endIdx - startIdx);
 
@@ -100,16 +108,22 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
     }
 
     private void handleError(final Message<Object> handler, final String msgError, final com.dcall.core.configuration.app.entity.message.Message<String> sender) {
-        final String error = "Failed to execute '" + new String(sender.getMessage()) + "' - ERROR : " + msgError;
-        final byte[] bytes = error.getBytes();
-        final String randId = HashProvider.seedSha512(bytes);
-        final com.dcall.core.configuration.app.entity.message.Message<String> resp = new MessageBean(randId, bytes, bytes.length);
+        try {
+            final String error = "Failed to execute '" + new String(sender.getMessage()) + "' - ERROR : " + msgError;
+            final AbstractCipherResource cipherResource = (AbstractCipherResource) runtimeContext.clusterContext().fingerPrintContext().getFingerprints().get(sender.getId());
+            final byte[] bytes = AESProvider.encryptBytes(error.getBytes(), cipherResource.getCipher().getCipherIn());
+            final com.dcall.core.configuration.app.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), bytes, bytes.length);
 
-        LOG.error(msgError);
+            LOG.error(msgError);
 
-        handler.fail(-1, "");
+            handler.fail(-1, "");
 
-        sendChunk(uriContext.getRemoteConsumerUri(), sender, bytes, getNbChunk(bytes), resp);
+            sendChunk(uriContext.getRemoteConsumerUri(), sender, bytes, getNbChunk(bytes), resp);
+        }
+        catch (Exception e) {
+            handler.fail(-1, e.getMessage());
+            LOG.error(e.getMessage());
+        }
     }
 
     private void configure() {

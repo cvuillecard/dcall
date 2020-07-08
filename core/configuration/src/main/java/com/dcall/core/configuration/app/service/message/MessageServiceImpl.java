@@ -1,6 +1,11 @@
 package com.dcall.core.configuration.app.service.message;
 
+import com.dcall.core.configuration.app.context.RuntimeContext;
+import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
+import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
+import com.dcall.core.configuration.app.security.aes.AESProvider;
+import com.dcall.core.configuration.app.service.fingerprint.FingerPrintService;
 import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
 import com.dcall.core.configuration.utils.SerializationUtils;
 import io.vertx.core.AsyncResult;
@@ -66,4 +71,41 @@ public class MessageServiceImpl implements MessageService {
     public <T> MessageService publish(final String address, final T obj, final DeliveryOptions deliveryOptions) {
         return publish(address, SerializationUtils.serialize(obj), deliveryOptions);
     }
+
+    @Override
+    public byte[] decryptMessage(final RuntimeContext runtimeContext, final com.dcall.core.configuration.app.entity.message.Message sender) {
+        try {
+            final FingerPrintService fingerPrintService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
+            final AbstractCipherResource cipherResource = (AbstractCipherResource) runtimeContext.clusterContext().fingerPrintContext().getFingerprints().get(sender.getId());
+
+            if (cipherResource.getCipher() == null)
+                fingerPrintService.updateCipherFingerPrint((FingerPrint) cipherResource);
+
+            return AESProvider.decryptBytes(sender.getMessage(), cipherResource.getCipher().getCipherOut());
+        }
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+
+        return null;
+    }
+
+    @Override
+    public byte[] encryptMessage(final RuntimeContext runtimeContext, final com.dcall.core.configuration.app.entity.message.Message sender, final byte[] datas) {
+        try {
+            final FingerPrintService fingerPrintService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
+            final AbstractCipherResource cipherResource = (AbstractCipherResource) runtimeContext.clusterContext().fingerPrintContext().getFingerprints().get(sender.getId());
+
+            if (cipherResource.getCipher() == null)
+                fingerPrintService.updateCipherFingerPrint((FingerPrint) cipherResource);
+
+            return AESProvider.encryptBytes(datas, cipherResource.getCipher().getCipherIn());
+        }
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+
+        return null;
+    }
+
 }

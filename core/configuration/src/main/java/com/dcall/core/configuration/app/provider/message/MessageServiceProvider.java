@@ -22,7 +22,7 @@ public final class MessageServiceProvider {
 
     // getters
     public UserServiceProvider userServiceProvider() { return this.userServiceProvider; }
-    public MessageService getMessageService() { return this.messageService; }
+    public MessageService messageService() { return this.messageService; }
 
     // utils
     public EnvironService environService() { return this.userServiceProvider.environService(); }

@@ -30,7 +30,7 @@ public final class IOHandler {
 
     public void init(final RuntimeContext context) {
         this.runtimeContext = context;
-        this.messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().getMessageService();
+        this.messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
 
         this.builtInService.setContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
         builtInService.setParser(new Parser(new BuiltInOperatorSolver(runtimeContext), new BuiltInOperandSolver()));
@@ -81,14 +81,18 @@ public final class IOHandler {
     }
 
     public void sendLastInput() {
-        final VertxURIContext uriContext = this.runtimeContext.systemContext().routeContext().getVertxContext().getVertxURIContext();
-
-        messageService.send(uriContext.getRemoteConsumerUri(), lastInput.toLowerCase().getBytes(),
-                null,
-                failed -> {
-                    if (!failed.cause().getMessage().isEmpty())
-                        output().addToEntry(failed.cause().getMessage());
-                }, null);
+        try {
+            final VertxURIContext uriContext = this.runtimeContext.systemContext().routeContext().getVertxContext().getVertxURIContext();
+            messageService.send(uriContext.getRemoteConsumerUri(), lastInput.toLowerCase().getBytes(),
+                    null,
+                    failed -> {
+                        if (!failed.cause().getMessage().isEmpty())
+                            output().addToEntry(failed.cause().getMessage());
+                    }, null);
+        }
+        catch (Exception e) {
+            LOG.debug(e.getMessage());
+        }
     }
 
     private void lockDisplay() {
