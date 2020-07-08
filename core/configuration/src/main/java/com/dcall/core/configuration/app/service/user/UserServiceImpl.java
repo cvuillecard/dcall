@@ -60,12 +60,16 @@ public class UserServiceImpl implements UserService {
 
         context.userContext().setUser(new UserBean(user));
 
-        if (!services.userServiceProvider().userService().hasConfiguration(context)) {
-            services.environService().configureUserEnviron(context.userContext().setUser(user), true);
+        if (!environService.hasConfiguration(context.userContext())) {
+            services.environService().configureUserEnviron(context.userContext(), true);
             context.userContext().getEnviron().getProperties().setProperty(EnvironConstant.COMMIT_MODE, Boolean.TRUE.toString());
             services.environService().updateEnviron(context.userContext().getEnviron());
             services.userServiceProvider().userService().initRepository(context, true);
             services.messageServiceProvider().fingerPrintService().publishPublicUserCertificate(context.userContext());
+        }
+        else {
+            services.userServiceProvider().userService().initRepository(context, false);
+            services.environService().configureUserEnviron(context.userContext(), false);
         }
 
         return this;
@@ -106,8 +110,9 @@ public class UserServiceImpl implements UserService {
         initRepository(context, false);
         final boolean hasConfiguration = !this.hasIdentity(encodePassword(context.userContext().getUser())) && environService.hasConfiguration(context.userContext());
 
-        if (!hasConfiguration)
+        if (!hasConfiguration) {
             context.userContext().getUser().reset();
+        }
         else {
             environService.configureUserEnviron(context.userContext(), false);
             context.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService().publishPublicUserCertificate(context.userContext());

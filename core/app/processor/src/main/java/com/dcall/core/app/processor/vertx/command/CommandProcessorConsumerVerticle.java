@@ -60,10 +60,10 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
             try {
                 final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
                 final com.dcall.core.configuration.app.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
-
-                final byte[] result = builtInService.setContext(runtimeContext).run(new String(sender.getMessage()));
-                final byte[] bytes = messageService.encryptMessage(runtimeContext, sender, result);
-                sendChunk(uriContext.getRemoteConsumerUri(), sender, bytes, getNbChunk(bytes), resp);
+                final byte[] in = messageService.decryptMessage(runtimeContext, sender);
+                final byte[] result = builtInService.setContext(runtimeContext).run(new String(in));
+                final byte[] out = messageService.encryptMessage(runtimeContext, sender, result);
+                sendChunk(uriContext.getRemoteConsumerUri(), sender, out, getNbChunk(out), resp);
             }
             catch (Exception e) {
                 handleError(handler, e.getMessage(), sender);
@@ -150,7 +150,7 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
     public void start() {
         configure();
 
-        final MessageConsumer<Object> consumer = vertx.eventBus().consumer(uriContext.getLocalConsumerUri());
+        final MessageConsumer<Object> consumer = vertx.eventBus().consumer(URIUtils.getUri(uriContext.getLocalConsumerUri(), HazelcastCluster.getLocalUuid()));
 
         consumer.handler(handler -> {
             final com.dcall.core.configuration.app.entity.message.Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);

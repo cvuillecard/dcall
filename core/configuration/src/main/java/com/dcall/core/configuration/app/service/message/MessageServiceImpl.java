@@ -73,6 +73,29 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public byte[] encryptMessage(final RuntimeContext runtimeContext, final FingerPrint fingerPrint, final byte[] datas) {
+        try {
+            final FingerPrintService fingerPrintService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
+            final AbstractCipherResource cipherResource = (AbstractCipherResource) fingerPrint;
+
+            if (cipherResource.getCipher() == null)
+                fingerPrintService.updateCipherFingerPrint((FingerPrint) cipherResource);
+
+            return AESProvider.encryptBytes(datas, cipherResource.getCipher().getCipherIn());
+        }
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+
+        return null;
+    }
+
+    @Override
+    public byte[] encryptMessage(final RuntimeContext runtimeContext, final com.dcall.core.configuration.app.entity.message.Message sender, final byte[] datas) {
+        return encryptMessage(runtimeContext, runtimeContext.clusterContext().fingerPrintContext().getFingerprints().get(sender.getId()), datas);
+    }
+
+    @Override
     public byte[] decryptMessage(final RuntimeContext runtimeContext, final com.dcall.core.configuration.app.entity.message.Message sender) {
         try {
             final FingerPrintService fingerPrintService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
@@ -89,23 +112,4 @@ public class MessageServiceImpl implements MessageService {
 
         return null;
     }
-
-    @Override
-    public byte[] encryptMessage(final RuntimeContext runtimeContext, final com.dcall.core.configuration.app.entity.message.Message sender, final byte[] datas) {
-        try {
-            final FingerPrintService fingerPrintService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
-            final AbstractCipherResource cipherResource = (AbstractCipherResource) runtimeContext.clusterContext().fingerPrintContext().getFingerprints().get(sender.getId());
-
-            if (cipherResource.getCipher() == null)
-                fingerPrintService.updateCipherFingerPrint((FingerPrint) cipherResource);
-
-            return AESProvider.encryptBytes(datas, cipherResource.getCipher().getCipherIn());
-        }
-        catch (Exception e) {
-            LOG.error(e.getMessage());
-        }
-
-        return null;
-    }
-
 }

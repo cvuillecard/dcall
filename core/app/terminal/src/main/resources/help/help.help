@@ -30,8 +30,15 @@ Note : All commands and futur applications must hold a 'help' file which general
 [ Built-in ]
 
     reset       - clear the screen and erase input/output history (this also free buffer space)
-    exit        - Safe exit of terminal ()
+
+    exit        - Safe exit of current command interpreter (if env.local_interpret=false)
+                  or exit the terminal (if env.local_interpret=true) (see also 'help exit')
+                  Note : Actually, 'exit' is the only way to exit safely the terminal without zombie processus.
+
     identity    - command used to print user identity, and set identity properties (see also 'help identity')
+
     env         - command used to print user environment, and set environment properties (see also 'help env')
+
     snapshot    - command used to save the current state of your local repository (see also 'help snapshot')
+
     rollback    - command used to rollback changes on local repository (see also 'help rollback')

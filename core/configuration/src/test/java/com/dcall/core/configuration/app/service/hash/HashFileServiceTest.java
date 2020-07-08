@@ -37,7 +37,7 @@ public class HashFileServiceTest extends Platform {
         Assert.assertEquals(MD5_LENGTH, hash.length());
         Assert.assertEquals(root, root2.get(0));
         Assert.assertEquals(root, rootHashPath);
-        Assert.assertTrue(service.exists(pwd, HashProvider.seedMd5(salt.getBytes()), "root"));
+        Assert.assertTrue(service.exists(pwd, hashSalt, "root"));
 
         Assert.assertTrue(new File(root).exists());
 

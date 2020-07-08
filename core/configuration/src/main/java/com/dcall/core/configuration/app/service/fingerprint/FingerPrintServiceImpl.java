@@ -1,12 +1,14 @@
 package com.dcall.core.configuration.app.service.fingerprint;
 
 import com.dcall.core.configuration.app.context.RuntimeContext;
+import com.dcall.core.configuration.app.context.fingerprint.FingerPrintContext;
 import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
 import com.dcall.core.configuration.app.entity.cipher.CipherAESBean;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrintBean;
 import com.dcall.core.configuration.app.entity.message.Message;
+import com.dcall.core.configuration.app.exception.FunctionalException;
 import com.dcall.core.configuration.app.security.aes.AESProvider;
 import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.security.rsa.RSAProvider;
@@ -92,5 +94,19 @@ public class FingerPrintServiceImpl implements FingerPrintService {
             ((AbstractCipherResource)fingerPrint).setCipher(new CipherAESBean(fingerPrint.getSecretKey()));
 
         return fingerPrint;
+    }
+
+    @Override
+    public FingerPrint nextFingerPrint(final FingerPrintContext fingerPrintContext) {
+        try {
+            if (fingerPrintContext.getFingerprints().size() > 0)
+                return fingerPrintContext.current() != null? fingerPrintContext.current() : fingerPrintContext.next(fingerPrintContext.iterator());
+            throw new FunctionalException("No fingerprints available in cache or no peers connected : perhaps you might use publish cmd to get a secure connection");
+        }
+        catch (FunctionalException e) {
+            e.log();
+        }
+
+        return null;
     }
 }

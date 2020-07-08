@@ -77,9 +77,6 @@ public class EnvironServiceImpl implements EnvironService {
         final Environ environ = context.setEnviron(createEnviron(context, userPwd)).getEnviron();
         final AbstractCipherResource cipherEnv = (AbstractCipherResource) environ;
 
-//        if (!create)
-//            environ.setProperties(loadEnvironProperties(context));
-
         final String userHome = hashService.getHashPath(context.getUser().getWorkspace(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_HOME));
         final String userCert = hashService.getHashPath(userHome, userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_CERT));
 

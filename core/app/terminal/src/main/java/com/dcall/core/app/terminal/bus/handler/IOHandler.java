@@ -2,6 +2,8 @@ package com.dcall.core.app.terminal.bus.handler;
 
 import com.dcall.core.app.terminal.bus.input.InputEntry;
 import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
+import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
+import com.dcall.core.configuration.app.provider.message.MessageServiceProvider;
 import com.dcall.core.configuration.generic.parser.expression.operand.solver.impl.BuiltInOperandSolver;
 import com.dcall.core.configuration.generic.parser.expression.operator.solver.impl.BuiltInOperatorSolver;
 import com.dcall.core.configuration.app.constant.EnvironConstant;
@@ -14,6 +16,7 @@ import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.service.message.MessageService;
 import com.dcall.core.configuration.generic.parser.Parser;
 import com.dcall.core.configuration.utils.HelpUtils;
+import com.dcall.core.configuration.utils.URIUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +86,11 @@ public final class IOHandler {
     public void sendLastInput() {
         try {
             final VertxURIContext uriContext = this.runtimeContext.systemContext().routeContext().getVertxContext().getVertxURIContext();
-            messageService.send(uriContext.getRemoteConsumerUri(), lastInput.toLowerCase().getBytes(),
+            final MessageServiceProvider messageServiceProvider = this.runtimeContext.serviceContext().serviceProvider().messageServiceProvider();
+            final FingerPrint<String> nextFingerPrint = messageServiceProvider.fingerPrintService().nextFingerPrint(this.runtimeContext.clusterContext().fingerPrintContext());
+            final byte[] bytes = messageServiceProvider.messageService().encryptMessage(this.runtimeContext, nextFingerPrint, lastInput.toLowerCase().getBytes());
+
+            messageService.send(URIUtils.getUri(uriContext.getRemoteConsumerUri(), nextFingerPrint.getId()), bytes,
                     null,
                     failed -> {
                         if (!failed.cause().getMessage().isEmpty())

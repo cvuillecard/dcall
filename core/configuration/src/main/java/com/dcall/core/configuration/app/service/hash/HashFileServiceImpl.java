@@ -62,12 +62,12 @@ public final class HashFileServiceImpl implements HashFileService {
     }
 
     @Override
-    public String getFileHash(String parentPath, final String salt, final String fileName) {
+    public String getFileHash(String parentPath, final String md5Salt, final String fileName) {
         String hash = null;
 
         if (fileName != null && !fileName.isEmpty()) {
             for (final String member : fileName.split(File.separator)) {
-                hash = sign(parentPath, seed(member), salt);
+                hash = sign(parentPath, seed(member), md5Salt);
                 parentPath = getPath(parentPath, hash);
             }
         }
@@ -76,12 +76,12 @@ public final class HashFileServiceImpl implements HashFileService {
     }
 
     @Override
-    public String getHashPath(String parentPath, final String salt, final String fileName) {
+    public String getHashPath(String parentPath, final String md5Salt, final String fileName) {
         String path = null;
 
         if (fileName != null && !fileName.isEmpty()) {
             for (final String member : fileName.split(File.separator)) {
-                path = getPath(parentPath, getFileHash(parentPath, salt, member));
+                path = getPath(parentPath, getFileHash(parentPath, md5Salt, member));
                 parentPath = path;
             }
         }
@@ -100,10 +100,10 @@ public final class HashFileServiceImpl implements HashFileService {
     }
 
     @Override
-    public boolean exists(final String parentPath, final String salt, final String... relativePaths) {
+    public boolean exists(final String parentPath, final String md5Salt, final String... relativePaths) {
         if (relativePaths.length > 0) {
             for (final String p : relativePaths) {
-                final String path = getHashPath(parentPath, salt, p);
+                final String path = getHashPath(parentPath, md5Salt, p);
                 if (!new File(path).exists()) {
                     LOG.debug(parentPath + File.separator + p + " > " + path + " : doesn't exists");
                     return false;

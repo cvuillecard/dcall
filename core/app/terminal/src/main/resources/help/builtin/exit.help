@@ -1,0 +1,9 @@
+[ Built-in : exit ] (v.${project.version})
+
+> Exit the terminal and its context safely, or exit the current remote command interpret.
+
+    Note : if env.local_interpret=false, then the 'exit' command will exit the remote
+           execution mode only and will set env.local_interpret=true to interpret cli commands in a local mode.
+           Therefore, if env.local_interpret=false, 'exit' will kill the current context and leave the terminal properly.
+
++ See also 'env'
