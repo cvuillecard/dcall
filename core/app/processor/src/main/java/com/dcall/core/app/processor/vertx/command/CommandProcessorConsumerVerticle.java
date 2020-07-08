@@ -59,11 +59,11 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
         vertx.executeBlocking(future -> {
             try {
                 final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
+
                 final com.dcall.core.configuration.app.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
-                final byte[] in = messageService.decryptMessage(runtimeContext, sender);
-                final byte[] result = builtInService.setContext(runtimeContext).run(new String(in));
-                final byte[] out = messageService.encryptMessage(runtimeContext, sender, result);
-                sendChunk(uriContext.getRemoteConsumerUri(), sender, out, getNbChunk(out), resp);
+                final byte[] result = builtInService.setContext(runtimeContext).run(new String(messageService.decryptMessage(runtimeContext, sender)));
+
+                messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, result, resp);
             }
             catch (Exception e) {
                 handleError(handler, e.getMessage(), sender);
@@ -86,39 +86,18 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
         });
     }
 
-    private int getNbChunk(byte[] result) {
-        return (result.length / BUF_SIZE) + ((result.length % BUF_SIZE) > 0 ? 1 : 0);
-    }
-
-    private void sendChunk(final String address, final com.dcall.core.configuration.app.entity.message.Message<String> sender, final byte[] bytes, final int nbChunk, final com.dcall.core.configuration.app.entity.message.Message<String> resp) {
-        for (int i = 0; i < nbChunk; i++) {
-            final int startIdx = i * BUF_SIZE;
-            final int nextIdx = startIdx + BUF_SIZE;
-            final int endIdx = (nextIdx > bytes.length) ? bytes.length : nextIdx;
-
-            resp.setMessage(Arrays.copyOfRange(bytes, startIdx, endIdx)).setLength(endIdx - startIdx);
-
-            vertx.eventBus().send(URIUtils.getUri(address, sender.getId()), Json.encodeToBuffer(resp), r -> {
-                        if (r.succeeded())
-                            LOG.info(r.result().body().toString());
-                        else
-                            new TechnicalException(r.cause()).log();
-                    });
-        }
-    }
-
     private void handleError(final Message<Object> handler, final String msgError, final com.dcall.core.configuration.app.entity.message.Message<String> sender) {
         try {
+            final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
             final String error = "Failed to execute '" + new String(sender.getMessage()) + "' - ERROR : " + msgError;
-            final AbstractCipherResource cipherResource = (AbstractCipherResource) runtimeContext.clusterContext().fingerPrintContext().getFingerprints().get(sender.getId());
-            final byte[] bytes = AESProvider.encryptBytes(error.getBytes(), cipherResource.getCipher().getCipherIn());
+            final byte[] bytes = error.getBytes();
             final com.dcall.core.configuration.app.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), bytes, bytes.length);
 
             LOG.error(msgError);
 
             handler.fail(-1, "");
 
-            sendChunk(uriContext.getRemoteConsumerUri(), sender, bytes, getNbChunk(bytes), resp);
+            messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, bytes, resp);
         }
         catch (Exception e) {
             handler.fail(-1, e.getMessage());

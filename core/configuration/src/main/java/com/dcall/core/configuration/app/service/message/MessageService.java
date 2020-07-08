@@ -3,6 +3,7 @@ package com.dcall.core.configuration.app.service.message;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 
@@ -17,4 +18,6 @@ public interface MessageService {
     byte[] encryptMessage(final RuntimeContext runtimeContext, final FingerPrint fingerPrint, final byte[] datas);
     byte[] encryptMessage(final RuntimeContext runtimeContext, final com.dcall.core.configuration.app.entity.message.Message sender, final byte[] datas);
     byte[] decryptMessage(final RuntimeContext runtimeContext, final com.dcall.core.configuration.app.entity.message.Message sender);
+    void sendEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, com.dcall.core.configuration.app.entity.message.Message<String> sender, final byte[] bytes, final com.dcall.core.configuration.app.entity.message.Message<String> resp);
+    MessageService setBufSize(final int size);
 }
