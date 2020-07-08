@@ -1,8 +1,10 @@
 package com.dcall.core.configuration.app.service.fingerprint;
 
+import com.dcall.core.configuration.app.constant.EnvironConstant;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.fingerprint.FingerPrintContext;
 import com.dcall.core.configuration.app.context.user.UserContext;
+import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
 import com.dcall.core.configuration.app.entity.cipher.CipherAESBean;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
@@ -15,6 +17,7 @@ import com.dcall.core.configuration.app.security.rsa.RSAProvider;
 import com.dcall.core.configuration.app.service.message.MessageService;
 import com.dcall.core.configuration.app.verticle.fingerprint.FingerPrintConsumerVerticle;
 import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
+import com.dcall.core.configuration.generic.vertx.uri.VertxURIConfig;
 import com.dcall.core.configuration.utils.SerializationUtils;
 import com.dcall.core.configuration.utils.URIUtils;
 import org.slf4j.Logger;
@@ -38,7 +41,6 @@ public class FingerPrintServiceImpl implements FingerPrintService {
         fingerPrint.setPublicKey(userContext.getCertificate().getKeyPair().getPublic());
 
         messageService.publish(FingerPrintConsumerVerticle.class.getName(), fingerPrint, null);
-
         return this;
     }
 
@@ -79,6 +81,29 @@ public class FingerPrintServiceImpl implements FingerPrintService {
                         bytes,
                         success -> LOG.debug("> SUCCESS : AES cipher transporter sent to [" + fromFingerPrint.getId() + ']'),
                         failed -> LOG.debug("> FAILED TO CREATE AES CIPHER TRANSPORTER FOR [" + fromFingerPrint.getId() + ']'),
+                        null);
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+
+        return this;
+    }
+
+    @Override
+    public FingerPrintService sendPublicId(final RuntimeContext runtimeContext, final FingerPrint<String> fromFingerPrint, final Message<String> fromMessage) {
+        try {
+            if (fromFingerPrint.getSecretKey() != null) {
+                final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
+                final String publicId = runtimeContext.userContext().getEnviron().getProperties().getProperty(EnvironConstant.PUBLIC_ID);
+                final byte[] bytes = RSAProvider.encrypt(publicId.getBytes(), fromFingerPrint.getPublicKey());
+                final String uri = URIUtils.getUri(URIUtils.getUri(FingerPrintConsumerVerticle.class.getName(), fromMessage.getId()), VertxURIConfig.ID_DOMAIN);
+
+                messageService.send(
+                        uri,
+                        bytes,
+                        success -> LOG.debug("> SUCCESS : Public id sent to [" + fromFingerPrint.getId() + ']'),
+                        failed -> LOG.debug("> FAILED TO SEND PUBLIC ID to [" + fromFingerPrint.getId() + ']'),
                         null);
             }
         } catch (Exception e) {
