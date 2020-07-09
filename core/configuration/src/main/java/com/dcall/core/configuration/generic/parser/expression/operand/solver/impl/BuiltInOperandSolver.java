@@ -5,12 +5,14 @@ import com.dcall.core.configuration.generic.parser.ASCII;
 import com.dcall.core.configuration.generic.parser.IterStringUtils;
 import com.dcall.core.configuration.generic.parser.expression.operand.solver.OperandSolver;
 import com.dcall.core.configuration.utils.HelpUtils;
+import com.dcall.core.configuration.utils.StringParserUtils;
 import com.dcall.core.configuration.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,14 +21,14 @@ public final class BuiltInOperandSolver implements OperandSolver {
 
     @Override
     public <T> T solve(final CharSequence seq) {
-        final int endIdx = IterStringUtils.iterFront(seq, 0, c -> !ASCII.isBlank(c));
-        final String cmdName = seq.subSequence(0, endIdx).toString();
+        final int lastIdx = IterStringUtils.iterFront(seq, 0, c -> !ASCII.isBlank(c));
+        final String cmdName = seq.subSequence(0, lastIdx).toString();
         try {
             final BuiltInAction cmd = BuiltInAction.valueOf(cmdName);
 
             if (cmd != null) {
-                final int nextArgIdx = IterStringUtils.iterFront(seq, endIdx, c -> ASCII.isBlank(c));
-                final String[] args = nextArgIdx > endIdx ? getCmdArgs(seq.subSequence(nextArgIdx, seq.length())) : null;
+                final int nextIdx = IterStringUtils.iterFront(seq, lastIdx, c -> ASCII.isBlank(c));
+                final String[] args = nextIdx > lastIdx ? getCmdArgs(seq.subSequence(nextIdx, seq.length())) : null;
                 return (T) cmd.getService().setHelp(HelpUtils.getBuiltInHelp(cmdName)).setParams(args);
             }
         }
@@ -38,20 +40,18 @@ public final class BuiltInOperandSolver implements OperandSolver {
     }
 
     public String[] getCmdArgs(final CharSequence seq) {
-        final List<String> cmdArgs = new ArrayList<>();
+        final char equalsToken = '=';
+        final Predicate<Character> isDelimiter = d -> d == '\'' || d == '"';
         final int endOptionIdx = IterStringUtils.iterFront(seq, 0, c -> !ASCII.isSpace(c));
         final String option = seq.subSequence(0, endOptionIdx).toString();
-        final Pattern pattern = Pattern.compile("([\\w-]+)=((.*?)([ \\w-]+)(.*?)\\3)");
-        final Matcher matcher = pattern.matcher(seq.toString());
+        final CharSequence optionArgs = seq.subSequence(endOptionIdx, seq.length());
+        List<String> args = StringParserUtils.parseKeyValueToList(optionArgs, 0, optionArgs.length(), equalsToken, isDelimiter);
 
-        while (matcher.find()) {
-            final String keyValue = matcher.group(1) + '=' + matcher.group(2);
-            cmdArgs.add(keyValue);
-            LOG.debug(keyValue);
-        }
-        if(!cmdArgs.isEmpty())
-            cmdArgs.add(0, option);
+        if(!args.isEmpty())
+            args.add(0, option);
+        else
+            args = StringParserUtils.parseWordToList(seq, 0, seq.length(), isDelimiter);
 
-        return cmdArgs.isEmpty() ? StringUtils.trim(seq).toString().split(" ") : cmdArgs.toArray(new String[cmdArgs.size()]);
+        return args.toArray(new String[args.size()]);
     }
 }

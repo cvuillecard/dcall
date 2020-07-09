@@ -3,6 +3,7 @@ package com.dcall.core.configuration.app.service.builtin.env;
 import com.dcall.core.configuration.app.constant.EnvironConstant;
 import com.dcall.core.configuration.app.entity.environ.Environ;
 import com.dcall.core.configuration.generic.service.command.AbstractCommand;
+import com.dcall.core.configuration.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +41,11 @@ public class BuiltInEnvServiceImpl extends AbstractCommand implements BuiltInEnv
         else
             environ.getProperties().keySet().forEach(k -> sb.append(entryToString(k.toString(), environ.getProperties().get(k).toString())));
 
-        return sb.toString().getBytes();
+        final byte[] bytes = sb.toString().getBytes();
+        if (bytes.length == 0)
+            return ("There are no properties for keys : " + Arrays.asList(keys).toString()).getBytes();
+
+        return bytes;
     }
 
     @Override
@@ -55,9 +60,11 @@ public class BuiltInEnvServiceImpl extends AbstractCommand implements BuiltInEnv
         Arrays.stream(args).forEach(v -> {
             final String[] entry = v.split(SEPARATOR);
             if (entry.length >= 2) {
-                environ.getProperties().put(entry[0], entry[1]);
-                sb.append(entryToString(entry[0], entry[1]));
-                updated.add(entry[0]);
+                final String key = entry[0].trim();
+                final String value = entry[1].trim();
+                environ.getProperties().put(key, value);
+                sb.append(entryToString(key, value));
+                updated.add(key);
             }
         });
 

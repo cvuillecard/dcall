@@ -51,7 +51,6 @@ public final class FingerPrintConsumerVerticle extends AbstractVerticle {
         publicConsumer.handler(handler -> handlePublicMessage(fingerPrintContext, handler));
         privateConsumer.handler(handler -> handlePrivateMessage(fingerPrintContext, handler));
         idConsumer.handler(handler -> handleIdMessage(fingerPrintContext, handler));
-
     }
 
     private void handleIdMessage(final FingerPrintContext fingerPrintContext, final Message<Object> handler) {

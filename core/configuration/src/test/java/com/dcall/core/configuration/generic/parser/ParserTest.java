@@ -3,6 +3,8 @@ package com.dcall.core.configuration.generic.parser;
 import com.dcall.core.configuration.generic.parser.expression.EvalExp;
 import com.dcall.core.configuration.generic.parser.expression.Expression;
 import com.dcall.core.configuration.generic.parser.expression.operand.Operand;
+import com.dcall.core.configuration.utils.StringParserUtils;
+import com.dcall.core.configuration.utils.StringUtils;
 import com.dcall.core.configuration.utils.tree.BTree;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,8 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.function.Predicate;
 
 public class ParserTest {
     private static final Logger LOG = LoggerFactory.getLogger(ParserTest.class);
@@ -53,6 +55,4 @@ public class ParserTest {
         Assert.assertEquals(14L, res5.getValue());
         Assert.assertEquals(42L, res6.getValue());
     }
-
-
 }

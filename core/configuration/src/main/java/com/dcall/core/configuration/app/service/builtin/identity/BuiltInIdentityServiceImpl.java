@@ -39,7 +39,11 @@ public class BuiltInIdentityServiceImpl extends AbstractCommand implements Built
         else
             props.keySet().forEach(k -> sb.append(entryToString(k.toString(), props.get(k).toString())));
 
-        return sb.toString().getBytes();
+        final byte[] bytes = sb.toString().getBytes();
+        if (bytes.length == 0)
+            return ("There are no properties for keys : " + Arrays.asList(keys).toString()).getBytes();
+
+        return bytes;
     }
 
     @Override
@@ -54,9 +58,11 @@ public class BuiltInIdentityServiceImpl extends AbstractCommand implements Built
         Arrays.stream(args).forEach(v -> {
             final String[] entry = v.split(SEPARATOR);
             if (entry.length >= 2) {
-                properties.setProperty(entry[0], entry[1]);
-                sb.append(entryToString(entry[0], entry[1]));
-                updated.add(entry[0]);
+                final String key = entry[0].trim();
+                final String value = entry[1].trim();
+                properties.setProperty(key, value);
+                sb.append(entryToString(key, value));
+                updated.add(key);
             }
         });
 
