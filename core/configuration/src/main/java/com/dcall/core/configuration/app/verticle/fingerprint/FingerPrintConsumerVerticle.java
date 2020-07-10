@@ -102,10 +102,13 @@ public final class FingerPrintConsumerVerticle extends AbstractVerticle {
                 if (!msg.getId().equals(HazelcastCluster.getLocalUuid())) {
                     FingerPrint<String> fingerPrint = SerializationUtils.deserialize(msg.getMessage());
                     if (fingerPrintContext.getFingerprints().get(msg.getId()) == null) {
+                        final FingerPrintService fingerPrintService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
+
                         fingerPrintContext.getFingerprints().put(msg.getId(), fingerPrint);
                         LOG.info(" > received public key from : " + msg.getId() + " < [ public_id :" + fingerPrint.getId() + " ] + [ public key : " + RSAProvider.encodeKey(fingerPrint.getPublicKey()) + " ]");
-                    runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService().sendPublicUserCertificate(runtimeContext, msg);
-                    runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService().sendSecretKey(runtimeContext, fingerPrint, msg);
+
+                        fingerPrintService.sendPublicUserCertificate(runtimeContext, msg);
+                        fingerPrintService.sendSecretKey(runtimeContext, fingerPrint, msg);
                     }
                 }
                 future.complete();

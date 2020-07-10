@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
         final User user = new UserBean();
 
         user.setName(HostUtils.getName())
-                .setSurname(HostUtils.getAddress("mac"))
+                .setSurname(HostUtils.getAddress("mac", false))
                 .setLogin(EnvironConstant.SYSTEM_LOGIN)
                 .setEmail(user.getName() + '.' + user.getSurname() + '@' + EnvironConstant.SYSTEM_MAIL_DOMAIN)
                 .setPassword(HashProvider.signSha512(HashProvider.createSalt512(user.getName(), user.getSurname(), user.getLogin()), user.getEmail()))

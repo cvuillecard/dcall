@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Enumeration;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 public final class HostUtils {
@@ -115,9 +116,10 @@ public final class HostUtils {
         return null;
     }
 
-    public static String getAddress(String addressType) {
+    public static String getAddress(final String addressType, final boolean ignoreVM) {
         String address = "";
         InetAddress lanIp = null;
+        Predicate<byte[]> vmCond = ignoreVM ? b -> !isVMMac(b) : b -> true;
         try {
             final Enumeration<NetworkInterface> net = NetworkInterface.getNetworkInterfaces();
             String ipAddress;
@@ -126,7 +128,7 @@ public final class HostUtils {
                 NetworkInterface element = net.nextElement();
                 Enumeration<InetAddress> addresses = element.getInetAddresses();
 
-                while (addresses.hasMoreElements() && element.getHardwareAddress() != null && element.getHardwareAddress().length > 0 && !isVMMac(element.getHardwareAddress())) {
+                while (addresses.hasMoreElements() && element.getHardwareAddress() != null && vmCond.test(element.getHardwareAddress())) {
                     InetAddress ip = addresses.nextElement();
                     if (ip instanceof Inet4Address) {
                         if (ip.isSiteLocalAddress()) {
