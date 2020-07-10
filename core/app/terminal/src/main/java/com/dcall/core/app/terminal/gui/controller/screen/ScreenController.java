@@ -11,8 +11,10 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.SimpleTerminalResizeListener;
 import com.googlecode.lanterna.terminal.Terminal;
+import com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import com.googlecode.lanterna.terminal.swing.TerminalEmulatorAutoCloseTrigger;
+import com.googlecode.lanterna.terminal.swing.TerminalEmulatorDeviceConfiguration;
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,9 +129,14 @@ public final class ScreenController {
 
     private static void initScreen() {
         try {
+            final TerminalEmulatorDeviceConfiguration configuration = new TerminalEmulatorDeviceConfiguration()
+                    .withCursorStyle(TerminalEmulatorDeviceConfiguration.CursorStyle.VERTICAL_BAR)
+                    .withCursorBlinking(true).withBlinkLengthInMilliSeconds(TermAttributes.DEFAULT_BLINKING_DURATION_MS);
+
             terminal = new DefaultTerminalFactory()
                     .setTerminalEmulatorFrameAutoCloseTrigger(TerminalEmulatorAutoCloseTrigger.CloseOnExitPrivateMode)
                     .setTerminalEmulatorTitle(TermAttributes.FRAME_TITLE)
+                    .setTerminalEmulatorDeviceConfiguration(configuration)
                     .setInitialTerminalSize(new TerminalSize(TermAttributes.FRAME_NB_COLS, TermAttributes.FRAME_NB_ROWS))
                     .createTerminal();
 

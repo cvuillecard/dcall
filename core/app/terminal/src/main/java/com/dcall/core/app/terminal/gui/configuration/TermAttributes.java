@@ -24,29 +24,23 @@ public class TermAttributes {
     public static int MARGIN_TOP = 2;
     public static int MIN_SIZE_COEF = 2;
     public static int DEFAULT_SCROLL_PADDING = 4;
+    public static int DEFAULT_BLINKING_DURATION_MS = 500;
 
     // HEADER
     public static final TextColor HEADER_BACKGROUND = new TextColor.RGB(230, 230, 0); // YELLOW
     public static final TextColor HEADER_FOREGROUND = new TextColor.RGB(0, 0, 0); // BLACK
-    public static final SGR[] HEADER_STYLE = new SGR[] { SGR.BOLD };
     public static final String HEADER_TITLE = "DCall (More you do, more it works..)";
     public static final String USER_CREATE_WAIT = "PLEASE WAIT A MOMENT FOR USER CREATION...";
 
     // PROMPT
     public static final TextColor PROMPT_BACKGROUND = TextColor.ANSI.BLACK;
     public static final TextColor PROMPT_FOREGROUND = TextColor.ANSI.CYAN;
-    public static final SGR[] PROMPT_STYLE = new SGR[] { SGR.BOLD };
     public static final String PROMPT = "DCall ~ ";
 
     // INPUT
     public static final int DEF_INPUT_NB_LINE = 255;
     public static final TextColor INPUT_BACKGROUND = TextColor.ANSI.BLACK;
     public static final TextColor INPUT_FOREGROUND = TextColor.ANSI.WHITE;
-    public static final SGR[] INPUT_STYLE = new SGR[] { SGR.BOLD };
-
-    // SCROLL
-    public static final int SCROLL_PADDING_UP = 1;
-    public static final int SCROLL_PADDING_DOWN = -1;
 
     // UTILS
     public static String getPrompt() {
