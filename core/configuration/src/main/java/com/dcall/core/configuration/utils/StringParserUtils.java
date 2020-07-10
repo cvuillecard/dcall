@@ -55,15 +55,23 @@ public final class StringParserUtils {
     }
 
     // parsing Word methods
-    public static void consumeWords(final CharSequence seq, int idx, final int endIdx, final Predicate<Character> isValueDelimiter, final Consumer<CharSequence> wordConsumer) {
+    public static void consumeWords(final CharSequence seq, int idx, final int endIdx, final Predicate<Character> isNotDelimiterCond, final Predicate<Character> isValueDelimiter, final Consumer<CharSequence> wordConsumer) {
         while ((idx = IterStringUtils.iterFront(seq, idx, endIdx, c -> ASCII.isBlank(c))) < endIdx)
-            idx = nextDelimiterIdx(seq, idx, endIdx, c -> !ASCII.isBlank(c), isValueDelimiter, s -> wordConsumer.accept(s)) + 1;
+            idx = nextDelimiterIdx(seq, idx, endIdx, isNotDelimiterCond, isValueDelimiter, s -> wordConsumer.accept(s)) + 1;
     }
 
     public static List<String> parseWordToList(final CharSequence seq, int idx, final int endIdx, final Predicate<Character> isValueDelimiter) {
         final List<String> entries = new ArrayList<>();
 
-        consumeWords(seq, idx, endIdx, isValueDelimiter, s -> entries.add(s.toString()));
+        consumeWords(seq, idx, endIdx, c -> !ASCII.isBlank(c), isValueDelimiter, s -> entries.add(s.toString()));
+
+        return entries;
+    }
+
+    public static List<String> parseWordToList(final CharSequence seq, int idx, final int endIdx, final Predicate<Character> isNotDelimiterCond, final Predicate<Character> isValueDelimiter) {
+        final List<String> entries = new ArrayList<>();
+
+        consumeWords(seq, idx, endIdx, isNotDelimiterCond, isValueDelimiter, s -> entries.add(s.toString()));
 
         return entries;
     }

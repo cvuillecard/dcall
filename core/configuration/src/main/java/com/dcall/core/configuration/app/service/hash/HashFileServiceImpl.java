@@ -3,6 +3,7 @@ package com.dcall.core.configuration.app.service.hash;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.entity.user.User;
 import com.dcall.core.configuration.utils.FileUtils;
+import com.dcall.core.configuration.utils.StringParserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.File;
@@ -63,10 +64,11 @@ public final class HashFileServiceImpl implements HashFileService {
 
     @Override
     public String getFileHash(String parentPath, final String md5Salt, final String fileName) {
+        final String fileSeparator = File.separator.replace("\\", "\\\\");
         String hash = null;
 
         if (fileName != null && !fileName.isEmpty()) {
-            for (final String member : fileName.split(File.separator)) {
+            for (final String member : fileName.split(fileSeparator)) {
                 hash = sign(parentPath, seed(member), md5Salt);
                 parentPath = getPath(parentPath, hash);
             }
@@ -77,10 +79,11 @@ public final class HashFileServiceImpl implements HashFileService {
 
     @Override
     public String getHashPath(String parentPath, final String md5Salt, final String fileName) {
+        final String fileSeparator = File.separator.replace("\\", "\\\\");
         String path = null;
 
         if (fileName != null && !fileName.isEmpty()) {
-            for (final String member : fileName.split(File.separator)) {
+            for (final String member : fileName.split(fileSeparator)) {
                 path = getPath(parentPath, getFileHash(parentPath, md5Salt, member));
                 parentPath = path;
             }

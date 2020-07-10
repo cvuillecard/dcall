@@ -62,6 +62,6 @@ public abstract class Platform {
     }
 
     protected String pwd() {
-        return System.getenv().get(isWin() ? "user.dir" : "PWD");
+        return isWin() ? System.getProperty("user.dir") : System.getenv().get("PWD");
     }
 }
