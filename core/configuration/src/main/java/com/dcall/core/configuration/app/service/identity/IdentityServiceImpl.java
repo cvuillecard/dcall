@@ -36,7 +36,10 @@ public class IdentityServiceImpl implements IdentityService {
 
         try {
             if (!f.exists()) {
-                identity.getProperties().store(new FileWriter(identityPath), context.getUser().getEmail() + " - identity ");
+                final FileWriter fileWriter = new FileWriter(identityPath);
+
+                identity.getProperties().store(fileWriter, context.getUser().getEmail() + " - identity ");
+                fileWriter.close();
 
                 AESProvider.encryptFile(identityPath, identityPath, cipher.getCipherIn());
 
@@ -75,8 +78,10 @@ public class IdentityServiceImpl implements IdentityService {
         try {
             if (identity != null && identity instanceof AbstractCipherResource) {
                 final AbstractCipherResource resource = (AbstractCipherResource) identity;
+                final FileWriter fileWriter = new FileWriter(resource.getPath());
                 FileUtils.getInstance().remove(resource.getPath());
-                identity.getProperties().store(new FileWriter(resource.getPath()), identity.getUser().getEmail() + " - identity ");
+                identity.getProperties().store(fileWriter, identity.getUser().getEmail() + " - identity ");
+                fileWriter.close();
                 AESProvider.encryptFile(resource.getPath(), resource.getPath(), resource.getCipher().getCipherIn());
             }
         }

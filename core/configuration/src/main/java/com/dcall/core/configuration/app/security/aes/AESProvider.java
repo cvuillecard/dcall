@@ -106,9 +106,9 @@ public final class AESProvider {
     public static void encryptFile(final String inputFilePath, final String outputFilePath, final Cipher cipher) throws Exception {
         final boolean isReplaceSource = inputFilePath.equals(outputFilePath);
         final String default_suffix = "_encrypted";
+        final String outputPath = isReplaceSource ? outputFilePath + default_suffix : outputFilePath;
         final File input = new File(inputFilePath);
-        final File copyInput = new File(inputFilePath + "_copy");
-        final File output = new File(isReplaceSource ? outputFilePath + default_suffix : outputFilePath);
+        final File output = new File(outputPath);
         int nread;
         final byte[] buffer = new byte[_BUFFER_SIZE];
 
@@ -117,11 +117,9 @@ public final class AESProvider {
 
         if (output.exists() && !isReplaceSource)
             output.delete();
-        if (isReplaceSource)
-            input.renameTo(copyInput);
 
-        final InputStream cin = new DataInputStream(new FileInputStream(isReplaceSource ? copyInput : input));
-        final CipherOutputStream cout = new CipherOutputStream(new FileOutputStream(outputFilePath), cipher);
+        final InputStream cin = new DataInputStream(new FileInputStream(input));
+        final CipherOutputStream cout = new CipherOutputStream(new FileOutputStream(outputPath), cipher);
 
         while ((nread = cin.read(buffer)) > 0)
             cout.write(buffer, 0, nread);
@@ -129,10 +127,8 @@ public final class AESProvider {
         cin.close();
         cout.close();
 
-        if (isReplaceSource) {
-            output.renameTo(new File(inputFilePath));
-            copyInput.delete();
-        }
+        if (isReplaceSource)
+            Files.move(output.toPath(), input.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
 
     public static void encryptDirectory(final String filePath, final Cipher enc, String prefix, final Predicate<String> fileNameCond) {

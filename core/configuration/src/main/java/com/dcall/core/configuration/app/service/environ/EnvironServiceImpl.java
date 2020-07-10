@@ -42,8 +42,10 @@ public class EnvironServiceImpl implements EnvironService {
         try {
             if (environ != null && environ instanceof AbstractCipherResource) {
                 final AbstractCipherResource resource = (AbstractCipherResource) environ;
+                final FileWriter fileWriter = new FileWriter(resource.getPath());
                 FileUtils.getInstance().remove(resource.getPath());
-                environ.getProperties().store(new FileWriter(resource.getPath()), environ.getUser().getEmail() + " - identity ");
+                environ.getProperties().store(fileWriter, environ.getUser().getEmail() + " - identity ");
+                fileWriter.close();
                 AESProvider.encryptFile(resource.getPath(), resource.getPath(), resource.getCipher().getCipherIn());
             }
         }
@@ -83,10 +85,11 @@ public class EnvironServiceImpl implements EnvironService {
         try {
             if (create && !(new File(cipherEnv.getPath())).exists()) {
                 FileUtils.getInstance().createDirectory(context.getUser().getWorkspace());
-               hashService.createDirectories(context.getUser().getWorkspace(), userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_HOME));
-               hashService.createDirectories(userHome, userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_CERT));
+                hashService.createDirectories(context.getUser().getWorkspace(), userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_HOME));
+                hashService.createDirectories(userHome, userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_CERT));
                 final Identity identity = hashServiceProvider.identityService().createUserIdentity(context, userHome);
                 final Certificate certificate = hashServiceProvider.certificateService().createUserCertificate(context, userCert);
+                final FileWriter fileWriter = new FileWriter(cipherEnv.getPath());
 
                 context.setIdentity(hashServiceProvider.identityService().getUserIdentity(context, identity))
                         .setCertificate(hashServiceProvider.certificateService().getUserCertificate(context, certificate));
@@ -100,13 +103,14 @@ public class EnvironServiceImpl implements EnvironService {
                 environ.getProperties().setProperty(EnvironConstant.INTERPRET_MODE, String.valueOf(InterpretMode.LOCAL.mode()));
                 environ.getProperties().setProperty(EnvironConstant.PUBLIC_ID, createPublicId(context));
 
-                environ.getProperties().store(new FileWriter(cipherEnv.getPath()), context.getUser().getEmail() + " - env properties");
+                environ.getProperties().store(fileWriter, context.getUser().getEmail() + " - env properties");
+                fileWriter.close();
+
                 AESProvider.encryptFile(cipherEnv.getPath(), cipherEnv.getPath(), cipherEnv.getCipher().getCipherIn());
                 // verification
                 // hashServiceProvider.hashFileService().exists(user.getWorkspace(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_HOME))
                 // hashService.exists(userHome, userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_CERT))
-            }
-            else {
+            } else {
                 environ.setProperties(loadEnvironProperties(context));
                 context.setIdentity(hashServiceProvider.identityService().createUserIdentity(context, userHome))
                         .setCertificate(hashServiceProvider.certificateService().createUserCertificate(context, userCert));
