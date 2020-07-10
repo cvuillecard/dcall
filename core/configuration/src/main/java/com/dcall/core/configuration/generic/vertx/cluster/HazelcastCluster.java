@@ -32,4 +32,6 @@ public final class HazelcastCluster {
     public static String getLocalUuid() {
         return HazelcastCluster.getLocalMember().getUuid();
     }
+
+    public static void shutdown() { getInstance().shutdown(); }
 }

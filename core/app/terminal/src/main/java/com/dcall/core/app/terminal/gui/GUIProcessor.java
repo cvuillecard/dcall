@@ -131,9 +131,9 @@ public final class GUIProcessor {
         GUIProcessor.prompt(ScreenController.metrics());
     }
 
-    private static void close() {
+    public static void close() {
+        VertxApplication.shutdown(Vertx.currentContext().owner());
         ScreenController.close();
-        VertxApplication.shutdown();
     }
 
     public static void resize(final ScreenMetrics metrics) {

@@ -1,7 +1,10 @@
 package com.dcall.core.app.terminal.gui.controller.screen;
 
+import com.dcall.core.app.terminal.gui.GUIProcessor;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
+import com.dcall.core.configuration.generic.vertx.VertxApplication;
+import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
@@ -10,6 +13,7 @@ import com.googlecode.lanterna.terminal.SimpleTerminalResizeListener;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import com.googlecode.lanterna.terminal.swing.TerminalEmulatorAutoCloseTrigger;
+import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +76,23 @@ public final class ScreenController {
 
             addWindowListener();
             addResizeListener();
+            addCloseListener();
         }
+    }
+
+    private static void addCloseListener() {
+        final SwingTerminalFrame term = (SwingTerminalFrame) terminal;
+        final Vertx vertx = Vertx.currentContext().owner();
+
+        term.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                VertxApplication.shutdown(vertx);
+                close();
+                LOG.warn(" > Swing Terminal Frame closing");
+                super.windowClosing(e);
+            }
+        });
     }
 
     private static void addResizeListener() {

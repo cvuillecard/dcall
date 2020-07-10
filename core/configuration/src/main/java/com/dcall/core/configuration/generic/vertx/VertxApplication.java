@@ -3,6 +3,7 @@ package com.dcall.core.configuration.generic.vertx;
 import com.dcall.core.configuration.app.constant.ResourceConstant;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.generic.spring.SpringConfig;
+import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
 import com.dcall.core.configuration.utils.ResourceUtils;
 import com.dcall.core.configuration.generic.vertx.cluster.EventBusConfigurator;
 import com.dcall.core.configuration.generic.vertx.cluster.HazelcastConfigurator;
@@ -159,6 +160,18 @@ public final class VertxApplication {
     public static void shutdown() {
         Vertx.currentContext().owner().close();
         LOG.debug("Local vertx context closed.");
+    }
+
+    public static void shutdown(final Vertx vertx) {
+        vertx.eventBus().close(res -> {
+            if (res.succeeded()) {
+                LOG.warn(" SUCCESS > EventBus closed.");
+                vertx.close();
+            }
+            else
+                LOG.warn(" FAILED TO CLOSE EVENT BUS");
+        });
+        HazelcastCluster.shutdown();
     }
 
 }
