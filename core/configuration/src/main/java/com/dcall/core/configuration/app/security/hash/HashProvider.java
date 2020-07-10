@@ -35,11 +35,11 @@ public final class HashProvider {
     }
 
     public static String signMd5(final String seed, String... keys) {
-        return DigestUtils.md5Hex(seed + File.separator + String.join("+", Arrays.asList(keys)));
+        return DigestUtils.md5Hex(seed + '_' + String.join("+", Arrays.asList(keys)));
     }
 
     public static String signSha512(final String seed, String... keys) {
-        return DigestUtils.sha512Hex(seed + File.separator + String.join("+", Arrays.asList(keys)));
+        return DigestUtils.sha512Hex(seed + '_' + String.join("+", Arrays.asList(keys)));
     }
 
     public static String createSalt512(final String seed, final String...keys) {

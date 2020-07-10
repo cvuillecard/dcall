@@ -8,6 +8,7 @@ import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public final class HazelcastConfigurator {
@@ -32,7 +33,7 @@ public final class HazelcastConfigurator {
     }
 
     public HazelcastConfigurator configureGroup(final String groupName, final String groupPass) {
-        final Cluster cluster = new ClusterBean(HashProvider.seedSha512((groupName + groupPass).getBytes()), groupName, groupPass);
+        final Cluster cluster = new ClusterBean(HashProvider.seedSha512((groupName + groupPass).getBytes(StandardCharsets.UTF_8)), groupName, groupPass);
 
         this.config.getGroupConfig().setName(cluster.getName());
         this.config.getGroupConfig().setPassword(cluster.getPassword()); // going to be deleted after test proved it's not used.
