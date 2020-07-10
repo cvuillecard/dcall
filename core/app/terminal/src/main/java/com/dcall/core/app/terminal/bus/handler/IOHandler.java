@@ -99,6 +99,7 @@ public final class IOHandler {
         }
         catch (Exception e) {
             LOG.debug(e.getMessage());
+            output().addToEntry(e.getMessage());
         }
     }
 

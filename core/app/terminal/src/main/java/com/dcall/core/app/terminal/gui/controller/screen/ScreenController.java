@@ -1,20 +1,16 @@
 package com.dcall.core.app.terminal.gui.controller.screen;
 
-import com.dcall.core.app.terminal.gui.GUIProcessor;
+import com.dcall.core.app.terminal.gui.configuration.ScreenAttributes;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.display.DisplayController;
-import com.dcall.core.configuration.generic.vertx.VertxApplication;
-import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
+import com.dcall.core.configuration.generic.cluster.vertx.VertxApplication;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.SimpleTerminalResizeListener;
 import com.googlecode.lanterna.terminal.Terminal;
-import com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration;
-import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
-import com.googlecode.lanterna.terminal.swing.TerminalEmulatorAutoCloseTrigger;
-import com.googlecode.lanterna.terminal.swing.TerminalEmulatorDeviceConfiguration;
+import com.googlecode.lanterna.terminal.swing.*;
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +31,10 @@ public final class ScreenController {
     private static volatile ScrollMetrics scrollMetrics = new ScrollMetrics();
     private static Screen screen;
     private static Terminal terminal;
+    private static ScreenAttributes.FrameType frameType;
 
-    public static void init() {
+    public static void init(final ScreenAttributes.FrameType frameType) {
+        ScreenController.frameType = frameType;
         initScreen();
     }
 
@@ -63,7 +61,7 @@ public final class ScreenController {
     }
 
     private static void addWindowListener() {
-        ((SwingTerminalFrame) terminal).addWindowListener(new java.awt.event.WindowAdapter() {
+        ((Frame) terminal).addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
                 super.windowClosed(e);
@@ -73,20 +71,18 @@ public final class ScreenController {
     }
 
     private static void addWindowListeners() {
-        if (terminal instanceof SwingTerminalFrame) {
+        if (terminal instanceof SwingTerminalFrame)
             ((SwingTerminalFrame) terminal).setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
             addWindowListener();
             addResizeListener();
             addCloseListener();
-        }
     }
 
     private static void addCloseListener() {
-        final SwingTerminalFrame term = (SwingTerminalFrame) terminal;
         final Vertx vertx = Vertx.currentContext().owner();
 
-        term.addWindowListener(new java.awt.event.WindowAdapter() {
+        ((Frame) terminal).addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
                 VertxApplication.shutdown(vertx);
@@ -107,7 +103,7 @@ public final class ScreenController {
                     LOG.debug(" *** Window resized to : " + terminal.getTerminalSize().getColumns() + " x " + terminal.getTerminalSize().getRows());
 
                     setScreenMetrics(terminal.getTerminalSize().getColumns(), terminal.getTerminalSize().getRows());
-                    ((SwingTerminalFrame)ScreenController.terminal).setTitle(TermAttributes.FRAME_TITLE + " (" + metrics.width + 'x' + metrics.height + ')');
+                    ((Frame)ScreenController.terminal).setTitle(TermAttributes.FRAME_TITLE + " (" + metrics.width + 'x' + metrics.height + ')');
 
                     DisplayController.resize(ScreenController.metrics());
 //                    if (terminal.getTerminalSize().getColumns() < getMinScreenWidth())
@@ -120,11 +116,9 @@ public final class ScreenController {
     }
 
     private static void setMinimumSize() {
-        if (ScreenController.terminal instanceof SwingTerminalFrame) {
-            final Dimension dimension = new Dimension();
-            dimension.setSize(getMinScreenWidth(), getMinScreenHeight());
-            ((SwingTerminalFrame) ScreenController.terminal).setPreferredSize(dimension);
-        }
+        final Dimension dimension = new Dimension();
+        dimension.setSize(getMinScreenWidth(), getMinScreenHeight());
+        ((Frame) ScreenController.terminal).setPreferredSize(dimension);
     }
 
     private static void initScreen() {
@@ -137,6 +131,8 @@ public final class ScreenController {
                     .setTerminalEmulatorFrameAutoCloseTrigger(TerminalEmulatorAutoCloseTrigger.CloseOnExitPrivateMode)
                     .setTerminalEmulatorTitle(TermAttributes.FRAME_TITLE)
                     .setTerminalEmulatorDeviceConfiguration(configuration)
+                    .setTerminalEmulatorFontConfiguration(AWTTerminalFontConfiguration.newInstance(TermAttributes.DEFAULT_FONT_POLICY))
+                    .setForceAWTOverSwing(ScreenController.frameType.equals(ScreenAttributes.FrameType.AWT_FRAME))
                     .setInitialTerminalSize(new TerminalSize(TermAttributes.FRAME_NB_COLS, TermAttributes.FRAME_NB_ROWS))
                     .createTerminal();
 

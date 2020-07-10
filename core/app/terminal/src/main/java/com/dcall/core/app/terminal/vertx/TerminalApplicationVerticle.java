@@ -1,6 +1,7 @@
 package com.dcall.core.app.terminal.vertx;
 
 import com.dcall.core.app.terminal.gui.GUIProcessor;
+import com.dcall.core.app.terminal.gui.configuration.ScreenAttributes;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import io.vertx.core.AbstractVerticle;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,6 @@ public class TerminalApplicationVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        GUIProcessor.start(runtimeContext);
+        GUIProcessor.start(runtimeContext, ScreenAttributes.FrameType.AWT_FRAME);
     }
 }

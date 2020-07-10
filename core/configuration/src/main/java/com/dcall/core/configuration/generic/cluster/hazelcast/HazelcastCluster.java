@@ -1,9 +1,8 @@
-package com.dcall.core.configuration.generic.vertx.cluster;
+package com.dcall.core.configuration.generic.cluster.hazelcast;
 
-import com.hazelcast.core.Cluster;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.Member;
+import com.dcall.core.configuration.generic.cluster.hazelcast.listener.MemberClusterListener;
+import com.hazelcast.config.ListenerConfig;
+import com.hazelcast.core.*;
 
 import java.util.Set;
 
@@ -34,4 +33,15 @@ public final class HazelcastCluster {
     }
 
     public static void shutdown() { getInstance().shutdown(); }
+
+    public static <T> T getListener(final String className) {
+        for (final ListenerConfig conf : getInstance ().getConfig().getListenerConfigs()) {
+            if (conf.getImplementation().getClass().getName().equals(MemberClusterListener.class.getName()))
+                return (T) conf.getImplementation();
+        }
+
+        return null;
+    }
+
+    public static MemberClusterListener getMemberShipListener() { return getListener(MemberClusterListener.class.getName()); }
 }

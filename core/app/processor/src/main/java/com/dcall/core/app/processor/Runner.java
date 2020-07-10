@@ -3,9 +3,10 @@ package com.dcall.core.app.processor;
 import com.dcall.core.app.processor.vertx.command.CommandProcessorConsumerVerticle;
 import com.dcall.core.configuration.app.runner.RunnerConfigurator;
 import com.dcall.core.configuration.app.verticle.fingerprint.FingerPrintConsumerVerticle;
-import com.dcall.core.configuration.generic.vertx.VertxApplication;
+import com.dcall.core.configuration.generic.cluster.vertx.VertxApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public final class Runner {
     private static final Logger LOG = LoggerFactory.getLogger(Runner.class);

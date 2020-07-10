@@ -1,16 +1,14 @@
 package com.dcall.core.configuration.app.verticle.fingerprint;
 
-import com.dcall.core.configuration.app.constant.EnvironConstant;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.fingerprint.FingerPrintContext;
 import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
-import com.dcall.core.configuration.app.entity.fingerprint.FingerPrintBean;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
 import com.dcall.core.configuration.app.security.rsa.RSAProvider;
 import com.dcall.core.configuration.app.service.fingerprint.FingerPrintService;
-import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
-import com.dcall.core.configuration.generic.vertx.uri.VertxURIConfig;
+import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
+import com.dcall.core.configuration.generic.cluster.vertx.uri.VertxURIConfig;
 import com.dcall.core.configuration.utils.SerializationUtils;
 import com.dcall.core.configuration.utils.URIUtils;
 import io.vertx.core.AbstractVerticle;
@@ -82,7 +80,7 @@ public final class FingerPrintConsumerVerticle extends AbstractVerticle {
                 if (!msg.getId().equals(HazelcastCluster.getLocalUuid()) &&  fromFingerPrint != null) {
                     final byte[] bytes = RSAProvider.decrypt(msg.getMessage(), runtimeContext.userContext().getCertificate().getKeyPair().getPrivate());
                     fromFingerPrint.setSecretKey(SerializationUtils.deserialize(bytes));
-                    fingerPrintService.sendPublicId(runtimeContext, fromFingerPrint, msg);
+//                    fingerPrintService.sendPublicId(runtimeContext, fromFingerPrint, msg);
                 } else
                     fingerPrintContext.getFingerprints().put(msg.getId(), SerializationUtils.deserialize(msg.getMessage()));
                 future.complete();

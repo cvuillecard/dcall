@@ -1,9 +1,10 @@
 package com.dcall.core.configuration.generic.service.command;
 
 import com.dcall.core.configuration.app.context.RuntimeContext;
+import com.dcall.core.configuration.app.context.WithRuntimeContext;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-public interface GenericCommandService {
+public interface GenericCommandService extends WithRuntimeContext {
     GenericCommandService init(final RuntimeContext context, final String helpFile);
     byte[] usage();
     String commitMessage(final String msg);

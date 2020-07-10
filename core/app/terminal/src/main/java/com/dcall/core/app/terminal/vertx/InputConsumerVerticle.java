@@ -6,7 +6,7 @@ import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import com.dcall.core.configuration.app.entity.message.Message;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
 import com.dcall.core.configuration.utils.URIUtils;
-import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
+import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
 import io.vertx.core.AbstractVerticle;
 
 import io.vertx.core.buffer.Buffer;

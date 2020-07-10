@@ -1,6 +1,7 @@
 package com.dcall.core.app.terminal.gui;
 
 import com.dcall.core.app.terminal.bus.input.InputEntry;
+import com.dcall.core.app.terminal.gui.configuration.ScreenAttributes;
 import com.dcall.core.configuration.app.constant.LoginOption;
 import com.dcall.core.app.terminal.gui.configuration.TermAttributes;
 import com.dcall.core.app.terminal.gui.controller.screen.CursorController;
@@ -13,7 +14,7 @@ import com.dcall.core.app.terminal.gui.service.credential.window.UserCredentialD
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.provider.ServiceProvider;
 import com.dcall.core.configuration.app.service.user.UserService;
-import com.dcall.core.configuration.generic.vertx.VertxApplication;
+import com.dcall.core.configuration.generic.cluster.vertx.VertxApplication;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
 import io.vertx.core.Vertx;
@@ -33,8 +34,8 @@ public final class GUIProcessor {
     private static Terminal terminal;
     private static Screen screen;
 
-    public static void start(final RuntimeContext runtimeContext) {
-        GUIProcessor.init(runtimeContext);
+    public static void start(final RuntimeContext runtimeContext, final ScreenAttributes.FrameType frameType) {
+        GUIProcessor.init(runtimeContext, frameType);
         GUIProcessor.startLoop(LoginOption.LOGIN);
     }
 
@@ -45,9 +46,9 @@ public final class GUIProcessor {
         bus.init(runtimeContext);
     }
 
-    private static void init(final RuntimeContext runtimeContext) {
+    private static void init(final RuntimeContext runtimeContext, final ScreenAttributes.FrameType frameType) {
         initContext(runtimeContext);
-        ScreenController.init();
+        ScreenController.init(frameType);
 
         terminal = ScreenController.getTerminal();
         screen = ScreenController.getScreen();
@@ -88,7 +89,7 @@ public final class GUIProcessor {
                         if (option.equals(LoginOption.NEW_USER) && userService.hasIdentity(runtimeContext.userContext().getUser())) {
                             DisplayController.printWaiting(ScreenController.metrics(), TermAttributes.USER_CREATE_WAIT);
                             userService.encodePassword(runtimeContext.userContext().getUser());
-                            services.environService().configureUserEnviron(runtimeContext.userContext(), true);
+                            services.environService().configureUserEnviron(runtimeContext, true);
                             userService.initRepository(runtimeContext, true);
                             services.messageServiceProvider().fingerPrintService().publishPublicUserCertificate(runtimeContext.userContext());
                         }

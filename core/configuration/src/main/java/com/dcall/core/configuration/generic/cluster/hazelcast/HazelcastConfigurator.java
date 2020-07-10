@@ -1,9 +1,11 @@
-package com.dcall.core.configuration.generic.vertx.cluster;
+package com.dcall.core.configuration.generic.cluster.hazelcast;
 
 import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.entity.cluster.Cluster;
 import com.dcall.core.configuration.app.entity.cluster.ClusterBean;
+import com.dcall.core.configuration.generic.cluster.hazelcast.listener.MemberClusterListener;
 import com.hazelcast.config.Config;
+import com.hazelcast.config.ListenerConfig;
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +31,7 @@ public final class HazelcastConfigurator {
 
         config.getNetworkConfig().setReuseAddress(true);
 
-        return getClusterManager();
+        return configureListeners().getClusterManager();
     }
 
     public HazelcastConfigurator configureGroup(final String groupName, final String groupPass) {
@@ -39,6 +41,23 @@ public final class HazelcastConfigurator {
         this.config.getGroupConfig().setPassword(cluster.getPassword()); // going to be deleted after test proved it's not used.
 
         return this;
+    }
+
+    public HazelcastConfigurator configureListeners() {
+        final ListenerConfig listenerConfig = new ListenerConfig();
+
+        this.addMemberClusterListener(listenerConfig);
+
+        this.config.addListenerConfig(listenerConfig);
+
+        return this;
+    }
+
+    private void addMemberClusterListener(final ListenerConfig listenerConfig) {
+        final MemberClusterListener memberClusterListener = new MemberClusterListener();
+
+        listenerConfig.setClassName(memberClusterListener.getClass().getName());
+        listenerConfig.setImplementation(memberClusterListener);
     }
 
     private HazelcastClusterManager getClusterManager() {

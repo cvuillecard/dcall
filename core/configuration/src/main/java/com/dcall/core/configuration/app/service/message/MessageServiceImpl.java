@@ -7,7 +7,7 @@ import com.dcall.core.configuration.app.entity.message.MessageBean;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.security.aes.AESProvider;
 import com.dcall.core.configuration.app.service.fingerprint.FingerPrintService;
-import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
+import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
 import com.dcall.core.configuration.utils.SerializationUtils;
 import com.dcall.core.configuration.utils.URIUtils;
 import io.vertx.core.AsyncResult;

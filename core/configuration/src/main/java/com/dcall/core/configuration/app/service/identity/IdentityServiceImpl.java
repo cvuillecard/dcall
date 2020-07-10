@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Properties;
 
@@ -78,8 +77,8 @@ public class IdentityServiceImpl implements IdentityService {
         try {
             if (identity != null && identity instanceof AbstractCipherResource) {
                 final AbstractCipherResource resource = (AbstractCipherResource) identity;
-                final FileWriter fileWriter = new FileWriter(resource.getPath());
                 FileUtils.getInstance().remove(resource.getPath());
+                final FileWriter fileWriter = new FileWriter(resource.getPath());
                 identity.getProperties().store(fileWriter, identity.getUser().getEmail() + " - identity ");
                 fileWriter.close();
                 AESProvider.encryptFile(resource.getPath(), resource.getPath(), resource.getCipher().getCipherIn());

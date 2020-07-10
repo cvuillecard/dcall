@@ -17,4 +17,5 @@ public final class FingerPrintContext {
     public Iterator<String> iterator() { return (iterator = fingerprints.keySet().iterator()); }
     public FingerPrint next(final Iterator<String> iterator) { return (current = fingerprints.get(iterator.next())); }
     public FingerPrint current() { return current; }
+    public FingerPrintContext setCurrent(final FingerPrint fingerPrint) { this.current = fingerPrint; return this; }
 }

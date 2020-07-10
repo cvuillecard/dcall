@@ -1,4 +1,4 @@
-package com.dcall.core.configuration.generic.vertx.ssl;
+package com.dcall.core.configuration.generic.cluster.vertx.ssl;
 
 import io.vertx.core.VertxOptions;
 import io.vertx.core.eventbus.EventBusOptions;

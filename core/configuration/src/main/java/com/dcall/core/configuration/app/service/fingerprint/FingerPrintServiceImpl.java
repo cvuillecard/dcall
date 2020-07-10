@@ -4,7 +4,6 @@ import com.dcall.core.configuration.app.constant.EnvironConstant;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.fingerprint.FingerPrintContext;
 import com.dcall.core.configuration.app.context.user.UserContext;
-import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
 import com.dcall.core.configuration.app.entity.cipher.CipherAESBean;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
@@ -16,8 +15,8 @@ import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.security.rsa.RSAProvider;
 import com.dcall.core.configuration.app.service.message.MessageService;
 import com.dcall.core.configuration.app.verticle.fingerprint.FingerPrintConsumerVerticle;
-import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
-import com.dcall.core.configuration.generic.vertx.uri.VertxURIConfig;
+import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
+import com.dcall.core.configuration.generic.cluster.vertx.uri.VertxURIConfig;
 import com.dcall.core.configuration.utils.SerializationUtils;
 import com.dcall.core.configuration.utils.URIUtils;
 import org.slf4j.Logger;
@@ -122,16 +121,9 @@ public class FingerPrintServiceImpl implements FingerPrintService {
     }
 
     @Override
-    public FingerPrint nextFingerPrint(final FingerPrintContext fingerPrintContext) {
-        try {
-            if (fingerPrintContext.getFingerprints().size() > 0)
-                return fingerPrintContext.current() != null? fingerPrintContext.current() : fingerPrintContext.next(fingerPrintContext.iterator());
-            throw new FunctionalException("No fingerprints available in cache or no peers connected : perhaps you might use publish cmd to get a secure connection");
-        }
-        catch (FunctionalException e) {
-            e.log();
-        }
-
-        return null;
+    public FingerPrint nextFingerPrint(final FingerPrintContext fingerPrintContext) throws FunctionalException {
+        if (fingerPrintContext.getFingerprints().size() > 0)
+            return fingerPrintContext.current() != null ? fingerPrintContext.current() : fingerPrintContext.next(fingerPrintContext.iterator());
+        throw new FunctionalException("No fingerprints available in cache or no peers connected : perhaps you might use publish cmd to get a secure connection");
     }
 }

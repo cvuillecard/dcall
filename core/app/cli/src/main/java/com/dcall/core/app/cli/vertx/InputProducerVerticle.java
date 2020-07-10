@@ -1,6 +1,6 @@
 package com.dcall.core.app.cli.vertx;
 
-import com.dcall.core.configuration.generic.vertx.VertxApplication;
+import com.dcall.core.configuration.generic.cluster.vertx.VertxApplication;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.MessageProducer;
 import org.slf4j.Logger;

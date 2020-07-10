@@ -1,4 +1,4 @@
-package com.dcall.core.configuration.generic.vertx;
+package com.dcall.core.configuration.generic.cluster.vertx;
 
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;

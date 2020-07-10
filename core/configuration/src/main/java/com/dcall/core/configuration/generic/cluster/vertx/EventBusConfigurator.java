@@ -1,4 +1,4 @@
-package com.dcall.core.configuration.generic.vertx.cluster;
+package com.dcall.core.configuration.generic.cluster.vertx;
 
 import com.dcall.core.configuration.utils.HostUtils;
 import io.vertx.core.VertxOptions;

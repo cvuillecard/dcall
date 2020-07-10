@@ -10,6 +10,7 @@ import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.service.environ.EnvironService;
 import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 import com.dcall.core.configuration.app.entity.user.User;
+import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
 import com.dcall.core.configuration.utils.HostUtils;
 import com.dcall.core.configuration.utils.ResourceUtils;
 import org.apache.commons.codec.binary.Base64;
@@ -61,16 +62,17 @@ public class UserServiceImpl implements UserService {
         context.userContext().setUser(new UserBean(user));
 
         if (!environService.hasConfiguration(context.userContext())) {
-            services.environService().configureUserEnviron(context.userContext(), true);
+            services.environService().configureUserEnviron(context, true);
             context.userContext().getEnviron().getProperties().setProperty(EnvironConstant.COMMIT_MODE, Boolean.TRUE.toString());
             services.environService().updateEnviron(context.userContext().getEnviron());
             services.userServiceProvider().userService().initRepository(context, true);
-            services.messageServiceProvider().fingerPrintService().publishPublicUserCertificate(context.userContext());
         }
         else {
             services.userServiceProvider().userService().initRepository(context, false);
-            services.environService().configureUserEnviron(context.userContext(), false);
+            services.environService().configureUserEnviron(context, false);
         }
+
+        services.messageServiceProvider().fingerPrintService().publishPublicUserCertificate(context.userContext());
 
         return this;
     }
@@ -114,7 +116,7 @@ public class UserServiceImpl implements UserService {
             context.userContext().getUser().reset();
         }
         else {
-            environService.configureUserEnviron(context.userContext(), false);
+            environService.configureUserEnviron(context, false);
             context.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService().publishPublicUserCertificate(context.userContext());
         }
 

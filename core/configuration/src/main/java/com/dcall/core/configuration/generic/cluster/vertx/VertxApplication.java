@@ -1,13 +1,11 @@
-package com.dcall.core.configuration.generic.vertx;
+package com.dcall.core.configuration.generic.cluster.vertx;
 
 import com.dcall.core.configuration.app.constant.ResourceConstant;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.generic.spring.SpringConfig;
-import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
 import com.dcall.core.configuration.utils.ResourceUtils;
-import com.dcall.core.configuration.generic.vertx.cluster.EventBusConfigurator;
-import com.dcall.core.configuration.generic.vertx.cluster.HazelcastConfigurator;
-import com.dcall.core.configuration.generic.vertx.ssl.VertxEventBusSSLConfigurator;
+import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastConfigurator;
+import com.dcall.core.configuration.generic.cluster.vertx.ssl.VertxEventBusSSLConfigurator;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
@@ -166,12 +164,11 @@ public final class VertxApplication {
         vertx.eventBus().close(res -> {
             if (res.succeeded()) {
                 LOG.warn(" SUCCESS > EventBus closed.");
-                vertx.close();
             }
             else
-                LOG.warn(" FAILED TO CLOSE EVENT BUS");
+                LOG.warn(" FAILED TO CLOSE EVENT BUS : " + res.cause());
         });
-        HazelcastCluster.shutdown();
+        vertx.close();
     }
 
 }

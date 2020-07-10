@@ -1,6 +1,6 @@
 package com.dcall.core.app.cli;
 
-import com.dcall.core.configuration.generic.vertx.VertxApplication;
+import com.dcall.core.configuration.generic.cluster.vertx.VertxApplication;
 
 import com.dcall.core.app.cli.vertx.InputConsumerVerticle;
 import com.dcall.core.app.cli.vertx.InputProducerVerticle;

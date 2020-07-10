@@ -1,37 +1,28 @@
 package com.dcall.core.app.processor.vertx.command;
 
+import com.dcall.core.configuration.app.constant.EnvironConstant;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
-import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
-import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
-import com.dcall.core.configuration.app.security.aes.AESProvider;
-import com.dcall.core.configuration.app.security.rsa.RSAProvider;
 import com.dcall.core.configuration.app.service.builtin.BuiltInService;
 import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
-import com.dcall.core.configuration.app.exception.TechnicalException;
-import com.dcall.core.configuration.app.security.hash.HashProvider;
-import com.dcall.core.configuration.app.service.fingerprint.FingerPrintService;
 import com.dcall.core.configuration.app.service.message.MessageService;
 import com.dcall.core.configuration.generic.parser.Parser;
 import com.dcall.core.configuration.generic.parser.expression.operand.solver.impl.BuiltInOperandSolver;
 import com.dcall.core.configuration.generic.parser.expression.operator.solver.impl.BuiltInOperatorSolver;
 import com.dcall.core.configuration.utils.HelpUtils;
 import com.dcall.core.configuration.utils.URIUtils;
-import com.dcall.core.configuration.generic.vertx.cluster.HazelcastCluster;
+import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.Json;
-import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -128,7 +119,6 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
     @Override
     public void start() {
         configure();
-
         final MessageConsumer<Object> consumer = vertx.eventBus().consumer(URIUtils.getUri(uriContext.getLocalConsumerUri(), HazelcastCluster.getLocalUuid()));
 
         consumer.handler(handler -> {

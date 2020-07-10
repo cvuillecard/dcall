@@ -1,6 +1,6 @@
 package com.dcall.core.configuration.app.context.vertx.uri;
 
-import com.dcall.core.configuration.generic.vertx.uri.VertxURIConfig;
+import com.dcall.core.configuration.generic.cluster.vertx.uri.VertxURIConfig;
 
 public final class VertxURIContext {
     private String baseLocalAppUri = VertxURIConfig.BASE_APP_URI;

@@ -6,6 +6,7 @@ import com.dcall.core.configuration.app.context.fingerprint.FingerPrintContext;
 import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.message.Message;
+import com.dcall.core.configuration.app.exception.FunctionalException;
 
 public interface FingerPrintService {
     FingerPrintService publishPublicUserCertificate(final UserContext userContext);
@@ -14,5 +15,5 @@ public interface FingerPrintService {
     FingerPrintService sendPublicId(RuntimeContext runtimeContext, FingerPrint<String> fromFingerPrint, Message<String> fromMessage);
 
     FingerPrint updateCipherFingerPrint(final FingerPrint<String> fingerPrint);
-    FingerPrint nextFingerPrint(final FingerPrintContext fingerPrintContext);
+    FingerPrint nextFingerPrint(final FingerPrintContext fingerPrintContext) throws FunctionalException;
 }

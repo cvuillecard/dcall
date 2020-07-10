@@ -6,6 +6,7 @@ import com.googlecode.lanterna.TextColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -25,6 +26,13 @@ public class TermAttributes {
     public static int MIN_SIZE_COEF = 2;
     public static int DEFAULT_SCROLL_PADDING = 4;
     public static int DEFAULT_BLINKING_DURATION_MS = 500;
+    public static int DEFAULT_FONT_SIZE = 14;
+    public static int DEFAULT_FONT_STYLE = Font.PLAIN;
+    //    public static String DEFAULT_FONT_FAMILY = "Courier New";
+    //    public static String DEFAULT_FONT_FAMILY = "Monospaced";
+    public static String DEFAULT_FONT_FAMILY = "DejaVu Sans Mono";
+    public static Font DEFAULT_FONT_POLICY = new Font(TermAttributes.DEFAULT_FONT_FAMILY, TermAttributes.DEFAULT_FONT_STYLE, TermAttributes.DEFAULT_FONT_SIZE);
+
 
     // HEADER
     public static final TextColor HEADER_BACKGROUND = new TextColor.RGB(230, 230, 0); // YELLOW
