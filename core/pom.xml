@@ -41,8 +41,8 @@
                                 <phase>install</phase>
                                 <configuration>
                                     <outputDirectory>${extern.base.directory}</outputDirectory>
-                                    <overWriteReleases>true</overWriteReleases>
-                                    <overWriteSnapshots>true</overWriteSnapshots>
+                                    <!--<overWriteReleases>true</overWriteReleases>-->
+                                    <!--<overWriteSnapshots>true</overWriteSnapshots>-->
                                     <artifactItems>
 
                                         <artifactItem>
