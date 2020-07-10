@@ -172,7 +172,7 @@ public final class RSAProvider {
 
     public static String decryptString(final String cipherText, final PrivateKey privateKey) throws Exception {
         byte[] bytes = Base64.getDecoder().decode(cipherText);
-        return new String(decrypt(bytes, privateKey));
+        return new String(decrypt(bytes, privateKey), _UTF_8);
     }
 
     public static String sign(final String plainText, final PrivateKey privateKey) throws Exception {
