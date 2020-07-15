@@ -12,13 +12,15 @@ public interface EnvironService {
     Environ updateEnviron(final Environ environ);
     boolean hasConfiguration(final UserContext context);
     Environ configureUserEnviron(final RuntimeContext context, boolean create);
-    String createPublicId(UserContext context);
+    String createPublicId(final UserContext context);
+    String createHostFilesDirectory(final RuntimeContext context);
     Properties loadEnvironProperties(final UserContext context);
 
     // getter
     String getConfigDirName();
     String getConfigDirectory();
     String getPublicId(final RuntimeContext runtimeContext);
+    String getHostFilesDirectory(RuntimeContext runtimeContext);
     boolean getInterpretMode(RuntimeContext runtimeContext);
     boolean getAutoCommitMode(RuntimeContext runtimeContext);
     boolean getHostFilesMode(RuntimeContext runtimeContext);

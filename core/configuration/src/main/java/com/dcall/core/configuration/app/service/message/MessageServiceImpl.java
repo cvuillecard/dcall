@@ -141,6 +141,30 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public void sendEncryptedChunk(final RuntimeContext runtimeContext, final String address, final byte[] bytes, final FingerPrint<String> fingerPrint) {
+        final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
+        final com.dcall.core.configuration.app.entity.message.Message<String> msg = new MessageBean().setId(HazelcastCluster.getLocalUuid());
+        final int nbChunk = getNbChunk(bytes);
+
+        for (int i = 0; i < nbChunk; i++) {
+            final int startIdx = i * BUF_SIZE;
+            final int nextIdx = startIdx + BUF_SIZE;
+            final int endIdx = (nextIdx > bytes.length) ? bytes.length : nextIdx;
+
+            final byte[] datas = messageService.encryptMessage(runtimeContext, fingerPrint, Arrays.copyOfRange(bytes, startIdx, endIdx));
+
+            msg.setMessage(datas).setLength(datas.length);
+
+            Vertx.currentContext().owner().eventBus().send(address, Json.encodeToBuffer(msg), r -> {
+                if (r.succeeded())
+                    LOG.info(r.result().body().toString());
+                else
+                    new TechnicalException(r.cause()).log();
+            });
+        }
+    }
+
+    @Override
     public MessageService setBufSize(final int size) { this.BUF_SIZE = size; return this; }
 
     private int getNbChunk(final byte[] result) {

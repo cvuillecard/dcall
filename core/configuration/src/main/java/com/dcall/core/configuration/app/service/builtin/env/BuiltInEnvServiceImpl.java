@@ -3,7 +3,6 @@ package com.dcall.core.configuration.app.service.builtin.env;
 import com.dcall.core.configuration.app.constant.EnvironConstant;
 import com.dcall.core.configuration.app.entity.environ.Environ;
 import com.dcall.core.configuration.generic.service.command.AbstractCommand;
-import com.dcall.core.configuration.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +18,7 @@ public class BuiltInEnvServiceImpl extends AbstractCommand implements BuiltInEnv
             EnvironConstant.USER_CONF, EnvironConstant.USER_IDENTITY_PROP,
             EnvironConstant.USER_CERT, EnvironConstant.COMMIT_MODE,
             EnvironConstant.INTERPRET_MODE, EnvironConstant.PUBLIC_ID,
-            EnvironConstant.ALLOW_HOST_FILES
+            EnvironConstant.ALLOW_HOST_FILES, EnvironConstant.HOST_FILES_DIR
     );
 
     @Override

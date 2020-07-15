@@ -1,0 +1,13 @@
+[ Built-in : publish ] (v.${project.version})
+
+> Publish command allows you to publish files or applications on the clustered network.
+
+    ~ publish
+    [ publish public user certificate on the clustered network connected ]
+
+    ~ publish workspace
+    [ publish the local repository on the clustered network connected ]
+
+Note : to be used, allow_host_files must be enabled with 'host_files_dir=true'
+
++ See also 'env'

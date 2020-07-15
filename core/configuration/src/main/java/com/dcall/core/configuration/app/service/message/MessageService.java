@@ -19,5 +19,7 @@ public interface MessageService {
     byte[] encryptMessage(final RuntimeContext runtimeContext, final com.dcall.core.configuration.app.entity.message.Message sender, final byte[] datas);
     byte[] decryptMessage(final RuntimeContext runtimeContext, final com.dcall.core.configuration.app.entity.message.Message sender);
     void sendEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, com.dcall.core.configuration.app.entity.message.Message<String> sender, final byte[] bytes, final com.dcall.core.configuration.app.entity.message.Message<String> resp);
+    void sendEncryptedChunk(final RuntimeContext runtimeContext, final String address, byte[] bytes, final FingerPrint<String> fingerPrint);
+
     MessageService setBufSize(final int size);
 }

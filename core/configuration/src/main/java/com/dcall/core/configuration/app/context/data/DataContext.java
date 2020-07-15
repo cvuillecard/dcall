@@ -1,8 +1,9 @@
 package com.dcall.core.configuration.app.context.data;
 
-public class DataContext {
-    private Object datas;
+import com.dcall.core.configuration.app.context.transfer.TransferContext;
 
-    public <T> Object getDatas() {  return (T) datas; }
-    public <T> void setDatas(T datas) { this.datas = datas; }
+public final class DataContext {
+    private final TransferContext transferContext = new TransferContext();
+
+    public TransferContext transferContext() { return transferContext; }
 }

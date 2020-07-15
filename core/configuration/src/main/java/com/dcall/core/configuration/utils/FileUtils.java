@@ -1,15 +1,13 @@
 package com.dcall.core.configuration.utils;
 
 import com.dcall.core.configuration.generic.system.platform.Platform;
+import com.dcall.core.configuration.utils.constant.FileType;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
@@ -31,8 +29,8 @@ public final class FileUtils extends Platform {
     }
 
     public byte[] readAllBytes(final InputStream inputStream) throws IOException {
-        try (SeekableByteChannel sbc = new SeekableInMemoryByteChannel(IOUtils.toByteArray(inputStream));
-             InputStream in = Channels.newInputStream(sbc)) {
+        try (final SeekableByteChannel sbc = new SeekableInMemoryByteChannel(IOUtils.toByteArray(inputStream));
+             final InputStream in = Channels.newInputStream(sbc)) {
             long size = sbc.size();
             if (size > (long) MAX_BUFFER_SIZE)
                 throw new OutOfMemoryError("Required array size too large");
@@ -78,6 +76,24 @@ public final class FileUtils extends Platform {
             dir.mkdirs();
 
         return path;
+    }
+
+    public String createFile(final String filePath, final byte[] bytes) {
+        final File file = new File(filePath);
+        final File parent = new File(file.getParent());
+
+        if (!parent.exists())
+            new File(parent.getPath()).mkdirs();
+        if (file.exists())
+            file.delete();
+
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            fos.write(bytes);
+        } catch (IOException e) {
+            LOG.error(e.getMessage());
+        }
+
+        return filePath;
     }
 
     public void lockDelete(final String path) {
@@ -143,4 +159,12 @@ public final class FileUtils extends Platform {
     }
 
     public String pwd() { return super.pwd(); }
+
+    public String getFilePath(final String parentPath, final String fileName) {
+        return parentPath + File.separator + fileName;
+    }
+
+    public FileType getFileType(final File file) {
+        return file.isDirectory() ? FileType.DIRECTORY : FileType.FILE;
+    }
 }

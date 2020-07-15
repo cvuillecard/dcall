@@ -10,6 +10,7 @@ import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 import com.dcall.core.configuration.app.entity.repository.GitRepository;
 import com.dcall.core.configuration.app.entity.repository.GitRepositoryBean;
 import com.dcall.core.configuration.app.entity.user.User;
+import com.dcall.core.configuration.utils.FileUtils;
 import com.dcall.core.configuration.utils.ResourceUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;
@@ -305,7 +306,7 @@ public class GitServiceImpl implements GitService {
 
     @Override
     public String getGitPath(final String repo) {
-        return repo + File.separator + GitConstant.GIT_FILENAME;
+        return FileUtils.getInstance().getFilePath(repo, GitConstant.GIT_FILENAME);
     }
 
     @Override

@@ -29,9 +29,10 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 public final class FingerPrintConsumerVerticle extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(FingerPrintConsumerVerticle.class);
     @Autowired private RuntimeContext runtimeContext;
-    private VertxURIContext uriContext = new VertxURIContext();
 
     private VertxURIContext uriContext() {
+        final VertxURIContext uriContext = new VertxURIContext();
+
         return uriContext.setBaseLocalAppUri(this.getClass().getPackage().getName())
                 .setBaseRemoteAppUri(uriContext.getBaseLocalAppUri())
                 .setLocalConsumerUri(this.getClass().getName())
@@ -73,7 +74,7 @@ public final class FingerPrintConsumerVerticle extends AbstractVerticle {
     private void handlePrivateMessage(final FingerPrintContext fingerPrintContext, final Message<Object> handler) {
         vertx.executeBlocking(future -> {
             try {
-                final FingerPrintService fingerPrintService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
+//                final FingerPrintService fingerPrintService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
                 final com.dcall.core.configuration.app.entity.message.Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
                 final FingerPrint<String> fromFingerPrint = fingerPrintContext.getFingerprints().get(msg.getId());
 

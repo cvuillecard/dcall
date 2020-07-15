@@ -107,6 +107,7 @@ public class EnvironServiceImpl implements EnvironService {
                 environ.getProperties().setProperty(EnvironConstant.INTERPRET_MODE, InterpretMode.LOCAL.toString());
                 environ.getProperties().setProperty(EnvironConstant.PUBLIC_ID, createPublicId(useContext));
                 environ.getProperties().setProperty(EnvironConstant.ALLOW_HOST_FILES, AllowHostFilesMode.ON.toString());
+                environ.getProperties().setProperty(EnvironConstant.HOST_FILES_DIR, createHostFilesDirectory(runtimeContext));
 
 
                 environ.getProperties().store(fileWriter, useContext.getUser().getEmail() + " - env properties");
@@ -136,6 +137,12 @@ public class EnvironServiceImpl implements EnvironService {
     @Override
     public String createPublicId(final UserContext context) {
         return HashProvider.signSha512(context.getUserHash().getMd5Salt(), EnvironConstant.PUBLIC_ID);
+    }
+
+    @Override
+    public String createHostFilesDirectory(final RuntimeContext runtimeContext) {
+        final String hostDir = hashServiceProvider.hashFileService().getHashPath(runtimeContext.userContext().getUser().getWorkspace(), runtimeContext.userContext().getUserHash().getMd5Salt(), EnvironConstant.HOST_FILES_DIR_NAME);
+        return FileUtils.getInstance().createDirectory(hostDir);
     }
 
     @Override
@@ -170,6 +177,11 @@ public class EnvironServiceImpl implements EnvironService {
     @Override
     public String getPublicId(final RuntimeContext runtimeContext) {
         return runtimeContext.userContext().getEnviron().getProperties().getProperty(EnvironConstant.PUBLIC_ID);
+    }
+
+    @Override
+    public String getHostFilesDirectory(final RuntimeContext runtimeContext) {
+        return runtimeContext.userContext().getEnviron().getProperties().getProperty(EnvironConstant.HOST_FILES_DIR);
     }
 
     @Override

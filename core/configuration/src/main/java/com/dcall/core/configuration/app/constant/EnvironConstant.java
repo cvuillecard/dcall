@@ -25,4 +25,8 @@ public final class EnvironConstant {
 
     // allow properties
     public static String ALLOW_HOST_FILES = "allow_host_files";
+
+    // paths
+    public static String HOST_FILES_DIR = "host_files_dir";
+    public static String HOST_FILES_DIR_NAME = "host";
 }
