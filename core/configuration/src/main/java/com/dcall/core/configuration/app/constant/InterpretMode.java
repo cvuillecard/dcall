@@ -6,4 +6,6 @@ public enum InterpretMode { LOCAL(true), REMOTE(false);
     InterpretMode(final boolean mode) { this.mode = mode; }
 
     public boolean mode() { return mode; }
+
+    @Override public String toString() { return String.valueOf(mode); }
 }

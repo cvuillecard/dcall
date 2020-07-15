@@ -48,7 +48,7 @@ public final class IOHandler {
         if (!lastInput.isEmpty() && !close(exit)) {
             lockDisplay();
             byte[] builtInResult = null;
-            final boolean isLocalMode = Boolean.valueOf(runtimeContext.userContext().getEnviron().getProperties().getProperty(EnvironConstant.INTERPRET_MODE));
+            final boolean isLocalMode = runtimeContext.serviceContext().serviceProvider().environService().getInterpretMode(runtimeContext);
 
             if (isLocalMode && !exit)
                 builtInResult = builtInService.run(new String[] { lastInput.trim().toLowerCase() });
@@ -115,7 +115,7 @@ public final class IOHandler {
 
     private boolean close(final boolean isExit) {
         if (isExit) {
-            final boolean isLocalMode = Boolean.valueOf(runtimeContext.userContext().getEnviron().getProperties().getProperty(EnvironConstant.INTERPRET_MODE));
+            final boolean isLocalMode = runtimeContext.serviceContext().serviceProvider().environService().getInterpretMode(runtimeContext);
 
             if (isLocalMode)
                 ScreenController.stop();

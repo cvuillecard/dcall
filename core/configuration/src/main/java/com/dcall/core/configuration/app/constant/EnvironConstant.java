@@ -22,4 +22,7 @@ public final class EnvironConstant {
 
     public static String SYSTEM_MAIL_DOMAIN = "dcall.system.user";
     public static String SYSTEM_LOGIN = "system";
+
+    // allow properties
+    public static String ALLOW_HOST_FILES = "allow_host_files";
 }

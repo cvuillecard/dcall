@@ -1,9 +1,9 @@
 package com.dcall.core.configuration.app.constant;
 
-public enum GitCommitMode { AUTO(true), MANUAL(false);
+public enum AllowHostFilesMode { ON(true), OFF(false);
     private final boolean mode;
 
-    GitCommitMode(final boolean mode) { this.mode = mode; }
+    AllowHostFilesMode(final boolean mode) { this.mode = mode; }
 
     public boolean mode() { return mode; }
 

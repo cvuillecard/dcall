@@ -103,9 +103,11 @@ public class EnvironServiceImpl implements EnvironService {
                 environ.getProperties().setProperty(EnvironConstant.USER_CONF, userPwd);
                 environ.getProperties().setProperty(EnvironConstant.USER_IDENTITY_PROP, ((AbstractCipherResource) identity).getPath());
                 environ.getProperties().setProperty(EnvironConstant.USER_CERT, ((AbstractCipherResource) certificate).getPath());
-                environ.getProperties().setProperty(EnvironConstant.COMMIT_MODE, String.valueOf(GitCommitMode.MANUAL.mode()));
-                environ.getProperties().setProperty(EnvironConstant.INTERPRET_MODE, String.valueOf(InterpretMode.LOCAL.mode()));
+                environ.getProperties().setProperty(EnvironConstant.COMMIT_MODE, GitCommitMode.MANUAL.toString());
+                environ.getProperties().setProperty(EnvironConstant.INTERPRET_MODE, InterpretMode.LOCAL.toString());
                 environ.getProperties().setProperty(EnvironConstant.PUBLIC_ID, createPublicId(useContext));
+                environ.getProperties().setProperty(EnvironConstant.ALLOW_HOST_FILES, AllowHostFilesMode.ON.toString());
+
 
                 environ.getProperties().store(fileWriter, useContext.getUser().getEmail() + " - env properties");
                 fileWriter.close();
@@ -154,22 +156,44 @@ public class EnvironServiceImpl implements EnvironService {
         return null;
     }
 
+    private UserHash<String> initHash(final UserContext context) {
+        return context.setUserHash(hashServiceProvider.hashService().createUserHash(context.getUser(), getConfigDirectory(), SaltDef.SALT_USER)).getUserHash();
+    }
+
+    // getter
     @Override
     public String getConfigDirName() { return ResourceUtils.localProperties().getProperty(EnvironConstant.RUNTIME_CONF_NAME); }
 
     @Override
     public String getConfigDirectory() { return ResourceUtils.localProperties().getProperty(EnvironConstant.RUNTIME_CONF_PATH); }
 
-    private UserHash<String> initHash(final UserContext context) {
-        return context.setUserHash(hashServiceProvider.hashService().createUserHash(context.getUser(), getConfigDirectory(), SaltDef.SALT_USER)).getUserHash();
+    @Override
+    public String getPublicId(final RuntimeContext runtimeContext) {
+        return runtimeContext.userContext().getEnviron().getProperties().getProperty(EnvironConstant.PUBLIC_ID);
     }
 
-    @Override public HashServiceProvider getHashServiceProvider() { return hashServiceProvider; }
+    @Override
+    public boolean getInterpretMode(final RuntimeContext runtimeContext) {
+        return Boolean.valueOf(runtimeContext.userContext().getEnviron().getProperties().getProperty(EnvironConstant.INTERPRET_MODE));
+    }
+
+    @Override
+    public boolean getAutoCommitMode(final RuntimeContext runtimeContext) {
+        return Boolean.valueOf(runtimeContext.userContext().getEnviron().getProperties().getProperty(EnvironConstant.COMMIT_MODE));
+    }
+
+    @Override
+    public boolean getHostFilesMode(final RuntimeContext runtimeContext) {
+        return Boolean.valueOf(runtimeContext.userContext().getEnviron().getProperties().getProperty(EnvironConstant.ALLOW_HOST_FILES));
+    }
 
     @Override public String getEnvProperty(final Environ environ, final String key) {
         return (key != null && !key.isEmpty() && environ.getProperties().get(key) != null) ? environ.getProperties().get(key).toString() : null;
     }
 
+    @Override public HashServiceProvider getHashServiceProvider() { return hashServiceProvider; }
+
+    // setter
     @Override
     public Environ setEnvProperty(final Environ environ, final String key, final String value) {
         environ.getProperties().put(key, value);
