@@ -7,10 +7,13 @@ import com.dcall.core.configuration.app.service.filetransfer.FileTransferService
 import com.dcall.core.configuration.app.service.fingerprint.FingerPrintService;
 import com.dcall.core.configuration.generic.service.command.AbstractCommand;
 import com.dcall.core.configuration.utils.ResourceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
 public final class BuiltInPublishServiceImpl extends AbstractCommand implements BuiltInPublishService {
+    final static Logger LOG = LoggerFactory.getLogger(BuiltInPublishServiceImpl.class);
 
     @Override
     public byte[] execute(final String... params) throws Exception {
@@ -23,7 +26,7 @@ public final class BuiltInPublishServiceImpl extends AbstractCommand implements 
     }
 
     @Override
-    public byte[] publish(final String... params) {
+    public byte[] publish(final String... params) throws Exception {
         final String cmd = params[0];
         final String[] args = params != null && params.length > 1 ? Arrays.copyOfRange(params, 1, params.length) : null;
 
@@ -33,6 +36,7 @@ public final class BuiltInPublishServiceImpl extends AbstractCommand implements 
         }
         return null;
     }
+
 
     private byte[]  publishWorkspace() {
         final StringBuilder sb = new StringBuilder();
@@ -49,7 +53,7 @@ public final class BuiltInPublishServiceImpl extends AbstractCommand implements 
         return sb.toString().getBytes();
     }
 
-    private byte[]  publishCertificate() {
+    private byte[]  publishCertificate() throws Exception {
         final StringBuilder sb = new StringBuilder();
 
         final FingerPrintService fingerPrintService = getContext().serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();

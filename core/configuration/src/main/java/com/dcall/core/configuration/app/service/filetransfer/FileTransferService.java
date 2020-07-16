@@ -12,8 +12,8 @@ import java.util.List;
 
 public interface FileTransferService {
     void publishWorkspace(final RuntimeContext runtimeContext) throws Exception;
-    void sendFileRecursively(final RuntimeContext runtimeContext, final FileTransfer<String> fileTransfer, final String parentPath, final String fileName, final FingerPrint<String> fingerPrint) throws Exception;
-    ExceptionHolder sendFileTransfer(final RuntimeContext runtimeContext, final FileTransfer<String> fileTransfer, final FingerPrint<String> fingerPrint) throws Exception;
-    void completeFileTransfer(final RuntimeContext runtimeContext, final FingerPrint<String> fingerPrint) throws Exception;
+    void sendFileRecursively(final RuntimeContext runtimeContext, final String uri, final FileTransfer<String> fileTransfer, final String parentPath, final String fileName, final FingerPrint<String> fingerPrint) throws Exception;
+    void sendFileTransfer(final RuntimeContext runtimeContext, final String uri, final FileTransfer<String> fileTransfer, final FingerPrint<String> fingerPrint) throws Exception;
+    void completeFileTransfer(final RuntimeContext runtimeContext, final String uri, final FingerPrint<String> fingerPrint, final String publicId) throws Exception;
     void storeWorkspaceTransferContext(final RuntimeContext runtimeContext, final FileTransferContext fileTransferContext) throws Exception;
 }

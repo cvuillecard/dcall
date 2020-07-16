@@ -107,7 +107,7 @@ public class GitServiceImpl implements GitService {
     @Override
     public RevCommit commitRepository(final RuntimeContext context, final GitRepository repo, final String commitMsg, final String... filesToAdd) {
         if (filesToAdd.length > 0) {
-            Arrays.stream(filesToAdd).forEach(f -> addFilePath(repo.getGit(), f));
+            Arrays.stream(filesToAdd).forEach(f -> addFilePath(repo.getGit(), getRelativePath(repo, f)));
             return commit(repo.getGit(), commitMsg);
         }
         return null;
@@ -364,6 +364,15 @@ public class GitServiceImpl implements GitService {
     @Override
     public String getSystemRepository() {
         return ResourceUtils.localProperties().getProperty(GitConstant.SYS_GIT_REPOSITORY);
+    }
+
+    @Override
+    public String getRelativePath(final GitRepository repo, final String path) {
+        final String repoPath = repo.getPath().replace(GitConstant.GIT_FILENAME, "");
+        final int idx = path.indexOf(repoPath);
+        if (idx > -1)
+            return path.substring(repoPath.length(), path.length());
+        return path;
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.exception.ExceptionHolder;
 import com.dcall.core.configuration.app.exception.TechnicalException;
+import com.dcall.core.configuration.generic.cluster.vertx.VertxCompletableFuture;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -21,8 +22,11 @@ public interface MessageService {
     byte[] encryptMessage(final RuntimeContext runtimeContext, final FingerPrint fingerPrint, final byte[] datas);
     byte[] encryptMessage(final RuntimeContext runtimeContext, final com.dcall.core.configuration.app.entity.message.Message sender, final byte[] datas);
     byte[] decryptMessage(final RuntimeContext runtimeContext, final com.dcall.core.configuration.app.entity.message.Message sender);
-    ExceptionHolder sendEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, com.dcall.core.configuration.app.entity.message.Message<String> sender, final byte[] bytes, final com.dcall.core.configuration.app.entity.message.Message<String> resp) throws Exception;
-    ExceptionHolder sendEncryptedChunk(final RuntimeContext runtimeContext, final String address, byte[] bytes, final FingerPrint<String> fingerPrint) throws Exception;
-
+    MessageService sendEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, com.dcall.core.configuration.app.entity.message.Message<String> sender, final byte[] bytes, final com.dcall.core.configuration.app.entity.message.Message<String> resp) throws Exception;
+    MessageService sendEncryptedChunk(final RuntimeContext runtimeContext, final String address, byte[] bytes, final FingerPrint<String> fingerPrint) throws Exception;
+    MessageService sendBlockingEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, final byte[] bytes, final int nbChunk, final int chunkIdx,
+                                              final FingerPrint<String> fingerPrint, final com.dcall.core.configuration.app.entity.message.Message<String> msgTransporter);
+    // utils
     MessageService setBufSize(final int size);
+    int getNbChunk(byte[] result);
 }

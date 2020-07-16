@@ -7,6 +7,7 @@ import com.dcall.core.configuration.app.context.filetransfer.FileTransferContext
 import com.dcall.core.configuration.app.entity.filetransfer.FileTransfer;
 import com.dcall.core.configuration.app.entity.filetransfer.FileTransferBean;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
+import com.dcall.core.configuration.app.entity.message.MessageBean;
 import com.dcall.core.configuration.app.exception.ExceptionHolder;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.service.environ.EnvironService;
@@ -14,12 +15,14 @@ import com.dcall.core.configuration.app.service.git.GitService;
 import com.dcall.core.configuration.app.service.hash.HashFileService;
 import com.dcall.core.configuration.app.service.message.MessageService;
 import com.dcall.core.configuration.app.verticle.filetransfer.FileTransferConsumerVerticle;
+import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
 import com.dcall.core.configuration.generic.cluster.vertx.uri.VertxURIConfig;
 import com.dcall.core.configuration.utils.FileUtils;
 import com.dcall.core.configuration.utils.PathUtils;
 import com.dcall.core.configuration.utils.SerializationUtils;
 import com.dcall.core.configuration.utils.URIUtils;
 import com.dcall.core.configuration.utils.constant.FileType;
+import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,14 +49,16 @@ public class FileTransferServiceImpl implements FileTransferService {
             final String publicId = environService.getPublicId(runtimeContext);
             final FileTransfer<String> fileTransfer = new FileTransferBean().setId(publicId);
             final GitService gitService = runtimeContext.serviceContext().serviceProvider().versionServiceProvider().gitService();
+            final String uriSend = URIUtils.getUri(FileTransferConsumerVerticle.class.getName(), nextFingerPrint.getId());
+            final String uriComplete = URIUtils.getUri(URIUtils.getUri(FileTransferConsumerVerticle.class.getName(), nextFingerPrint.getId()), URIUtils.getUri(VertxURIConfig.COMPLETE_DOMAIN, UserConstant.WORKSPACE));
 
-            sendFileRecursively(runtimeContext, fileTransfer, gitService.getSystemRepository(), GitConstant.GIT_FILENAME, nextFingerPrint);
-            completeFileTransfer(runtimeContext, nextFingerPrint);
+            sendFileRecursively(runtimeContext, uriSend, fileTransfer, gitService.getSystemRepository(), GitConstant.GIT_FILENAME, nextFingerPrint);
+            completeFileTransfer(runtimeContext, uriComplete, nextFingerPrint, publicId);
         }
     }
 
     @Override
-    public void sendFileRecursively(final RuntimeContext runtimeContext, final FileTransfer<String> fileTransfer, final String parentPath, final String fileName, final FingerPrint<String> fingerPrint) throws Exception {
+    public void sendFileRecursively(final RuntimeContext runtimeContext, final String uri, final FileTransfer<String> fileTransfer, final String parentPath, final String fileName, final FingerPrint<String> fingerPrint) throws Exception {
         final FileUtils fileUtils = FileUtils.getInstance();
         final String filePath = fileUtils.getFilePath(parentPath, fileName);
         final File file = new File(filePath);
@@ -62,33 +67,28 @@ public class FileTransferServiceImpl implements FileTransferService {
 
         if (file.isDirectory())
             for (final File f : file.listFiles())
-                sendFileRecursively(runtimeContext, fileTransfer, filePath, f.getName(), fingerPrint);
+                sendFileRecursively(runtimeContext, uri, fileTransfer, filePath, f.getName(), fingerPrint);
         else {
             final FileInputStream is = new FileInputStream(file);
             fileTransfer.setBytes(fileUtils.readAllBytes(is)).setFileType(FileType.FILE);
             is.close();
-            final ExceptionHolder exceptionHolder = sendFileTransfer(runtimeContext, fileTransfer, fingerPrint);
-            if (exceptionHolder.hasException())
-                exceptionHolder.throwException();
+            LOG.info(" > send File : " + file.getAbsolutePath());
+            sendFileTransfer(runtimeContext, uri, fileTransfer, fingerPrint);
         }
     }
 
     @Override
-    public ExceptionHolder sendFileTransfer(final RuntimeContext runtimeContext, final FileTransfer<String> fileTransfer, final FingerPrint<String> fingerPrint) throws Exception {
-        final String uri = URIUtils.getUri(FileTransferConsumerVerticle.class.getName(), fingerPrint.getId());
+    public void sendFileTransfer(final RuntimeContext runtimeContext, final String uri, final FileTransfer<String> fileTransfer, final FingerPrint<String> fingerPrint) throws Exception {
+        final byte[] bytes = SerializationUtils.serialize(fileTransfer);
+        final int nbChunk = messageService.getNbChunk(bytes);
+        final com.dcall.core.configuration.app.entity.message.Message<String> msgTransporter = new MessageBean().setId(HazelcastCluster.getLocalUuid());
 
-        return messageService.sendEncryptedChunk(runtimeContext, uri, SerializationUtils.serialize(fileTransfer), fingerPrint);
+        messageService.sendBlockingEncryptedChunk(runtimeContext, Vertx.currentContext().owner(), uri, bytes, nbChunk, 0, fingerPrint, msgTransporter);
     }
 
     @Override
-    public void completeFileTransfer(final RuntimeContext runtimeContext, final FingerPrint<String> fingerPrint) throws Exception {
-        final String publicId = runtimeContext.serviceContext().serviceProvider().environService().getPublicId(runtimeContext);
-        final FileTransfer<String> fileTransfer = new FileTransferBean().setId(publicId);
-        final String uri = URIUtils.getUri(URIUtils.getUri(FileTransferConsumerVerticle.class.getName(), fingerPrint.getId()), URIUtils.getUri(VertxURIConfig.COMPLETE_DOMAIN, UserConstant.WORKSPACE));
-
-        final ExceptionHolder exceptionHolder = messageService.sendEncryptedChunk(runtimeContext, uri, SerializationUtils.serialize(fileTransfer), fingerPrint);
-        if (exceptionHolder.hasException())
-            exceptionHolder.throwException();
+    public void completeFileTransfer(final RuntimeContext runtimeContext, final String uri, final FingerPrint<String> fingerPrint, final String publicId) throws Exception {
+        sendFileTransfer(runtimeContext, uri, new FileTransferBean().setId(publicId), fingerPrint);
     }
 
     @Override

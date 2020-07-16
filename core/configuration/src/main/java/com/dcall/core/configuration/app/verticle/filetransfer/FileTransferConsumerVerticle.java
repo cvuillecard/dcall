@@ -81,19 +81,19 @@ public final class  FileTransferConsumerVerticle extends AbstractVerticle {
                     if (transferContext.getFileTransfersContext().get(fileTransfer.getId()) != null) {
                         fileTransferService.storeWorkspaceTransferContext(runtimeContext, transferContext.getFileTransfersContext().get(fileTransfer.getId()));
                         transferContext.getFileTransfersContext().remove(fileTransfer.getId());
-//                        final String hostedRepo = serviceProvider.environService().getHostedFilePath(runtimeContext, fileTransfer.getId(), GitConstant.GIT_FILENAME);
+                        final String hostedRepo = serviceProvider.environService().getHostedFilePath(runtimeContext, fileTransfer.getId(), GitConstant.GIT_FILENAME);
 
                         if (serviceProvider.versionServiceProvider().gitService().isAutoCommit(runtimeContext))
                             serviceProvider.versionServiceProvider().gitService().commit(
                                     runtimeContext,
-                                    GitMessage.getFormatedMessage(runtimeContext.userContext().getUser(), "HOST", "host remote workspace repository"),
-                                    serviceProvider.environService().getHostedUserPath(runtimeContext, fileTransfer.getId()));
+                                    GitMessage.getFormatedMessage(runtimeContext.userContext().getUser(), "HOST", "store remote workspace repository"),
+                                    hostedRepo);
                     }
                 }
                 future.complete();
             }
             catch (Exception e) {
-                future.fail(e.getMessage());
+                future.fail(e.getCause());
                 LOG.error(e.getMessage());
             }
         }, res -> {
@@ -140,7 +140,7 @@ public final class  FileTransferConsumerVerticle extends AbstractVerticle {
                 future.complete();
             }
             catch (Exception e) {
-                future.fail(e.getMessage());
+                future.fail(e.getCause());
                 LOG.error(e.getMessage());
             }
         }, res -> {

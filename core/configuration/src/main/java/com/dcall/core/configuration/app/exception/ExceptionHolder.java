@@ -11,7 +11,8 @@ public final class ExceptionHolder {
     }
 
     public Exception getException() { return exception; }
-    public ExceptionHolder setException(Exception exception) { this.exception = exception; return this; }
+    public ExceptionHolder setException(final Exception exception) { this.exception = exception; return this; }
+    public ExceptionHolder setException(final Throwable throwable) { this.exception = new Exception(throwable); return this; }
 
     public boolean hasException() { return exception != null; }
 }

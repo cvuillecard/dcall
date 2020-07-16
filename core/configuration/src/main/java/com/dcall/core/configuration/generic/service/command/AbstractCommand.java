@@ -1,7 +1,5 @@
 package com.dcall.core.configuration.generic.service.command;
 
-import com.dcall.core.configuration.app.constant.EnvironConstant;
-import com.dcall.core.configuration.app.constant.GitCommitMode;
 import com.dcall.core.configuration.app.constant.GitMessage;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.exception.FunctionalException;

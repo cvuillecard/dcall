@@ -19,9 +19,7 @@ import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class MessageServiceImpl implements MessageService {
@@ -121,7 +119,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public ExceptionHolder sendEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, final com.dcall.core.configuration.app.entity.message.Message<String> sender, final byte[] bytes, final com.dcall.core.configuration.app.entity.message.Message<String> resp) throws Exception {
+    public MessageService sendEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, final com.dcall.core.configuration.app.entity.message.Message<String> sender, final byte[] bytes, final com.dcall.core.configuration.app.entity.message.Message<String> resp) throws Exception {
         final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
         final int nbChunk = getNbChunk(bytes);
         final ExceptionHolder exceptionHolder = new ExceptionHolder();
@@ -141,13 +139,16 @@ public class MessageServiceImpl implements MessageService {
                 else
                     exceptionHolder.setException(new TechnicalException(r.cause()));
             });
+
+            if (exceptionHolder.hasException())
+                exceptionHolder.throwException();
         }
 
-        return exceptionHolder;
+        return this;
     }
 
     @Override
-    public ExceptionHolder sendEncryptedChunk(final RuntimeContext runtimeContext, final String address, final byte[] bytes, final FingerPrint<String> fingerPrint) throws Exception {
+    public MessageService sendEncryptedChunk(final RuntimeContext runtimeContext, final String address, final byte[] bytes, final FingerPrint<String> fingerPrint) throws Exception {
         final Vertx vertx = Vertx.currentContext().owner();
         final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
         final com.dcall.core.configuration.app.entity.message.Message<String> msg = new MessageBean().setId(HazelcastCluster.getLocalUuid());
@@ -163,20 +164,57 @@ public class MessageServiceImpl implements MessageService {
             msg.setMessage(datas).setLength(datas.length);
 
             vertx.eventBus().send(address, Json.encodeToBuffer(msg), r -> {
-                if (r.succeeded())
+                if (r.succeeded()) {
                     LOG.info(r.result().body().toString());
-                else
+                }
+                else {
                     exceptionHolder.setException(new TechnicalException(r.cause()));
+                    LOG.error(r.cause().getMessage());
+                }
             });
+            if (exceptionHolder.hasException())
+                exceptionHolder.throwException();
         }
 
-        return exceptionHolder;
+        return this;
     }
 
     @Override
+    public MessageService sendBlockingEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, final byte[] bytes, final int nbChunk, final int chunkIdx,
+                                                     final FingerPrint<String> fingerPrint, final com.dcall.core.configuration.app.entity.message.Message<String> msgTransporter) {
+        if (chunkIdx < nbChunk) {
+            final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
+            final int startIdx = chunkIdx * BUF_SIZE;
+            final int nextIdx = startIdx + BUF_SIZE;
+            final int endIdx = (nextIdx > bytes.length) ? bytes.length : nextIdx;
+            final byte[] datas = messageService.encryptMessage(runtimeContext, fingerPrint, Arrays.copyOfRange(bytes, startIdx, endIdx));
+
+            msgTransporter.setMessage(datas).setLength(datas.length);
+
+            vertx.eventBus().send(address, Json.encodeToBuffer(msgTransporter), r -> {
+                try {
+                    if (r.succeeded()) {
+                        sendBlockingEncryptedChunk(runtimeContext, vertx, address, bytes, nbChunk, chunkIdx + 1, fingerPrint, msgTransporter);
+                    } else {
+                        LOG.error(r.cause().getMessage());
+                    }
+                }
+                catch (Exception e) {
+                    LOG.error(e.getMessage());
+                }
+            });
+        }
+        else {
+            LOG.info(" Complete > sendBlockingEncryptedChunk [ chunkIdx:" + chunkIdx + ", nbChunk:" + nbChunk);
+        }
+
+        return this;
+    }
+
+    // utils
+    @Override
     public MessageService setBufSize(final int size) { this.BUF_SIZE = size; return this; }
 
-    private int getNbChunk(final byte[] result) {
-        return (result.length / BUF_SIZE) + ((result.length % BUF_SIZE) > 0 ? 1 : 0);
-    }
+    @Override
+    public int getNbChunk(final byte[] result) { return (result.length / BUF_SIZE) + ((result.length % BUF_SIZE) > 0 ? 1 : 0); }
 }

@@ -60,7 +60,8 @@ public final class IOHandler {
             else
                 output().addToEntry(new String(builtInResult));
 
-            unlockDisplay();
+            if (exit || builtInResult != null)
+                unlockDisplay();
 
             return true;
         }
@@ -95,7 +96,7 @@ public final class IOHandler {
                     failed -> {
                         if (!failed.cause().getMessage().isEmpty())
                             output().addToEntry(failed.cause().getMessage());
-                    }, null);
+                    }, () -> unlockDisplay());
         }
         catch (Exception e) {
             LOG.debug(e.getMessage());

@@ -9,7 +9,7 @@
 
     <logger name="com.dcall.core.app.terminal" level="TRACE"/>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
 

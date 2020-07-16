@@ -55,9 +55,7 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
                 final com.dcall.core.configuration.app.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
                 final byte[] result = builtInService.setContext(runtimeContext).run(new String(messageService.decryptMessage(runtimeContext, sender)));
 
-                final ExceptionHolder exceptionHolder = messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, result, resp);
-                if (exceptionHolder.hasException())
-                    exceptionHolder.throwException();
+                messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, result, resp);
             }
             catch (Exception e) {
                 handleError(handler, e.getMessage(), sender);
@@ -89,11 +87,9 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
 
             LOG.error(msgError);
 
-            handler.fail(-1, "");
+            handler.fail(-1, msgError);
 
-            final ExceptionHolder exceptionHolder = messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, bytes, resp);
-            if (exceptionHolder.hasException())
-                exceptionHolder.throwException();
+            messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, bytes, resp);
         }
         catch (Exception e) {
             handler.fail(-1, e.getMessage());

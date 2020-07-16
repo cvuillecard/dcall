@@ -55,8 +55,7 @@ public interface GitService {
     boolean isGitRepository(final String dirPath);
     String branchRefName(final String branch);
     String getRefHash(final GitRepository repo, final String name);
-
     String getSystemRepository();
-
-    boolean isAutoCommit(RuntimeContext runtimeContext);
+    String getRelativePath(final GitRepository repo, final String path);
+    boolean isAutoCommit(final RuntimeContext runtimeContext);
 }
