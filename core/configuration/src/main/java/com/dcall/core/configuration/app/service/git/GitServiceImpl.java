@@ -105,6 +105,20 @@ public class GitServiceImpl implements GitService {
     }
 
     @Override
+    public RevCommit commitRepository(final RuntimeContext context, final GitRepository repo, final String commitMsg, final String... filesToAdd) {
+        if (filesToAdd.length > 0) {
+            Arrays.stream(filesToAdd).forEach(f -> addFilePath(repo.getGit(), f));
+            return commit(repo.getGit(), commitMsg);
+        }
+        return null;
+    }
+
+    @Override
+    public RevCommit commit(final RuntimeContext context, final String commitMsg, final String... filesToAdd) {
+        return commitRepository(context, context.systemContext().versionContext().getRepository(), commitMsg, filesToAdd);
+    }
+
+    @Override
     public GitRepository createUserRepository(final User user) {
         final File workspace = new File(user.getWorkspace());
 
@@ -350,5 +364,10 @@ public class GitServiceImpl implements GitService {
     @Override
     public String getSystemRepository() {
         return ResourceUtils.localProperties().getProperty(GitConstant.SYS_GIT_REPOSITORY);
+    }
+
+    @Override
+    public boolean isAutoCommit(final RuntimeContext runtimeContext) {
+        return runtimeContext.serviceContext().serviceProvider().environService().getAutoCommitMode(runtimeContext);
     }
 }

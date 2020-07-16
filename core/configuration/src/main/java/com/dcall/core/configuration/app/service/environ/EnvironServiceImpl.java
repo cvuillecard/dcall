@@ -205,6 +205,16 @@ public class EnvironServiceImpl implements EnvironService {
 
     @Override public HashServiceProvider getHashServiceProvider() { return hashServiceProvider; }
 
+    @Override
+    public String getHostedUserPath(final RuntimeContext runtimeContext, final String publicId) {
+        return hashServiceProvider.hashFileService().getHashPath(getHostFilesDirectory(runtimeContext), runtimeContext.userContext().getUserHash().getMd5Salt(), publicId);
+    }
+
+    @Override
+    public String getHostedFilePath(final RuntimeContext runtimeContext, final String publicId, final String fileName) {
+        return hashServiceProvider.hashFileService().getHashPath(getHostedUserPath(runtimeContext, publicId), runtimeContext.userContext().getUserHash().getMd5Salt(), fileName);
+    }
+
     // setter
     @Override
     public Environ setEnvProperty(final Environ environ, final String key, final String value) {

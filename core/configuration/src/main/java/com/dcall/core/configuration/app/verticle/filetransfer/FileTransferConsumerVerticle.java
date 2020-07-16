@@ -1,5 +1,7 @@
 package com.dcall.core.configuration.app.verticle.filetransfer;
 
+import com.dcall.core.configuration.app.constant.GitConstant;
+import com.dcall.core.configuration.app.constant.GitMessage;
 import com.dcall.core.configuration.app.constant.UserConstant;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.filetransfer.FileTransferContext;
@@ -9,12 +11,15 @@ import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import com.dcall.core.configuration.app.entity.filetransfer.FileTransfer;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
+import com.dcall.core.configuration.app.provider.ServiceProvider;
 import com.dcall.core.configuration.app.service.filetransfer.FileTransferService;
+import com.dcall.core.configuration.app.service.hash.HashFileService;
 import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
 import com.dcall.core.configuration.generic.cluster.vertx.uri.VertxURIConfig;
 import com.dcall.core.configuration.utils.FileUtils;
 import com.dcall.core.configuration.utils.SerializationUtils;
 import com.dcall.core.configuration.utils.URIUtils;
+import com.dcall.core.configuration.utils.VertxUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
@@ -62,26 +67,40 @@ public final class  FileTransferConsumerVerticle extends AbstractVerticle {
 
     private void handleCompleteMessage(final FingerPrintContext fingerPrintContext, final Message<Object> handler) {
         vertx.executeBlocking(future -> {
-            final com.dcall.core.configuration.app.entity.message.Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
-            final FingerPrint<String> fromFingerPrint = fingerPrintContext.getFingerprints().get(msg.getId());
+            try {
+                final com.dcall.core.configuration.app.entity.message.Message<String> msg = Json.decodeValue((Buffer) handler.body(), MessageBean.class);
+                final FingerPrint<String> fromFingerPrint = fingerPrintContext.getFingerprints().get(msg.getId());
 
-            if (!msg.getId().equals(HazelcastCluster.getLocalUuid()) && fromFingerPrint != null) {
-                final TransferContext transferContext = runtimeContext.dataContext().transferContext();
-                final FileTransferService fileTransferService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fileTransferService();
-                final byte[] bytes = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService().decryptMessage(runtimeContext, msg);
-                final FileTransfer<String> fileTransfer = SerializationUtils.deserialize(bytes);
+                if (!msg.getId().equals(HazelcastCluster.getLocalUuid()) && fromFingerPrint != null) {
+                    final ServiceProvider serviceProvider = runtimeContext.serviceContext().serviceProvider();
+                    final TransferContext transferContext = runtimeContext.dataContext().transferContext();
+                    final FileTransferService fileTransferService = serviceProvider.messageServiceProvider().fileTransferService();
+                    final byte[] bytes = serviceProvider.messageServiceProvider().messageService().decryptMessage(runtimeContext, msg);
+                    final FileTransfer<String> fileTransfer = SerializationUtils.deserialize(bytes);
 
-                if (transferContext.getFileTransfersContext().get(fileTransfer.getId()) != null) {
-                    fileTransferService.storeWorkspaceTransferContext(runtimeContext, transferContext.getFileTransfersContext().get(fileTransfer.getId()));
-                    transferContext.getFileTransfersContext().remove(fileTransfer.getId());
+                    if (transferContext.getFileTransfersContext().get(fileTransfer.getId()) != null) {
+                        fileTransferService.storeWorkspaceTransferContext(runtimeContext, transferContext.getFileTransfersContext().get(fileTransfer.getId()));
+                        transferContext.getFileTransfersContext().remove(fileTransfer.getId());
+//                        final String hostedRepo = serviceProvider.environService().getHostedFilePath(runtimeContext, fileTransfer.getId(), GitConstant.GIT_FILENAME);
+
+                        if (serviceProvider.versionServiceProvider().gitService().isAutoCommit(runtimeContext))
+                            serviceProvider.versionServiceProvider().gitService().commit(
+                                    runtimeContext,
+                                    GitMessage.getFormatedMessage(runtimeContext.userContext().getUser(), "HOST", "host remote workspace repository"),
+                                    serviceProvider.environService().getHostedUserPath(runtimeContext, fileTransfer.getId()));
+                    }
                 }
+                future.complete();
             }
-            future.complete();
+            catch (Exception e) {
+                future.fail(e.getMessage());
+                LOG.error(e.getMessage());
+            }
         }, res -> {
             if (res.succeeded())
                 handler.reply("> SUCCESS");
             else
-                handler.reply(res.cause());
+                handler.reply(VertxUtils.replyException(res.cause(), res.cause().getMessage()));
         });
     }
 
@@ -121,13 +140,14 @@ public final class  FileTransferConsumerVerticle extends AbstractVerticle {
                 future.complete();
             }
             catch (Exception e) {
+                future.fail(e.getMessage());
                 LOG.error(e.getMessage());
             }
         }, res -> {
             if (res.succeeded())
                 handler.reply("> SUCCESS");
             else
-                handler.reply(res.cause());
+                handler.reply(VertxUtils.replyException(res.cause(), res.cause().getMessage()));
         });
     }
 

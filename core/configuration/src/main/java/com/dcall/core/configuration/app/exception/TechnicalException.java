@@ -3,7 +3,7 @@ package com.dcall.core.configuration.app.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TechnicalException extends Exception {
+public final class TechnicalException extends Exception {
     private static final Logger LOG = LoggerFactory.getLogger(TechnicalException.class);
 
     public TechnicalException() { super(); }

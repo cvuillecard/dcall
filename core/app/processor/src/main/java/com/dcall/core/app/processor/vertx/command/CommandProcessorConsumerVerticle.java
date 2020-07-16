@@ -3,6 +3,7 @@ package com.dcall.core.app.processor.vertx.command;
 import com.dcall.core.configuration.app.constant.EnvironConstant;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
+import com.dcall.core.configuration.app.exception.ExceptionHolder;
 import com.dcall.core.configuration.app.service.builtin.BuiltInService;
 import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
@@ -54,7 +55,9 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
                 final com.dcall.core.configuration.app.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
                 final byte[] result = builtInService.setContext(runtimeContext).run(new String(messageService.decryptMessage(runtimeContext, sender)));
 
-                messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, result, resp);
+                final ExceptionHolder exceptionHolder = messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, result, resp);
+                if (exceptionHolder.hasException())
+                    exceptionHolder.throwException();
             }
             catch (Exception e) {
                 handleError(handler, e.getMessage(), sender);
@@ -88,7 +91,9 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
 
             handler.fail(-1, "");
 
-            messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, bytes, resp);
+            final ExceptionHolder exceptionHolder = messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, bytes, resp);
+            if (exceptionHolder.hasException())
+                exceptionHolder.throwException();
         }
         catch (Exception e) {
             handler.fail(-1, e.getMessage());

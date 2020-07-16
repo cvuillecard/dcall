@@ -63,6 +63,7 @@ public final class FingerPrintConsumerVerticle extends AbstractVerticle {
                     final byte[] bytes = RSAProvider.decrypt(msg.getMessage(), runtimeContext.userContext().getCertificate().getKeyPair().getPrivate());
                     fingerPrint.setId(new String(bytes));
                 }
+                future.complete();
             }
             catch (Exception e) {
                 future.fail(e.getMessage());

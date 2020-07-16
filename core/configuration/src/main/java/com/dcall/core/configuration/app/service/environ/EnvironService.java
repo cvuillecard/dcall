@@ -26,6 +26,8 @@ public interface EnvironService {
     boolean getHostFilesMode(RuntimeContext runtimeContext);
     String getEnvProperty(final Environ environ, final String key);
     HashServiceProvider getHashServiceProvider();
+    String getHostedUserPath(final RuntimeContext runtimeContext, final String publicId);
+    String getHostedFilePath(final RuntimeContext runtimeContext, final String publicId, final String fileName);
 
     // setter
     Environ setEnvProperty(final Environ environ, final String key, final String value);

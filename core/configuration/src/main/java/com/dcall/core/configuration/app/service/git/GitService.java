@@ -22,7 +22,9 @@ public interface GitService {
     GitRepository createRepository(final String path);
     GitRepository getRepository(final File fileRepo);
     GitRepository createSystemRepository(final RuntimeContext context);
-    RevCommit commitSystemRepository(RuntimeContext context, GitRepository repo, String commitMsg);
+    RevCommit commitSystemRepository(final RuntimeContext context, final GitRepository repo, final String commitMsg);
+    RevCommit commitRepository(final RuntimeContext context, final GitRepository repo, final String commitMsg, final String... filesToAdd);
+    RevCommit commit(final RuntimeContext context, final String commitMsg, final String... filesToAdd);
 
     GitRepository createUserRepository(final User user);
     Git clone(final String src, final String dest);
@@ -41,7 +43,7 @@ public interface GitService {
 
     void addFilePath(final Git git, final String path);
     RevCommit commit(final Git git, final String msg);
-    PullResult pull(Git git);
+    PullResult pull(final Git git);
 
     Status status(final Git sysGit);
     Ref reset(final Git git, final ResetCommand.ResetType resetType, final String ref);
@@ -55,4 +57,6 @@ public interface GitService {
     String getRefHash(final GitRepository repo, final String name);
 
     String getSystemRepository();
+
+    boolean isAutoCommit(RuntimeContext runtimeContext);
 }

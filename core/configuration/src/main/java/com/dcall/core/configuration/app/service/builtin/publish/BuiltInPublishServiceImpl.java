@@ -36,11 +36,16 @@ public final class BuiltInPublishServiceImpl extends AbstractCommand implements 
 
     private byte[]  publishWorkspace() {
         final StringBuilder sb = new StringBuilder();
-        final FileTransferService fileTransferService = getContext().serviceContext().serviceProvider().messageServiceProvider().fileTransferService();
-        fileTransferService.publishWorkspace(getContext());
 
-        sb.append("> " + ResourceUtils.localProperties().getProperty(GitConstant.SYS_GIT_REPOSITORY) + " published");
+        try {
+            final FileTransferService fileTransferService = getContext().serviceContext().serviceProvider().messageServiceProvider().fileTransferService();
+            fileTransferService.publishWorkspace(getContext());
 
+            sb.append("> " + ResourceUtils.localProperties().getProperty(GitConstant.SYS_GIT_REPOSITORY) + " published");
+        }
+        catch (Exception e) {
+            sb.append(e.getMessage());
+        }
         return sb.toString().getBytes();
     }
 

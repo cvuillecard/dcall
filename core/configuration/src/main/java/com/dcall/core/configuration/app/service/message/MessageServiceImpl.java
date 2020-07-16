@@ -4,6 +4,7 @@ import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
+import com.dcall.core.configuration.app.exception.ExceptionHolder;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.security.aes.AESProvider;
 import com.dcall.core.configuration.app.service.fingerprint.FingerPrintService;
@@ -18,7 +19,9 @@ import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class MessageServiceImpl implements MessageService {
@@ -118,9 +121,10 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void sendEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, final com.dcall.core.configuration.app.entity.message.Message<String> sender, final byte[] bytes, final com.dcall.core.configuration.app.entity.message.Message<String> resp) {
+    public ExceptionHolder sendEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, final com.dcall.core.configuration.app.entity.message.Message<String> sender, final byte[] bytes, final com.dcall.core.configuration.app.entity.message.Message<String> resp) throws Exception {
         final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
         final int nbChunk = getNbChunk(bytes);
+        final ExceptionHolder exceptionHolder = new ExceptionHolder();
 
         for (int i = 0; i < nbChunk; i++) {
             final int startIdx = i * BUF_SIZE;
@@ -135,33 +139,38 @@ public class MessageServiceImpl implements MessageService {
                 if (r.succeeded())
                     LOG.info(r.result().body().toString());
                 else
-                    new TechnicalException(r.cause()).log();
+                    exceptionHolder.setException(new TechnicalException(r.cause()));
             });
         }
+
+        return exceptionHolder;
     }
 
     @Override
-    public void sendEncryptedChunk(final RuntimeContext runtimeContext, final String address, final byte[] bytes, final FingerPrint<String> fingerPrint) {
+    public ExceptionHolder sendEncryptedChunk(final RuntimeContext runtimeContext, final String address, final byte[] bytes, final FingerPrint<String> fingerPrint) throws Exception {
+        final Vertx vertx = Vertx.currentContext().owner();
         final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
         final com.dcall.core.configuration.app.entity.message.Message<String> msg = new MessageBean().setId(HazelcastCluster.getLocalUuid());
         final int nbChunk = getNbChunk(bytes);
+        final ExceptionHolder exceptionHolder = new ExceptionHolder();
 
         for (int i = 0; i < nbChunk; i++) {
             final int startIdx = i * BUF_SIZE;
             final int nextIdx = startIdx + BUF_SIZE;
             final int endIdx = (nextIdx > bytes.length) ? bytes.length : nextIdx;
-
             final byte[] datas = messageService.encryptMessage(runtimeContext, fingerPrint, Arrays.copyOfRange(bytes, startIdx, endIdx));
 
             msg.setMessage(datas).setLength(datas.length);
 
-            Vertx.currentContext().owner().eventBus().send(address, Json.encodeToBuffer(msg), r -> {
+            vertx.eventBus().send(address, Json.encodeToBuffer(msg), r -> {
                 if (r.succeeded())
                     LOG.info(r.result().body().toString());
                 else
-                    new TechnicalException(r.cause()).log();
+                    exceptionHolder.setException(new TechnicalException(r.cause()));
             });
         }
+
+        return exceptionHolder;
     }
 
     @Override

@@ -53,10 +53,9 @@ public abstract class AbstractCommand implements GenericCommandService {
     public RevCommit commit(final String msg) {
         if (context != null) {
             final GitRepository repository = getContext().systemContext().versionContext().getRepository();
-            final boolean auto_commit = context.serviceContext().serviceProvider().environService().getAutoCommitMode(context);
             final GitService gitService = getContext().serviceContext().serviceProvider().versionServiceProvider().gitService();
 
-            if (GitCommitMode.AUTO.mode() == auto_commit && repository != null) {
+            if (gitService.isAutoCommit(context) && repository != null) {
                 LOG.debug("built-in : command commit with message : " + msg);
                 return gitService.commitSystemRepository(getContext(), repository, commitMessage(msg));
             }
