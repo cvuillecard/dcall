@@ -169,7 +169,7 @@ public class MessageServiceImpl implements MessageService {
                 }
                 else {
                     exceptionHolder.setException(new TechnicalException(r.cause()));
-                    LOG.error(r.cause().getMessage());
+                    LOG.error("sendEncryptedChunk error response : " + r.cause().getMessage());
                 }
             });
             if (exceptionHolder.hasException())
@@ -197,6 +197,7 @@ public class MessageServiceImpl implements MessageService {
                         sendBlockingEncryptedChunk(runtimeContext, vertx, address, bytes, nbChunk, chunkIdx + 1, fingerPrint, msgTransporter);
                     } else {
                         LOG.error(r.cause().getMessage());
+                        LOG.error("sendBlockingEncryptedChunk error response : " + r.cause().getMessage());
                     }
                 }
                 catch (Exception e) {

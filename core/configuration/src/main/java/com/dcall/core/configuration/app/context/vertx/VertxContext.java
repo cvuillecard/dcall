@@ -6,4 +6,6 @@ public final class VertxContext {
     private VertxURIContext vertxURIContext = new VertxURIContext();
 
     public VertxURIContext getVertxURIContext() { return vertxURIContext; }
+
+    public void setVertxURIContext(final VertxURIContext vertxURIContext) { this.vertxURIContext = vertxURIContext; }
 }
