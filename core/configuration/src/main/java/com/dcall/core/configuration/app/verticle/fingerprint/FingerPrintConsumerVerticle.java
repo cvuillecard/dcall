@@ -1,24 +1,21 @@
 package com.dcall.core.configuration.app.verticle.fingerprint;
 
-import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.fingerprint.FingerPrintContext;
-import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
 import com.dcall.core.configuration.app.security.rsa.RSAProvider;
 import com.dcall.core.configuration.app.service.fingerprint.FingerPrintService;
 import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
+import com.dcall.core.configuration.generic.cluster.vertx.AbstractContextVerticle;
 import com.dcall.core.configuration.generic.cluster.vertx.uri.VertxURIConfig;
 import com.dcall.core.configuration.utils.SerializationUtils;
 import com.dcall.core.configuration.utils.URIUtils;
-import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -26,31 +23,8 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 
 @Component
 @Scope(SCOPE_PROTOTYPE)
-public final class FingerPrintConsumerVerticle extends AbstractVerticle {
+public final class FingerPrintConsumerVerticle extends AbstractContextVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(FingerPrintConsumerVerticle.class);
-    @Autowired private RuntimeContext runtimeContext;
-
-    private VertxURIContext uriContext() {
-        final VertxURIContext uriContext = new VertxURIContext();
-
-        return uriContext.setBaseLocalAppUri(this.getClass().getPackage().getName())
-                .setBaseRemoteAppUri(uriContext.getBaseLocalAppUri())
-                .setLocalConsumerUri(this.getClass().getName())
-                .setRemoteConsumerUri(uriContext.getLocalConsumerUri());
-    }
-
-    @Override
-    public void start() {
-        final FingerPrintContext fingerPrintContext = runtimeContext.clusterContext().fingerPrintContext();
-        final String privateUri = URIUtils.getUri(uriContext().getLocalConsumerUri(), HazelcastCluster.getLocalUuid());
-        final MessageConsumer<Object> publicConsumer = vertx.eventBus().consumer(uriContext().getLocalConsumerUri());
-        final MessageConsumer<Object> privateConsumer = vertx.eventBus().consumer(privateUri);
-        final MessageConsumer<Object> idConsumer = vertx.eventBus().consumer(URIUtils.getUri(privateUri, VertxURIConfig.ID_DOMAIN));
-
-        publicConsumer.handler(handler -> handlePublicMessage(fingerPrintContext, handler));
-        privateConsumer.handler(handler -> handlePrivateMessage(fingerPrintContext, handler));
-        idConsumer.handler(handler -> handleIdMessage(fingerPrintContext, handler));
-    }
 
     private void handleIdMessage(final FingerPrintContext fingerPrintContext, final Message<Object> handler) {
         vertx.executeBlocking(future -> {
@@ -118,5 +92,18 @@ public final class FingerPrintConsumerVerticle extends AbstractVerticle {
                 LOG.error(e.getMessage());
             }
         }, null);
+    }
+
+    @Override
+    public void start() {
+        final FingerPrintContext fingerPrintContext = runtimeContext.clusterContext().fingerPrintContext();
+        final String privateUri = URIUtils.getUri(uriContext.getLocalConsumerUri(), HazelcastCluster.getLocalUuid());
+        final MessageConsumer<Object> publicConsumer = vertx.eventBus().consumer(uriContext.getLocalConsumerUri());
+        final MessageConsumer<Object> privateConsumer = vertx.eventBus().consumer(privateUri);
+        final MessageConsumer<Object> idConsumer = vertx.eventBus().consumer(URIUtils.getUri(privateUri, VertxURIConfig.ID_DOMAIN));
+
+        publicConsumer.handler(handler -> handlePublicMessage(fingerPrintContext, handler));
+        privateConsumer.handler(handler -> handlePrivateMessage(fingerPrintContext, handler));
+        idConsumer.handler(handler -> handleIdMessage(fingerPrintContext, handler));
     }
 }

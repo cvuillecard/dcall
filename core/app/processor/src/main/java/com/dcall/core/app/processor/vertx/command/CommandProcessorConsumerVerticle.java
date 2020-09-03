@@ -1,27 +1,22 @@
 package com.dcall.core.app.processor.vertx.command;
 
-import com.dcall.core.configuration.app.constant.EnvironConstant;
-import com.dcall.core.configuration.app.context.RuntimeContext;
-import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
-import com.dcall.core.configuration.app.exception.ExceptionHolder;
 import com.dcall.core.configuration.app.service.builtin.BuiltInService;
 import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
 import com.dcall.core.configuration.app.service.message.MessageService;
+import com.dcall.core.configuration.generic.cluster.vertx.AbstractContextVerticle;
 import com.dcall.core.configuration.generic.parser.Parser;
 import com.dcall.core.configuration.generic.parser.expression.operand.solver.impl.BuiltInOperandSolver;
 import com.dcall.core.configuration.generic.parser.expression.operator.solver.impl.BuiltInOperatorSolver;
 import com.dcall.core.configuration.utils.HelpUtils;
 import com.dcall.core.configuration.utils.URIUtils;
 import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
-import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -29,13 +24,10 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 
 @Component
 @Scope(SCOPE_PROTOTYPE)
-public class CommandProcessorConsumerVerticle extends AbstractVerticle {
-    @Autowired private RuntimeContext runtimeContext;
+public final class CommandProcessorConsumerVerticle extends AbstractContextVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(CommandProcessorConsumerVerticle.class);
 
-    private final int BUF_SIZE = 8192;
     private final BuiltInService builtInService = new BuiltInServiceImpl();
-    private VertxURIContext uriContext;
 
     private void execute(final Message<Object> handler, final com.dcall.core.configuration.app.entity.message.Message<String> msg) {
         if (handler != null) {
@@ -99,7 +91,6 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
 
     private void configure() {
         configurebuiltInService();
-        configureURI();
         runtimeContext.serviceContext().serviceProvider().userServiceProvider().userService().configureSystemUser(runtimeContext);
     }
 
@@ -108,9 +99,8 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
         this.builtInService.setParser(new Parser(new BuiltInOperatorSolver(runtimeContext), new BuiltInOperandSolver()));
     }
 
-    private void configureURI() {
-        uriContext = this.runtimeContext.systemContext().routeContext().getVertxContext().getVertxURIContext();
-
+    @Override
+    protected void setUriContext() {
         uriContext.setBaseRemoteAppUri(uriContext.getLocalUri("terminal.vertx"));
 
         uriContext.setLocalConsumerUri(CommandProcessorConsumerVerticle.class.getName());
