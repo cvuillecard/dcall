@@ -115,18 +115,19 @@ public final class  FileTransferConsumerVerticle extends AbstractVerticle {
                     final TransferContext transferContext = runtimeContext.dataContext().transferContext();
                     final byte[] bytes = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService().decryptMessage(runtimeContext, msg);
                     final FileTransfer<String> fileTransfer = SerializationUtils.deserialize(bytes);
-                    final String cacheId = FileUtils.getInstance().getFilePath(fileTransfer.getParentPath(), fileTransfer.getFileName());
+                    final String publicId = fileTransfer.getId();
+                    final String relativeFilePath = FileUtils.getInstance().getFilePath(fileTransfer.getParentPath(), fileTransfer.getFileName());
 
-                    if (transferContext.getFileTransfersContext().get(fileTransfer.getId()) == null) {
+                    if (transferContext.getFileTransfersContext().get(publicId) == null) {
                         final FileTransferContext fileTransferContext = new FileTransferContext();
-                        fileTransferContext.getFileTransfers().put(cacheId, fileTransfer);
-                        transferContext.getFileTransfersContext().put(fileTransfer.getId(), fileTransferContext);
+                        fileTransferContext.getFileTransfers().put(relativeFilePath, fileTransfer);
+                        transferContext.getFileTransfersContext().put(publicId, fileTransferContext);
                     } else {
-                        final FileTransferContext fileTransferContext = transferContext.getFileTransfersContext().get(fileTransfer.getId());
-                        if (fileTransferContext.getFileTransfers().get(cacheId) == null)
-                            fileTransferContext.getFileTransfers().put(cacheId, fileTransfer);
+                        final FileTransferContext fileTransferContext = transferContext.getFileTransfersContext().get(publicId);
+                        if (fileTransferContext.getFileTransfers().get(relativeFilePath) == null)
+                            fileTransferContext.getFileTransfers().put(relativeFilePath, fileTransfer);
                         else {
-                            final FileTransfer<String> cacheFileTransfer = fileTransferContext.getFileTransfers().get(cacheId);
+                            final FileTransfer<String> cacheFileTransfer = fileTransferContext.getFileTransfers().get(relativeFilePath);
                             final ByteArrayOutputStream os = new ByteArrayOutputStream();
                             os.write(cacheFileTransfer.getBytes());
                             os.write(fileTransfer.getBytes());

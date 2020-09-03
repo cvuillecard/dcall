@@ -94,7 +94,7 @@ public final class IOHandler {
             messageService.send(URIUtils.getUri(uriContext.getRemoteConsumerUri(), nextFingerPrint.getId()), bytes,
                     null,
                     failed -> {
-                        if (!failed.cause().getMessage().isEmpty())
+                        if (failed.cause().getMessage() != null)
                             output().addToEntry(failed.cause().getMessage());
                     }, () -> unlockDisplay());
         }

@@ -58,7 +58,7 @@ public class CommandProcessorConsumerVerticle extends AbstractVerticle {
                 messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, result, resp);
             }
             catch (Exception e) {
-                handleError(handler, e.getMessage(), sender);
+                handleError(handler, e.getMessage() != null ? e.getMessage() : e.toString(), sender);
                 LOG.error(e.getMessage());
             }
             finally {
