@@ -192,9 +192,7 @@
                 </plugins>
             </build>
         </profile>
-
-        <!--PAS INDISPENSABLE MAIS TANT QU'AFFAIRE SI MAVEN POUVAIT DEPLOYER A MA PLACE...JE SAIS C'EST PAS SON BUT-->
-        <!--ON VA ME DIRE, FAIS DU ANSIBLE, ET JE REPONDRAI, FAIS DU SCRIPT SHELL CA VA PLUS VITE.. -->
+        
         <profile>
             <id>UNZIP-CONFIG</id>
             <activation>
