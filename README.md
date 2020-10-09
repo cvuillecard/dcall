@@ -1,6 +1,6 @@
 # dcall
 
-DCall is a draft of a terminal fully written in java based on DLT (Data Ledger Technology).
+DCall is a very basic terminal fully written in java based on DLT (Data Ledger Technology).
 
 DCall is a project with the objective to construct a secure terminal control, able to protect user datas, host or distribute applications or datas on the public and/or private networks on which it is connected.
 
@@ -75,4 +75,4 @@ After this big rock, the last difficult part to give a sense to all this work, i
 
 Note : Configuration 'README' is coming, but don't hesitate to send me a mail at 'charles.vuillec@gmail.com' if you need help.
 
-Maven configuration Notes : There are few useless dependencies because of the project in development (hibernate, jpa, neo4j, h2.. and every useless database dependencies with few spring dependencies and few exclusions of transitive dependencies) > will be removed, and a clean will be done later but they are really not a problem actually.
+Maven configuration notes : few transitive dependencies are still packaged, but they will be removed later to reduce packaging size even if configuration is mutualized between app modules..(not a priority actually) 

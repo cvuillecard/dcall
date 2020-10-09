@@ -1,7 +1,5 @@
 package com.dcall.core.configuration.utils;
 
-import org.h2.tools.Server;
-import org.h2.util.New;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +9,6 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Enumeration;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 public final class HostUtils {
     private static final Logger LOG = LoggerFactory.getLogger(HostUtils.class);

@@ -17,23 +17,6 @@
     <description>Dcall configuration</description>
 
     <dependencies>
-        <!--Database-->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
-
-        <!--Jpa-->
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>javax.persistence-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <scope>compile</scope>
-        </dependency>
 
         <!--Spring-->
         <dependency>
@@ -46,28 +29,6 @@
             <artifactId>spring-orm</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-jpa</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
-        </dependency>
-
-        <!-- Spring Data Neo4j -->
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-neo4j</artifactId>
-        </dependency>
-
-        <!-- REDIS -->
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-        </dependency>
-
         <!--Vert.x -->
         <dependency>
             <groupId>io.vertx</groupId>
@@ -78,26 +39,6 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-hazelcast</artifactId>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>io.vertx</groupId>-->
-            <!--<artifactId>vertx-web</artifactId>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>io.vertx</groupId>-->
-            <!--<artifactId>vertx-service-discovery</artifactId>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>io.vertx</groupId>-->
-            <!--<artifactId>vertx-auth-common</artifactId>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>io.vertx</groupId>-->
-            <!--<artifactId>vertx-auth-jwt</artifactId>-->
-        <!--</dependency>-->
 
         <!--TERMINAL-->
         <dependency>
