@@ -33,7 +33,6 @@ Note : All commands and futur applications must hold a 'help' file which general
 
     exit        - Safe exit of current command interpreter (if env.local_interpret=false)
                   or exit the terminal (if env.local_interpret=true) (see also 'help exit')
-                  Note : Actually, 'exit' is the only way to exit safely the terminal without zombie processus.
 
     identity    - command used to print user identity, and set identity properties (see also 'help identity')
 

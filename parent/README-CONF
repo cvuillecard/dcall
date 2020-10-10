@@ -1,0 +1,91 @@
+#################################################
+# HOW TO RUN PROJECT (According parent/pom.xml) #
+#################################################
+
+> Structure of maven project :
+
+    - 'configuration' is used by each app module as a transitive dependency regrouping all common dependencies :
+      On deploy, is used to generate a zip (profile 'ZIP-CONFIG') containing all jar dependencies used by the 'app' modules.
+
+    - All the 'app' sub-modules are built as a jar using the configuration directory where the previous 'configuration' zip is extracted
+      (profile 'UNZIP-CONFIG') > see 'DEPLOY-LINUX' and 'DEPLOY-WINDOWS' for properties configuration
+
+
+> All necessary variable properties are setted in 'configuration/src/main/resources/local.properties' and used by profiles defined in 'parent/pom.xml'
+  (you can define properties and profiles too in your local '${MAVEN_HOME}/conf/settings.xml' or '.m2/settings.xml' to replace 'parent.xml' if you prefer)
+
+  There are 8 profiles defined :
+
+  + DEVELOPMENT
+
+    - 'DEV-LINUX' : is only used for development in local mode
+    - 'DEV-WINDOWS' : is only used for development in local mode (same than 'DEV-LINUX', exists just for clarity)
+
+  + DEPLOY
+
+    - 'DEPLOY-LINUX' : must be used with 'UNPACK-SERVICE', 'UNPACK-TERMINAL-SCRIPT', 'ZIP-CONFIG' AND 'UNZIP-CONFIG'
+    - 'DEPLOY-WINDOWS' : the same than 'DEPLOY-LINUX' (exists just for clarity)
+
+  + CONFIGURATION AND PACKAGING
+
+    - 'UNPACK-SERVICE' : copy all 'app' jar built in the target directory where you deploy 'app' applications (see ${extern.base.directory})
+      Important : Be careful, the jar are not overwritten by default in the target directory
+    - 'UNPACK-TERMINAL-SCRIPT' : copy the scripts 'dcall.sh'and 'dcall.bat' configured at build in ${extern.base.directory}
+    - 'ZIP-CONFIG' : create a zip of jars with configuration module
+    - 'UNZIP-CONFIG' : Unzip the configuration-${project.version}-pack.zip created by 'ZIP-CONFIG' in
+      ${extern.base.directory}/configuration
+
+    Note : All 'app' jars built are configured to use '${extern.base.directory}/configuration' jars in their classpath
+
+
+> STEPS TO RUN PROJECT :
+
+   - Create the dcall base directory (is the ${project.extern.resources.directory} property) example : '/var/lib/dcall'
+   - 1 : Create an SSL certificate (used by configuration/src/main/resources/local.properties and vertx eventbus at initialization) using the script
+     'generateKey.sh' or send me a mail if you cannot generate it on windows.
+     2 : Copy 'client-keystore.jks' and 'client-truststore.jks files generated in your ssl directory example in : '/var/lib/dcall/ssl'
+   - Create a sub-directory called 'env' in your dcall base directory for environment configuration properties files like : /var/lib/dcall/env
+   - Create an extern env properties in the directory just created. example : /var/lib/dcall/env/local.properties
+     (Again you can declare the properties in your maven home settings.xml if you prefer in local, but be careful because this directory is used by the
+     'properties-maven-plugin' in parent/pom.xml to load the properties declared in ${project.extern.resources.directory}/env/local.properties)
+
+    Example content of local properties in '${project.extern.resources.directory}/env/local.properties' :
+
+        # SSL CONF
+        keystore.path=ssl/client-keystore.jks
+        keystore.pwd=everybodyknows
+
+        truststore.path=ssl/client-truststore.jks
+        truststore.pwd=whoknows
+
+        # CLUSTER DEFAULT CONF - NOT NECESSARY ! IS USED ONLY IF NO CLI ARGUMENTS ARE GIVEN AT 'dcall.sh' OR 'processor-${project.version}.jar' execution.
+        cluster.host.ip=192.168.0.45
+        cluster.host.port=58573
+
+   - All variable properties defined in parent/pom.xml by profiles can be declared in your maven settings.xml locally or in your dcall directory
+     example in '${project.extern.resources.directory}/env/local.properties'
+
+
+> Run the project :
+
+   - run the 'processor-${project.version}.jar' :
+        $> java -jar processor-1.0.0.jar <args..>
+
+   - run the 'dcall.sh' or 'dcall.bat' (see the script) :
+        $> sh dcall.sh <args..>
+
+example in local :
+
+$> java -jar processor-1.0.0.jar -host 127.0.0.1 -port 58573 -group public:local -peers 127.0.0.1:58574
+$> sh dcall.sh -host 127.0.0.1 -port 58574 -group public:local -peers 127.0.0.1:58573
+
+(VPN : If you use a vpn you must add the the -host and -port values as a peer too with -peers argument
+       to reach the destination otherwise cluster connexion will fail)
+_____________________________________________________________
+
+Maven configuration notes : few transitive dependencies are still packaged, but they will be removed later to reduce packaging size
+even if configuration is mutualized between app modules..(not a priority actually)
+
+Note : 'app/cli' is a dead module because not started, but if you want to work it, i would be happy to do it with you, don't hesitate to contribute.
+        Send me a mail at charles.vuillec@gmail.com if you need informations, or need a pre-configured dcall directory.
+

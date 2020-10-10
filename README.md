@@ -72,7 +72,10 @@ After this big rock, the last difficult part to give a sense to all this work, i
 
 
 
+____________________________________________________
+CONFIGURATION NOTES : parent/README-CONF
+  
+Note : Send me a mail at 'charles.vuillec@gmail.com' if you want to contribute, or are interested by the project, or any else :)
+       You can join me on twitter : @VuillecardC
 
-Note : Configuration 'README' is coming, but don't hesitate to send me a mail at 'charles.vuillec@gmail.com' if you need help.
-
-Maven configuration notes : few transitive dependencies are still packaged, but they will be removed later to reduce packaging size even if configuration is mutualized between app modules..(not a priority actually) 
+ 
