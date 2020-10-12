@@ -11,7 +11,9 @@ import com.dcall.core.configuration.app.service.fingerprint.FingerPrintServiceIm
 import com.dcall.core.configuration.app.service.message.MessageService;
 import com.dcall.core.configuration.app.service.message.MessageServiceImpl;
 
-public final class MessageServiceProvider {
+import java.io.Serializable;
+
+public final class MessageServiceProvider implements Serializable {
     private final UserServiceProvider userServiceProvider;
     private final MessageService messageService;
     private final FingerPrintService fingerPrintService;

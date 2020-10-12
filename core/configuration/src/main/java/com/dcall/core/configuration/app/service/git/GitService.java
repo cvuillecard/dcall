@@ -14,10 +14,11 @@ import org.eclipse.jgit.submodule.SubmoduleStatus;
 import org.eclipse.jgit.transport.FetchResult;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-public interface GitService {
+public interface GitService extends Serializable {
     Git initRepository(final File repo);
     GitRepository createRepository(final String path);
     GitRepository getRepository(final File fileRepo);

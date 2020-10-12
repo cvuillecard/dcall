@@ -11,7 +11,9 @@ import com.dcall.core.configuration.app.service.hash.HashServiceImpl;
 import com.dcall.core.configuration.app.service.identity.IdentityService;
 import com.dcall.core.configuration.app.service.identity.IdentityServiceImpl;
 
-public final class HashServiceProvider {
+import java.io.Serializable;
+
+public final class HashServiceProvider implements Serializable {
     private final CipherService cipherService = new CipherServiceImpl();
     private final HashService hashService = new HashServiceImpl();
     private final HashFileService hashFileService = new HashFileServiceImpl();

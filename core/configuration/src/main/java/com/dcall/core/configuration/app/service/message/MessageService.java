@@ -10,10 +10,11 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public interface MessageService {
+public interface MessageService extends Serializable {
     MessageService send(final String id, final String address, final byte[] datas, final Consumer<AsyncResult<Message<Object>>> onSuccess, final Consumer<AsyncResult<Message<Object>>> onFail, final Runnable callback);
     MessageService send(final String address, final byte[] datas, final Consumer<AsyncResult<Message<Object>>> onSuccess, final Consumer<AsyncResult<Message<Object>>> onFail, final Runnable callback);
     <T> MessageService send(final String address, final T obj, final Consumer<AsyncResult<Message<Object>>> onSuccess, final Consumer<AsyncResult<Message<Object>>> onFail, final Runnable callback);

@@ -8,7 +8,6 @@ import com.dcall.core.configuration.app.entity.filetransfer.FileTransfer;
 import com.dcall.core.configuration.app.entity.filetransfer.FileTransferBean;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
-import com.dcall.core.configuration.app.exception.ExceptionHolder;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.service.environ.EnvironService;
 import com.dcall.core.configuration.app.service.git.GitService;
@@ -31,6 +30,7 @@ import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.util.Map;
 
+// Temporary state : problem of sub-tasks not synchronized
 public class FileTransferServiceImpl implements FileTransferService {
     private static final Logger LOG = LoggerFactory.getLogger(FileTransferServiceImpl.class);
     private final MessageService messageService;

@@ -6,7 +6,9 @@ import com.dcall.core.configuration.app.context.service.ServiceContext;
 import com.dcall.core.configuration.app.context.system.SystemContext;
 import com.dcall.core.configuration.app.context.user.UserContext;
 
-public class RuntimeContext {
+import java.io.Serializable;
+
+public class RuntimeContext implements Serializable {
     private final UserContext userContext = new UserContext();
     private final SystemContext systemContext = new SystemContext();
     private final DataContext dataContext = new DataContext();

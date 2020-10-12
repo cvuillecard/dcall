@@ -8,9 +8,10 @@ import com.dcall.core.configuration.app.exception.ExceptionHolder;
 import com.dcall.core.configuration.app.exception.FunctionalException;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface FileTransferService {
+public interface FileTransferService extends Serializable {
     void publishWorkspace(final RuntimeContext runtimeContext) throws Exception;
     void sendFileRecursively(final RuntimeContext runtimeContext, final String uri, final FileTransfer<String> fileTransfer, final String parentPath, final String fileName, final FingerPrint<String> fingerPrint) throws Exception;
     void sendFileTransfer(final RuntimeContext runtimeContext, final String uri, final FileTransfer<String> fileTransfer, final FingerPrint<String> fingerPrint) throws Exception;

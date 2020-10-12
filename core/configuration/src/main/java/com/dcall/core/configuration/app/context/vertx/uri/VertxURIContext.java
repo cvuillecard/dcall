@@ -2,7 +2,9 @@ package com.dcall.core.configuration.app.context.vertx.uri;
 
 import com.dcall.core.configuration.generic.cluster.vertx.uri.VertxURIConfig;
 
-public final class VertxURIContext {
+import java.io.Serializable;
+
+public final class VertxURIContext implements Serializable {
     private String baseLocalAppUri = VertxURIConfig.BASE_APP_URI;
     private String baseRemoteAppUri;
     private String localConsumerUri;

@@ -5,9 +5,10 @@ import com.dcall.core.configuration.app.context.user.UserContext;
 import com.dcall.core.configuration.app.provider.hash.HashServiceProvider;
 import com.dcall.core.configuration.app.entity.environ.Environ;
 
+import java.io.Serializable;
 import java.util.Properties;
 
-public interface EnvironService {
+public interface EnvironService extends Serializable {
     Environ createEnviron(final UserContext context, final String path);
     Environ updateEnviron(final Environ environ);
     boolean hasConfiguration(final UserContext context);

@@ -3,7 +3,9 @@ package com.dcall.core.configuration.app.context.system;
 import com.dcall.core.configuration.app.context.route.RouteContext;
 import com.dcall.core.configuration.app.context.version.VersionContext;
 
-public final class SystemContext {
+import java.io.Serializable;
+
+public final class SystemContext implements Serializable {
     private RouteContext routeContext = new RouteContext();
     private VersionContext versionContext = new VersionContext();
 

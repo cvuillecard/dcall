@@ -6,7 +6,9 @@ import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 import com.dcall.core.configuration.app.service.user.UserService;
 import com.dcall.core.configuration.app.service.user.UserServiceImpl;
 
-public final class UserServiceProvider {
+import java.io.Serializable;
+
+public final class UserServiceProvider implements Serializable {
     private final EnvironService environService;
     private final UserService userService;
     private final VersionServiceProvider versionServiceProvider;

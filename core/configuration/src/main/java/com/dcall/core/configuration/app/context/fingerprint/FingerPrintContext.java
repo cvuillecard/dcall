@@ -2,9 +2,10 @@ package com.dcall.core.configuration.app.context.fingerprint;
 
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 
+import java.io.Serializable;
 import java.util.*;
 
-public final class FingerPrintContext {
+public final class FingerPrintContext implements Serializable {
     private Map<String, FingerPrint> fingerprints = new HashMap<>();
     private Iterator<String> iterator = fingerprints.keySet().iterator();
     private FingerPrint current;
