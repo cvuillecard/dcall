@@ -6,7 +6,9 @@ import com.dcall.core.configuration.app.entity.hash.UserHash;
 import com.dcall.core.configuration.app.entity.identity.Identity;
 import com.dcall.core.configuration.app.entity.user.User;
 
-public class UserContext {
+import java.io.Serializable;
+
+public class UserContext implements Serializable {
     private User user = null;
     private UserHash<String> userHash;
     private Environ environ = null;

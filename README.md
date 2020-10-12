@@ -68,7 +68,7 @@ This step probably represents the biggest part of the implementation work becaus
 
 ​
 
-After this big rock, the last difficult part to give a sense to all this work, is to make the terminal reflective in a CLI object runtime context. With a reflective system to use classes on runtime as commands, we can create a simple little script language to compose what is a contract. I didn't test the java reflexion in a CLI way, but i did it in the past with php for fun and was surprised by the good performances of the php language. (So Quizz of what is a Dcall-contract ? only an api implementation or a little script that we deploy as an app or a block app ?)
+After this big rock, the last difficult part to give a sense to all this work, is to make the terminal reflective in a CLI object runtime context. With a reflective system to use classes on runtime as commands, we can create a simple little script language to compose what is a contract. (So Quizz of what is a Dcall-contract ? only an api implementation or a little script that we deploy as an app or a block app ?)
 
 
 

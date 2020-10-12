@@ -1,9 +1,10 @@
 package com.dcall.core.configuration.app.service.hash;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-public interface HashFileService {
+public interface HashFileService extends Serializable {
     String seed(final String salt);
     String createRootDirectory(final String parentPath, final String salt);
     List<String> createDirectories(final String parentPath, final String salt, final String... directories);

@@ -5,7 +5,9 @@ import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 import com.dcall.core.configuration.app.service.git.GitService;
 import com.dcall.core.configuration.app.service.git.GitServiceImpl;
 
-public final class VersionServiceProvider {
+import java.io.Serializable;
+
+public final class VersionServiceProvider implements Serializable {
     private final EnvironService environService;
     private final GitService gitService;
 

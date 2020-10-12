@@ -8,7 +8,9 @@ import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.message.Message;
 import com.dcall.core.configuration.app.exception.FunctionalException;
 
-public interface FingerPrintService {
+import java.io.Serializable;
+
+public interface FingerPrintService extends Serializable {
     FingerPrintService publishPublicUserCertificate(final UserContext userContext);
     FingerPrintService sendPublicUserCertificate(final RuntimeContext runtimeContext, final Message<String> fromMessage);
     FingerPrintService sendSecretKey(final RuntimeContext runtimeContext, final FingerPrint<String> fingerPrint, final Message<String> fromMessage);

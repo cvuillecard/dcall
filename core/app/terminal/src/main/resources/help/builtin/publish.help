@@ -1,4 +1,4 @@
-[ Built-in : publish ] (v.${project.version})
+[ Built-in : publish (IN DEVELOPMENT) ] (v.${project.version})
 
 > Publish command allows you to publish files or applications on the clustered network.
 

@@ -7,7 +7,9 @@ import com.dcall.core.configuration.app.provider.version.VersionServiceProvider;
 import com.dcall.core.configuration.app.service.environ.EnvironService;
 import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 
-public final class ServiceProvider {
+import java.io.Serializable;
+
+public final class ServiceProvider implements Serializable {
     private final HashServiceProvider hashServiceProvider = new HashServiceProvider();
     private final EnvironService environService = new EnvironServiceImpl(hashServiceProvider);
     private final VersionServiceProvider versionServiceProvider = new VersionServiceProvider(environService);
