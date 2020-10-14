@@ -23,6 +23,8 @@ public final class BuiltInServiceImpl extends AbstractCommand implements BuiltIn
     public byte[] execute(final String... input) {
         final String line = input[0];
 
+        parser.reset();
+
         configureParser(line).parse(line, 0, line.length());
 
         this.expr = parser.getFirst();
@@ -32,16 +34,18 @@ public final class BuiltInServiceImpl extends AbstractCommand implements BuiltIn
 
     private Parser configureParser(final String line) {
         try {
-            final int nextIdx = IterStringUtils.iterFront(line, 0, c -> !ASCII.isBlank(c));
-            final String cmd = line.substring(0, nextIdx);
+            final CharSequence cmd = IterStringUtils.accumulate(line, 0, c -> !ASCII.isBlank(c));
 
-            parser.setTokenSolver(BuiltInAction.valueOf(cmd) != null ? new BuiltInTokenSolver() : new ArithmeticTokenSolver());
+            BuiltInAction.valueOf(cmd.toString());
+
+            parser.setTokenSolver(new BuiltInTokenSolver());
         }
-        catch (Exception e) {
+        catch (IllegalArgumentException e) {
+            parser.setTokenSolver(new ArithmeticTokenSolver());
             LOG.error(e.getMessage());
         }
 
-        return parser.reset();
+        return parser;
     }
 
     @Override
