@@ -14,7 +14,7 @@ public interface EnvironService extends Serializable {
     boolean hasConfiguration(final UserContext context);
     Environ configureUserEnviron(final RuntimeContext context, boolean create);
     String createPublicId(final UserContext context);
-    String createHostFilesDirectory(final RuntimeContext context);
+    String createHostFilesDirectory(final UserContext context);
     Properties loadEnvironProperties(final UserContext context);
 
     // getter

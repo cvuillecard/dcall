@@ -1,5 +1,6 @@
 package com.dcall.core.app.terminal;
 
+import com.dcall.core.app.terminal.vertx.TaskExecutorVerticle;
 import com.dcall.core.configuration.app.verticle.fingerprint.FingerPrintConsumerVerticle;
 import com.dcall.core.configuration.generic.cluster.vertx.VertxApplication;
 import com.dcall.core.configuration.app.runner.RunnerConfigurator;
@@ -24,6 +25,7 @@ public class Runner {
                 configurator.getPeers().toArray(new String[configurator.getPeers().size()]),
                 InputConsumerVerticle.class,
                 FingerPrintConsumerVerticle.class,
+                TaskExecutorVerticle.class,
                 TerminalApplicationVerticle.class
         );
     }

@@ -13,7 +13,7 @@ public class RuntimeContext implements Serializable {
     private final SystemContext systemContext = new SystemContext();
     private final DataContext dataContext = new DataContext();
     private final ClusterContext clusterContext = new ClusterContext(userContext);
-    private final ServiceContext serviceContext = new ServiceContext();
+    private final ServiceContext serviceContext = new ServiceContext(this);
 
     public UserContext userContext() { return userContext; }
     public SystemContext systemContext() { return systemContext; }

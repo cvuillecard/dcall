@@ -5,7 +5,7 @@ import com.dcall.core.configuration.app.context.WithRuntimeContext;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 public interface GenericCommandService extends WithRuntimeContext {
-    GenericCommandService init(final RuntimeContext context, final String helpFile);
+    GenericCommandService init(final RuntimeContext runtimeContext, final String helpFile);
     byte[] usage();
     String commitMessage(final String msg);
     RevCommit commit(final String msg);
@@ -16,7 +16,7 @@ public interface GenericCommandService extends WithRuntimeContext {
     byte[] handleException(Exception e);
 
     // getter
-    RuntimeContext getContext();
+    RuntimeContext getRuntimeContext();
     String getHelp();
 
     String[] getParams();
@@ -24,7 +24,7 @@ public interface GenericCommandService extends WithRuntimeContext {
     byte[] getDatas();
 
     // setter
-    GenericCommandService setContext(final RuntimeContext context);
+    GenericCommandService setRuntimeContext(final RuntimeContext context);
     GenericCommandService setHelp(final String helpFile);
     GenericCommandService setParams(String[] params);
     GenericCommandService setDatas(byte[] datas);

@@ -13,6 +13,7 @@ import com.dcall.core.configuration.app.service.environ.EnvironService;
 import com.dcall.core.configuration.app.service.git.GitService;
 import com.dcall.core.configuration.app.service.hash.HashFileService;
 import com.dcall.core.configuration.app.service.message.MessageService;
+import com.dcall.core.configuration.app.service.task.filetransfer.workspace.WorkspaceTransferTaskServiceImpl;
 import com.dcall.core.configuration.app.verticle.filetransfer.FileTransferConsumerVerticle;
 import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
 import com.dcall.core.configuration.generic.cluster.vertx.uri.VertxURIConfig;
@@ -30,7 +31,6 @@ import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.util.Map;
 
-// Temporary state : problem of sub-tasks not synchronized
 public class FileTransferServiceImpl implements FileTransferService {
     private static final Logger LOG = LoggerFactory.getLogger(FileTransferServiceImpl.class);
     private final MessageService messageService;
@@ -40,55 +40,9 @@ public class FileTransferServiceImpl implements FileTransferService {
     }
 
     @Override
-    public void publishWorkspace(final RuntimeContext runtimeContext) throws Exception {
-        final EnvironService environService = runtimeContext.serviceContext().serviceProvider().environService();
-        final FingerPrint<String> nextFingerPrint = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fingerPrintService().nextFingerPrint(runtimeContext.clusterContext().fingerPrintContext());
-        final boolean hostFileMode = environService.getHostFilesMode(runtimeContext);
-
-        if (hostFileMode) {
-            final String publicId = environService.getPublicId(runtimeContext);
-            final FileTransfer<String> fileTransfer = new FileTransferBean().setId(publicId);
-            final GitService gitService = runtimeContext.serviceContext().serviceProvider().versionServiceProvider().gitService();
-            final String uriSend = URIUtils.getUri(FileTransferConsumerVerticle.class.getName(), nextFingerPrint.getId());
-            final String uriComplete = URIUtils.getUri(URIUtils.getUri(FileTransferConsumerVerticle.class.getName(), nextFingerPrint.getId()), URIUtils.getUri(VertxURIConfig.COMPLETE_DOMAIN, UserConstant.WORKSPACE));
-
-            sendFileRecursively(runtimeContext, uriSend, fileTransfer, gitService.getSystemRepository(), GitConstant.GIT_FILENAME, nextFingerPrint);
-            completeFileTransfer(runtimeContext, uriComplete, nextFingerPrint, publicId);
-        }
-    }
-
-    @Override
-    public void sendFileRecursively(final RuntimeContext runtimeContext, final String uri, final FileTransfer<String> fileTransfer, final String parentPath, final String fileName, final FingerPrint<String> fingerPrint) throws Exception {
-        final FileUtils fileUtils = FileUtils.getInstance();
-        final String filePath = fileUtils.getFilePath(parentPath, fileName);
-        final File file = new File(filePath);
-
-        fileTransfer.setParentPath(parentPath).setFileName(fileName);
-
-        if (file.isDirectory())
-            for (final File f : file.listFiles())
-                sendFileRecursively(runtimeContext, uri, fileTransfer, filePath, f.getName(), fingerPrint);
-        else {
-            final FileInputStream is = new FileInputStream(file);
-            fileTransfer.setBytes(fileUtils.readAllBytes(is)).setFileType(FileType.FILE);
-            is.close();
-            LOG.info(" > send File : " + file.getAbsolutePath());
-            sendFileTransfer(runtimeContext, uri, fileTransfer, fingerPrint);
-        }
-    }
-
-    @Override
-    public void sendFileTransfer(final RuntimeContext runtimeContext, final String uri, final FileTransfer<String> fileTransfer, final FingerPrint<String> fingerPrint) throws Exception {
-        final byte[] bytes = SerializationUtils.serialize(fileTransfer);
-        final int nbChunk = messageService.getNbChunk(bytes);
-        final com.dcall.core.configuration.app.entity.message.Message<String> msgTransporter = new MessageBean().setId(HazelcastCluster.getLocalUuid());
-
-        messageService.sendBlockingEncryptedChunk(runtimeContext, Vertx.currentContext().owner(), uri, bytes, nbChunk, 0, fingerPrint, msgTransporter);
-    }
-
-    @Override
-    public void completeFileTransfer(final RuntimeContext runtimeContext, final String uri, final FingerPrint<String> fingerPrint, final String publicId) throws Exception {
-        sendFileTransfer(runtimeContext, uri, new FileTransferBean().setId(publicId), fingerPrint);
+    public void publishWorkspace(final RuntimeContext runtimeContext) {
+        runtimeContext.serviceContext().serviceProvider().taskServiceProvider().workspaceTransferService().run();
+//        new WorkspaceTransferTaskServiceImpl(runtimeContext).run();
     }
 
     @Override

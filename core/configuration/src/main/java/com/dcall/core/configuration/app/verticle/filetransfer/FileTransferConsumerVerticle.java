@@ -63,8 +63,8 @@ public final class  FileTransferConsumerVerticle extends AbstractContextVerticle
                 future.complete();
             }
             catch (Exception e) {
-                future.fail(e.getCause());
-                LOG.error(e.getMessage());
+                future.fail(e.toString());
+                LOG.error(e.toString());
             }
         }, res -> {
             if (res.succeeded())
@@ -111,7 +111,7 @@ public final class  FileTransferConsumerVerticle extends AbstractContextVerticle
                 future.complete();
             }
             catch (Exception e) {
-                future.fail(e.getCause());
+                future.fail(e.toString());
                 LOG.error(e.getMessage());
             }
         }, res -> {

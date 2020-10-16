@@ -49,10 +49,10 @@ public final class MemberClusterListener implements MembershipListener, WithRunt
     }
 
     @Override
-    public RuntimeContext getContext() { return this.runtimeContext; }
+    public RuntimeContext getRuntimeContext() { return this.runtimeContext; }
 
     @Override
-    public MemberClusterListener setContext(final RuntimeContext context) {
+    public MemberClusterListener setRuntimeContext(final RuntimeContext context) {
         this.runtimeContext = context;
 
         return this;

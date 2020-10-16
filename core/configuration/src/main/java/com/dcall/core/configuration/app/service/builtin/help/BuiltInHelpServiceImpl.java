@@ -6,11 +6,11 @@ import com.dcall.core.configuration.utils.HelpUtils;
 public class BuiltInHelpServiceImpl extends AbstractCommand implements BuiltInHelpService {
     @Override
     public byte[] execute(final String... params) {
-        return init(getContext(), HelpUtils.getBuiltInHelp(params[0])).usage();
+        return init(getRuntimeContext(), HelpUtils.getBuiltInHelp(params[0])).usage();
     }
 
     @Override
     public byte[] execute() {
-        return init(getContext(), HelpUtils.getHelpPath(HelpUtils.HELP)).usage();
+        return init(getRuntimeContext(), HelpUtils.getHelpPath(HelpUtils.HELP)).usage();
     }
 }

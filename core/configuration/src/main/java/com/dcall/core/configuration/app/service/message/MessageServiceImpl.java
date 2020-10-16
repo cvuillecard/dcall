@@ -1,9 +1,11 @@
 package com.dcall.core.configuration.app.service.message;
 
+import com.dcall.core.configuration.app.constant.TaskStatus;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
+import com.dcall.core.configuration.app.entity.task.Task;
 import com.dcall.core.configuration.app.exception.ExceptionHolder;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.security.aes.AESProvider;
@@ -153,7 +155,6 @@ public class MessageServiceImpl implements MessageService {
         final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
         final com.dcall.core.configuration.app.entity.message.Message<String> msg = new MessageBean().setId(HazelcastCluster.getLocalUuid());
         final int nbChunk = getNbChunk(bytes);
-        final ExceptionHolder exceptionHolder = new ExceptionHolder();
 
         for (int i = 0; i < nbChunk; i++) {
             final int startIdx = i * BUF_SIZE;
@@ -168,12 +169,9 @@ public class MessageServiceImpl implements MessageService {
                     LOG.info(r.result().body().toString());
                 }
                 else {
-                    exceptionHolder.setException(new TechnicalException(r.cause()));
                     LOG.error("sendEncryptedChunk error response : " + r.cause().getMessage());
                 }
             });
-            if (exceptionHolder.hasException())
-                exceptionHolder.throwException();
         }
 
         return this;
@@ -202,6 +200,43 @@ public class MessageServiceImpl implements MessageService {
                 }
                 catch (Exception e) {
                     LOG.error(e.getMessage());
+                }
+            });
+        }
+        else {
+            LOG.info(" Complete > sendBlockingEncryptedChunk [ chunkIdx:" + chunkIdx + ", nbChunk:" + nbChunk);
+        }
+
+        return this;
+    }
+
+    @Override
+    public MessageService sendEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, final byte[] bytes, final int nbChunk, final int chunkIdx,
+                                             final FingerPrint<String> fingerPrint, final com.dcall.core.configuration.app.entity.message.Message<String> msgTransporter, final Task task) {
+        if (chunkIdx < nbChunk) {
+            final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
+            final int startIdx = chunkIdx * BUF_SIZE;
+            final int nextIdx = startIdx + BUF_SIZE;
+            final int endIdx = (nextIdx > bytes.length) ? bytes.length : nextIdx;
+            final byte[] datas = messageService.encryptMessage(runtimeContext, fingerPrint, Arrays.copyOfRange(bytes, startIdx, endIdx));
+
+            msgTransporter.setMessage(datas).setLength(datas.length);
+
+            vertx.eventBus().send(address, Json.encodeToBuffer(msgTransporter), r -> {
+                if (r.succeeded()) {
+                    if (chunkIdx == (nbChunk - 1))
+                        task.setStatus(TaskStatus.COMPLETED);
+                    sendBlockingEncryptedChunk(runtimeContext, vertx, address, bytes, nbChunk, chunkIdx + 1, fingerPrint, msgTransporter);
+                } else {
+                    final String failMsg = "id = " + task.getId() + " - ERROR : " + r.cause().getMessage();
+                    task.setStatus(TaskStatus.FAILED);
+                    if (task.getParent() != null) {
+                        task.getParent().setStatus(TaskStatus.FAILED);
+                        task.getParent().setId(failMsg);
+                    }
+                    else
+                        task.setId(failMsg);
+                    LOG.error("Failure : sendEncryptedChunk error response : " + task.getId() + " - " + r.cause().getMessage());
                 }
             });
         }

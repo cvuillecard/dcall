@@ -26,7 +26,7 @@ public class BuiltInIdentityServiceImpl extends AbstractCommand implements Built
 
     @Override
     public Identity getUserIdentity() {
-        return getContext().userContext().getIdentity();
+        return getRuntimeContext().userContext().getIdentity();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class BuiltInIdentityServiceImpl extends AbstractCommand implements Built
         });
 
         if (updated.size() > 0) {
-            getContext().serviceContext().serviceProvider().hashServiceProvider().identityService().updateUserIdentity(getUserIdentity());
+            getRuntimeContext().serviceContext().serviceProvider().hashServiceProvider().identityService().updateUserIdentity(getUserIdentity());
             commit("Identity properties added or updated : " + updated.toString());
         }
 
@@ -89,7 +89,7 @@ public class BuiltInIdentityServiceImpl extends AbstractCommand implements Built
         String ret = sb.toString();
 
         if (ret.length() > 0) {
-            getContext().serviceContext().serviceProvider().hashServiceProvider().identityService().updateUserIdentity(getUserIdentity());
+            getRuntimeContext().serviceContext().serviceProvider().hashServiceProvider().identityService().updateUserIdentity(getUserIdentity());
             commit("Identity properties deleted : " + removed.toString());
         }
         else

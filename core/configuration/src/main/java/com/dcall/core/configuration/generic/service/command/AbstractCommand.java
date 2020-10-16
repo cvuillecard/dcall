@@ -17,14 +17,14 @@ import java.util.Objects;
 
 public abstract class AbstractCommand implements GenericCommandService {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCommand.class);
-    private RuntimeContext context;
+    protected RuntimeContext runtimeContext;
     private String helpFile;
     private byte[] datas;
     private String[] params;
 
     @Override
-    public GenericCommandService init(final RuntimeContext context, final String helpFile) {
-        this.context = context;
+    public GenericCommandService init(final RuntimeContext runtimeContext, final String helpFile) {
+        this.runtimeContext = runtimeContext;
         this.helpFile = helpFile;
 
         return this;
@@ -44,18 +44,18 @@ public abstract class AbstractCommand implements GenericCommandService {
 
     @Override
     public String commitMessage(final String msg) {
-        return GitMessage.getLocalSnapshotUserMsg(context.userContext().getUser(), msg);
+        return GitMessage.getLocalSnapshotUserMsg(runtimeContext.userContext().getUser(), msg);
     }
 
     @Override
     public RevCommit commit(final String msg) {
-        if (context != null) {
-            final GitRepository repository = getContext().systemContext().versionContext().getRepository();
-            final GitService gitService = getContext().serviceContext().serviceProvider().versionServiceProvider().gitService();
+        if (runtimeContext != null) {
+            final GitRepository repository = getRuntimeContext().systemContext().versionContext().getRepository();
+            final GitService gitService = getRuntimeContext().serviceContext().serviceProvider().versionServiceProvider().gitService();
 
-            if (gitService.isAutoCommit(context) && repository != null) {
+            if (gitService.isAutoCommit(runtimeContext) && repository != null) {
                 LOG.debug("built-in : command commit with message : " + msg);
-                return gitService.commitSystemRepository(getContext(), repository, commitMessage(msg));
+                return gitService.commitSystemRepository(getRuntimeContext(), repository, commitMessage(msg));
             }
             else
                 LOG.debug("built-in : cannot commit, env.auto_commit = false");
@@ -80,7 +80,7 @@ public abstract class AbstractCommand implements GenericCommandService {
         try {
             if (params != null)
                 LOG.debug("cmd params : " + StringUtils.listToString(Arrays.asList(params)));
-            if (this.context == null || this.helpFile == null) {
+            if (this.runtimeContext == null || this.helpFile == null) {
                 throw new FunctionalException("Missing initialization of Abstract Command > AbstractCommand.init(final RuntimeContext context, final String helpFile) has not been called");
             }
             this.datas = params != null && params.length > 0 ? this.execute(params) : this.execute();
@@ -110,13 +110,13 @@ public abstract class AbstractCommand implements GenericCommandService {
     public abstract byte[] execute() throws Exception;
 
     // getter
-    @Override public RuntimeContext getContext() { return this.context; }
+    @Override public RuntimeContext getRuntimeContext() { return this.runtimeContext; }
     @Override public String getHelp() { return this.helpFile; }
     @Override public String[] getParams() { return params; }
     @Override public byte[] getDatas() { return this.datas; }
 
     // setter
-    @Override public GenericCommandService setContext(final RuntimeContext context) { this.context = context; return this; }
+    @Override public GenericCommandService setRuntimeContext(final RuntimeContext runtimeContext) { this.runtimeContext = runtimeContext; return this; }
     @Override public GenericCommandService setHelp(final String helpFile) { this.helpFile = helpFile; return this; }
     @Override public GenericCommandService setParams(String[] params) { this.params = params; return this; }
     @Override public GenericCommandService setDatas(byte[] datas) { this.datas = datas; return this; }

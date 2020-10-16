@@ -16,7 +16,7 @@ public final class BuiltInOperatorSolver implements OperatorSolver {
 
     @Override
     public byte[] execute(final Operand operand) {
-        return ((GenericCommandService)operand.getValue()).setContext(runtimeContext).run();
+        return ((GenericCommandService)operand.getValue()).setRuntimeContext(runtimeContext).run();
     }
 
     @Override

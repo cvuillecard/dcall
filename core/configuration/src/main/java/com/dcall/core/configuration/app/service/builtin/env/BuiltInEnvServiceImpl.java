@@ -34,7 +34,7 @@ public class BuiltInEnvServiceImpl extends AbstractCommand implements BuiltInEnv
     @Override
     public byte[] getUserEnv(final String... keys) {
         final StringBuilder sb = new StringBuilder();
-        final Environ environ = getContext().userContext().getEnviron();
+        final Environ environ = getRuntimeContext().userContext().getEnviron();
 
         if (keys != null && keys.length > 0)
             Arrays.stream(keys).filter(k -> environ.getProperties().get(k) != null).forEach(k -> sb.append(entryToString(k, environ.getProperties().get(k).toString())));
@@ -53,7 +53,7 @@ public class BuiltInEnvServiceImpl extends AbstractCommand implements BuiltInEnv
         if (args == null || args.length == 0)
             return usageSet().getBytes();
 
-        final Environ environ = getContext().userContext().getEnviron();
+        final Environ environ = getRuntimeContext().userContext().getEnviron();
         final StringBuilder sb = new StringBuilder();
         final List<String> updated = new ArrayList<>();
 
@@ -69,7 +69,7 @@ public class BuiltInEnvServiceImpl extends AbstractCommand implements BuiltInEnv
         });
 
         if (updated.size() > 0) {
-            getContext().serviceContext().serviceProvider().environService().updateEnviron(environ);
+            getRuntimeContext().serviceContext().serviceProvider().environService().updateEnviron(environ);
             commit("User env properties added or updated : " + updated.toString());
         }
 
@@ -81,7 +81,7 @@ public class BuiltInEnvServiceImpl extends AbstractCommand implements BuiltInEnv
         if (args == null || args.length == 0)
             return usageDel().getBytes();
 
-        final Environ environ = getContext().userContext().getEnviron();
+        final Environ environ = getRuntimeContext().userContext().getEnviron();
         final StringBuilder sb = new StringBuilder();
         final List<String> removed = new ArrayList<>();
 
@@ -93,7 +93,7 @@ public class BuiltInEnvServiceImpl extends AbstractCommand implements BuiltInEnv
         String ret = sb.toString();
 
         if (ret.length() > 0) {
-            getContext().serviceContext().serviceProvider().environService().updateEnviron(environ);
+            getRuntimeContext().serviceContext().serviceProvider().environService().updateEnviron(environ);
             commit("User env properties deleted : " + removed.toString());
         }
         else

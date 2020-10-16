@@ -35,7 +35,7 @@ public final class IOHandler {
         this.runtimeContext = context;
         this.messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
 
-        this.builtInService.setContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
+        this.builtInService.setRuntimeContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
         builtInService.setParser(new Parser(new BuiltInOperatorSolver(runtimeContext), new BuiltInOperandSolver()));
     }
 
@@ -60,7 +60,7 @@ public final class IOHandler {
             else
                 output().addToEntry(new String(builtInResult));
 
-            if (exit || builtInResult != null)
+            if (exit || builtInResult != null && !runtimeContext.clusterContext().taskContext().isCurrentTask())
                 unlockDisplay();
 
             return true;
@@ -109,7 +109,7 @@ public final class IOHandler {
         DisplayController.setDataReady(false);
     }
 
-    private void unlockDisplay() {
+    public void unlockDisplay() {
         lastInput = null;
         DisplayController.setDataReady(true);
     }

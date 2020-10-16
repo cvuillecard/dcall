@@ -45,7 +45,7 @@ public final class CommandProcessorConsumerVerticle extends AbstractContextVerti
                 final MessageService messageService = runtimeContext.serviceContext().serviceProvider().messageServiceProvider().messageService();
 
                 final com.dcall.core.configuration.app.entity.message.Message<String> resp = new MessageBean(HazelcastCluster.getLocalUuid(), null, 0);
-                final byte[] result = builtInService.setContext(runtimeContext).run(new String(messageService.decryptMessage(runtimeContext, sender)));
+                final byte[] result = builtInService.setRuntimeContext(runtimeContext).run(new String(messageService.decryptMessage(runtimeContext, sender)));
 
                 messageService.sendEncryptedChunk(runtimeContext, vertx, uriContext.getRemoteConsumerUri(), sender, result, resp);
             }
@@ -95,7 +95,7 @@ public final class CommandProcessorConsumerVerticle extends AbstractContextVerti
     }
 
     private void configurebuiltInService() {
-        this.builtInService.setContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
+        this.builtInService.setRuntimeContext(this.runtimeContext).setHelp(HelpUtils.getHelpPath(HelpUtils.HELP));
         this.builtInService.setParser(new Parser(new BuiltInOperatorSolver(runtimeContext), new BuiltInOperandSolver()));
     }
 

@@ -2,6 +2,7 @@ package com.dcall.core.configuration.app.service.message;
 
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
+import com.dcall.core.configuration.app.entity.task.Task;
 import com.dcall.core.configuration.app.exception.ExceptionHolder;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.generic.cluster.vertx.VertxCompletableFuture;
@@ -27,6 +28,10 @@ public interface MessageService extends Serializable {
     MessageService sendEncryptedChunk(final RuntimeContext runtimeContext, final String address, byte[] bytes, final FingerPrint<String> fingerPrint) throws Exception;
     MessageService sendBlockingEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, final byte[] bytes, final int nbChunk, final int chunkIdx,
                                               final FingerPrint<String> fingerPrint, final com.dcall.core.configuration.app.entity.message.Message<String> msgTransporter);
+
+    MessageService sendEncryptedChunk(final RuntimeContext runtimeContext, final Vertx vertx, final String address, final byte[] bytes, final int nbChunk, final int chunkIdx,
+                                      final FingerPrint<String> fingerPrint, final com.dcall.core.configuration.app.entity.message.Message<String> msgTransporter, final Task task);
+
     // utils
     MessageService setBufSize(final int size);
     int getNbChunk(byte[] result);

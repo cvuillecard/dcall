@@ -3,8 +3,8 @@ package com.dcall.core.configuration.app.service.builtin.publish;
 import com.dcall.core.configuration.app.constant.GitConstant;
 import com.dcall.core.configuration.app.constant.UserConstant;
 import com.dcall.core.configuration.app.entity.cipher.AbstractCipherResource;
-import com.dcall.core.configuration.app.service.filetransfer.FileTransferService;
 import com.dcall.core.configuration.app.service.fingerprint.FingerPrintService;
+import com.dcall.core.configuration.app.service.task.filetransfer.workspace.WorkspaceTransferTaskServiceImpl;
 import com.dcall.core.configuration.generic.service.command.AbstractCommand;
 import com.dcall.core.configuration.utils.ResourceUtils;
 import org.slf4j.Logger;
@@ -37,29 +37,27 @@ public final class BuiltInPublishServiceImpl extends AbstractCommand implements 
         return null;
     }
 
-
     private byte[]  publishWorkspace() {
         final StringBuilder sb = new StringBuilder();
 
         try {
-            final FileTransferService fileTransferService = getContext().serviceContext().serviceProvider().messageServiceProvider().fileTransferService();
-            fileTransferService.publishWorkspace(getContext());
-
-            sb.append("> " + ResourceUtils.localProperties().getProperty(GitConstant.SYS_GIT_REPOSITORY) + " published");
+            runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fileTransferService().publishWorkspace(runtimeContext);
+            sb.append("> publish workspace order > path = " + ResourceUtils.localProperties().getProperty(GitConstant.SYS_GIT_REPOSITORY));
         }
         catch (Exception e) {
-            sb.append(e.getMessage());
+            sb.append("Failed to publish workspace : " + e.getMessage());
         }
-        return sb.toString().getBytes();
+
+        return sb.length() > 0 ? sb.toString().getBytes() : null;
     }
 
     private byte[]  publishCertificate() throws Exception {
         final StringBuilder sb = new StringBuilder();
 
-        final FingerPrintService fingerPrintService = getContext().serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
-        fingerPrintService.publishPublicUserCertificate(getContext().userContext());
+        final FingerPrintService fingerPrintService = getRuntimeContext().serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
+        fingerPrintService.publishPublicUserCertificate(getRuntimeContext().userContext());
 
-        sb.append("> certificate " + ((AbstractCipherResource<String>)getContext().userContext().getCertificate()).getPath() + " published");
+        sb.append("> certificate " + ((AbstractCipherResource<String>)getRuntimeContext().userContext().getCertificate()).getPath() + " published");
 
         return sb.toString().getBytes();
     }

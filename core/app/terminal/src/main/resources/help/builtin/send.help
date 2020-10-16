@@ -1,0 +1,14 @@
+[ Built-in : send ] (v.${project.version}) // TODO : skeleton only : not implemented
+
+> send command allows you to send a file on a peer node.
+
+    ~ send -src file_path_1 file_path2 file_path3 -dest relative_parent_directory
+    [ publish public user certificate on the clustered network connected ]
+
+    ~ publish workspace
+    [ publish the local repository on the clustered network connected ]
+
+Note : to be used, local_interpret must be disabled (env.local_interpret=false) and
+       allow_host_files must be enabled (env.host_files_dir=true)
+
++ See also 'env'

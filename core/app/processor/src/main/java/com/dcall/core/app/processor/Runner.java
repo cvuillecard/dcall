@@ -4,7 +4,6 @@ import com.dcall.core.app.processor.vertx.command.CommandProcessorConsumerVertic
 import com.dcall.core.configuration.app.runner.RunnerConfigurator;
 import com.dcall.core.configuration.app.verticle.filetransfer.FileTransferConsumerVerticle;
 import com.dcall.core.configuration.app.verticle.fingerprint.FingerPrintConsumerVerticle;
-import com.dcall.core.configuration.app.verticle.task.TaskExecutorVerticle;
 import com.dcall.core.configuration.generic.cluster.vertx.VertxApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +23,7 @@ public final class Runner {
                 configurator.getPeers().toArray(new String[configurator.getPeers().size()]),
                 FingerPrintConsumerVerticle.class,
                 FileTransferConsumerVerticle.class,
-                CommandProcessorConsumerVerticle.class,
-                TaskExecutorVerticle.class
+                CommandProcessorConsumerVerticle.class
         );
     }
 }

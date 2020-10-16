@@ -69,48 +69,48 @@ public class EnvironServiceImpl implements EnvironService {
 
     @Override
     public Environ configureUserEnviron(final RuntimeContext runtimeContext, final boolean create) {
-        final UserContext useContext = runtimeContext.userContext();
+        final UserContext userContext = runtimeContext.userContext();
 
         if (create) {
             FileUtils.getInstance().createDirectory(getConfigDirectory());
-            initHash(useContext);
+            initHash(userContext);
         }
-        final UserHash<String> userHash = useContext.getUserHash();
+        final UserHash<String> userHash = userContext.getUserHash();
         final HashFileService hashService = hashServiceProvider.hashFileService();
         final String userPwd = create ?
                 hashService.createDirectories(userHash.getPwd(), userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_CONF)).get(0) :
                 hashService.getHashPath(userHash.getPwd(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_CONF));
-        final Environ environ = useContext.setEnviron(createEnviron(useContext, userPwd)).getEnviron();
+        final Environ environ = userContext.setEnviron(createEnviron(userContext, userPwd)).getEnviron();
         final AbstractCipherResource cipherEnv = (AbstractCipherResource) environ;
 
-        final String userHome = hashService.getHashPath(useContext.getUser().getWorkspace(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_HOME));
+        final String userHome = hashService.getHashPath(userContext.getUser().getWorkspace(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_HOME));
         final String userCert = hashService.getHashPath(userHome, userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_CERT));
 
         try {
             if (create && !(new File(cipherEnv.getPath())).exists()) {
-                FileUtils.getInstance().createDirectory(useContext.getUser().getWorkspace());
-                hashService.createDirectories(useContext.getUser().getWorkspace(), userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_HOME));
+                FileUtils.getInstance().createDirectory(userContext.getUser().getWorkspace());
+                hashService.createDirectories(userContext.getUser().getWorkspace(), userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_HOME));
                 hashService.createDirectories(userHome, userHash.getSalt(), userHash.saltResource(EnvironConstant.USER_CERT));
-                final Identity identity = hashServiceProvider.identityService().createUserIdentity(useContext, userHome);
-                final Certificate certificate = hashServiceProvider.certificateService().createUserCertificate(useContext, userCert);
+                final Identity identity = hashServiceProvider.identityService().createUserIdentity(userContext, userHome);
+                final Certificate certificate = hashServiceProvider.certificateService().createUserCertificate(userContext, userCert);
                 final FileWriter fileWriter = new FileWriter(cipherEnv.getPath());
 
-                useContext.setIdentity(hashServiceProvider.identityService().getUserIdentity(useContext, identity))
-                        .setCertificate(hashServiceProvider.certificateService().getUserCertificate(useContext, certificate));
+                userContext.setIdentity(hashServiceProvider.identityService().getUserIdentity(userContext, identity))
+                        .setCertificate(hashServiceProvider.certificateService().getUserCertificate(userContext, certificate));
 
                 environ.getProperties().setProperty(EnvironConstant.USER_HOME, userHome);
-                environ.getProperties().setProperty(EnvironConstant.USER_WORKSPACE, useContext.getUser().getWorkspace());
+                environ.getProperties().setProperty(EnvironConstant.USER_WORKSPACE, userContext.getUser().getWorkspace());
                 environ.getProperties().setProperty(EnvironConstant.USER_CONF, userPwd);
                 environ.getProperties().setProperty(EnvironConstant.USER_IDENTITY_PROP, ((AbstractCipherResource) identity).getPath());
                 environ.getProperties().setProperty(EnvironConstant.USER_CERT, ((AbstractCipherResource) certificate).getPath());
                 environ.getProperties().setProperty(EnvironConstant.COMMIT_MODE, GitCommitMode.MANUAL.toString());
                 environ.getProperties().setProperty(EnvironConstant.INTERPRET_MODE, InterpretMode.LOCAL.toString());
-                environ.getProperties().setProperty(EnvironConstant.PUBLIC_ID, createPublicId(useContext));
+                environ.getProperties().setProperty(EnvironConstant.PUBLIC_ID, createPublicId(userContext));
                 environ.getProperties().setProperty(EnvironConstant.ALLOW_HOST_FILES, AllowHostFilesMode.ON.toString());
-                environ.getProperties().setProperty(EnvironConstant.HOST_FILES_DIR, createHostFilesDirectory(runtimeContext));
+                environ.getProperties().setProperty(EnvironConstant.HOST_FILES_DIR, createHostFilesDirectory(userContext));
 
 
-                environ.getProperties().store(fileWriter, useContext.getUser().getEmail() + " - env properties");
+                environ.getProperties().store(fileWriter, userContext.getUser().getEmail() + " - env properties");
                 fileWriter.close();
 
                 AESProvider.encryptFile(cipherEnv.getPath(), cipherEnv.getPath(), cipherEnv.getCipher().getCipherIn());
@@ -118,12 +118,12 @@ public class EnvironServiceImpl implements EnvironService {
                 // hashServiceProvider.hashFileService().exists(user.getWorkspace(), userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_HOME))
                 // hashService.exists(userHome, userHash.getMd5Salt(), userHash.saltResource(EnvironConstant.USER_CERT))
             } else {
-                environ.setProperties(loadEnvironProperties(useContext));
-                useContext.setIdentity(hashServiceProvider.identityService().createUserIdentity(useContext, userHome))
-                        .setCertificate(hashServiceProvider.certificateService().createUserCertificate(useContext, userCert));
+                environ.setProperties(loadEnvironProperties(userContext));
+                userContext.setIdentity(hashServiceProvider.identityService().createUserIdentity(userContext, userHome))
+                        .setCertificate(hashServiceProvider.certificateService().createUserCertificate(userContext, userCert));
             }
 
-            runtimeContext.clusterContext().clusterListenerContext().setMemberClusterListener(HazelcastCluster.getMemberShipListener().setContext(runtimeContext));
+            runtimeContext.clusterContext().clusterListenerContext().setMemberClusterListener(HazelcastCluster.getMemberShipListener().setRuntimeContext(runtimeContext));
 
             return environ;
         }
@@ -140,8 +140,8 @@ public class EnvironServiceImpl implements EnvironService {
     }
 
     @Override
-    public String createHostFilesDirectory(final RuntimeContext runtimeContext) {
-        final String hostDir = hashServiceProvider.hashFileService().getHashPath(runtimeContext.userContext().getUser().getWorkspace(), runtimeContext.userContext().getUserHash().getMd5Salt(), EnvironConstant.HOST_FILES_DIR_NAME);
+    public String createHostFilesDirectory(final UserContext context) {
+        final String hostDir = hashServiceProvider.hashFileService().getHashPath(context.getUser().getWorkspace(), context.getUserHash().getMd5Salt(), EnvironConstant.HOST_FILES_DIR_NAME);
         return FileUtils.getInstance().createDirectory(hostDir);
     }
 
