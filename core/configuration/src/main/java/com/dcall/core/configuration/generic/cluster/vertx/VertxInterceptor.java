@@ -8,7 +8,7 @@ public final class VertxInterceptor {
     private static final Logger LOG = LoggerFactory.getLogger(VertxInterceptor.class);
     private static boolean log = false;
 
-    public final static void logRequest(final Vertx vertx) {
+    public static void logRequest(final Vertx vertx) {
         if (!log) {
             vertx.eventBus().addInboundInterceptor(ctx -> {
                 if (ctx.message().body() != null)

@@ -70,17 +70,17 @@ public final class TextDrawerService {
     }
 
     // UTILS
-    private static final TextGraphics textGraphics() {
+    private static TextGraphics textGraphics() {
         return  ScreenController.getScreen().newTextGraphics();
     }
 
-    private static final TextGraphics inputTextGraphics() {
+    private static TextGraphics inputTextGraphics() {
         return ScreenController.getScreen().newTextGraphics()
                 .setBackgroundColor(TermAttributes.INPUT_BACKGROUND)
                 .setForegroundColor(TermAttributes.INPUT_FOREGROUND);
     }
 
-    private static final TextGraphics promptTextGraphics() {
+    private static TextGraphics promptTextGraphics() {
         return ScreenController.getScreen().newTextGraphics()
                 .setBackgroundColor(TermAttributes.PROMPT_BACKGROUND)
                 .setForegroundColor(TermAttributes.PROMPT_FOREGROUND);

@@ -182,7 +182,7 @@ public final class IterStringUtilsTest {
 
         final List<CharSequence> list = new ArrayList<>();
         int idx = 0;
-        int end = 0;
+        int end;
 
         while ((idx = IterStringUtils.iterFront(totoStr, idx, c -> ASCII.isBlank(c))) < totoStr.length()) {
             end = IterStringUtils.iterFront(totoStr, idx, c -> ASCII.isAlphaNum(c));

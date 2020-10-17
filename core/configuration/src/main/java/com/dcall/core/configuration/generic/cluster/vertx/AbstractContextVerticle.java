@@ -3,8 +3,6 @@ package com.dcall.core.configuration.generic.cluster.vertx;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.vertx.uri.VertxURIContext;
 import io.vertx.core.AbstractVerticle;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 public abstract class AbstractContextVerticle extends AbstractVerticle {
     protected final RuntimeContext runtimeContext;

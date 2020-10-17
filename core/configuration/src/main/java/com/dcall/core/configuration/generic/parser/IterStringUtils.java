@@ -43,7 +43,7 @@ public final class IterStringUtils implements java.io.Serializable {
 
     public static List<CharSequence> accumulateList(final CharSequence seq, int idx, final Predicate<Character> cond) {
         final List<CharSequence> accu = new ArrayList<>();
-        int end = 0;
+        int end;
 
         while ((idx = iterFront(seq, idx, c -> ASCII.isBlank(c))) < seq.length()) {
             end = iterFront(seq, idx, cond);
@@ -58,7 +58,7 @@ public final class IterStringUtils implements java.io.Serializable {
 
     public static List<CharSequence> accumulateList(final CharSequence seq, int idx, final int endIdx, final Predicate<Character> cond) {
         final List<CharSequence> accu = new ArrayList<>();
-        int end = 0;
+        int end;
 
         while ((idx = iterFront(seq, idx, c -> ASCII.isBlank(c))) < endIdx) {
             end = iterFront(seq, idx, endIdx, cond);
@@ -117,6 +117,6 @@ public final class IterStringUtils implements java.io.Serializable {
     }
 
     // util
-    public static final <T> Predicate<T> predicateNotNull(final Predicate<T> predicate) { return predicate == null ? (c -> true) : predicate; }
+    public static <T> Predicate<T> predicateNotNull(final Predicate<T> predicate) { return predicate == null ? (c -> true) : predicate; }
 
 }

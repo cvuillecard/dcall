@@ -12,7 +12,7 @@ public final class JsonUtils {
     private static final Logger LOG = LoggerFactory.getLogger(JsonUtils.class);
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    final static byte[] objToByteArray(final Object o, final Cipher cipher) {
+    static byte[] objToByteArray(final Object o, final Cipher cipher) {
         try {
             final byte[] bytes = mapper.writeValueAsBytes(o);
             return cipher != null ? AESProvider.encryptBytes(bytes, cipher) : bytes;
@@ -23,7 +23,7 @@ public final class JsonUtils {
         return null;
     }
 
-    final static <T> T byteArrayToObj(final byte[] bytes, Class<T> type, final Cipher cipher) {
+    static <T> T byteArrayToObj(final byte[] bytes, Class<T> type, final Cipher cipher) {
         try {
             return cipher != null ? mapper.readValue(AESProvider.decryptBytes(bytes, cipher), type) : mapper.readValue(bytes, type);
         } catch (Exception e) {

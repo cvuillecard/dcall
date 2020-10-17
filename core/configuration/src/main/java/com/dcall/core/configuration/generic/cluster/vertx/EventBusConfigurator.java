@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 public final class EventBusConfigurator {
     private static final Logger LOG = LoggerFactory.getLogger(EventBusConfigurator.class);
 
-    private VertxOptions vertxOptions = new VertxOptions();
-    private EventBusOptions eventBusOptions = new EventBusOptions();
+    private VertxOptions vertxOptions;
+    private EventBusOptions eventBusOptions;
 
     public EventBusConfigurator(final VertxOptions vertxOptions) {
         this.vertxOptions = vertxOptions;

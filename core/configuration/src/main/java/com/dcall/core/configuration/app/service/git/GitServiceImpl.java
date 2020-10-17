@@ -85,7 +85,7 @@ public class GitServiceImpl implements GitService {
 
     @Override
     public GitRepository createSystemRepository(final RuntimeContext context) {
-        GitRepository repo = null;
+        GitRepository repo;
         final String sysPath = getSystemRepository();
         final File gitFile = new File(getGitPath(sysPath));
 
