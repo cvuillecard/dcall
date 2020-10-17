@@ -42,13 +42,13 @@ public final class BuiltInPublishServiceImpl extends AbstractCommand implements 
 
         try {
             runtimeContext.serviceContext().serviceProvider().messageServiceProvider().fileTransferService().publishWorkspace(runtimeContext);
-            sb.append("> publish workspace order > path = " + ResourceUtils.localProperties().getProperty(GitConstant.SYS_GIT_REPOSITORY));
+            sb.append("> publish workspace order [path = " + ResourceUtils.localProperties().getProperty(GitConstant.SYS_GIT_REPOSITORY) + "]");
         }
         catch (Exception e) {
             sb.append("Failed to publish workspace : " + e.getMessage());
         }
 
-        return sb.length() > 0 ? sb.toString().getBytes() : null;
+        return sb.toString().getBytes();
     }
 
     private byte[]  publishCertificate() throws Exception {

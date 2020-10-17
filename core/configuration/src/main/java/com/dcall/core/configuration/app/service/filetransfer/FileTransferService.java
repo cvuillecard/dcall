@@ -12,6 +12,6 @@ import java.io.Serializable;
 import java.util.List;
 
 public interface FileTransferService extends Serializable {
-    void publishWorkspace(final RuntimeContext runtimeContext);
+    void publishWorkspace(final RuntimeContext runtimeContext) throws Exception;
     void storeWorkspaceTransferContext(final RuntimeContext runtimeContext, final FileTransferContext fileTransferContext) throws Exception;
 }

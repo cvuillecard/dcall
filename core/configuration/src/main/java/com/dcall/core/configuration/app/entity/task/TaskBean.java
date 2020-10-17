@@ -33,7 +33,8 @@ public final class TaskBean implements Task<String> {
 
     @Override
     public String toString() {
-        return (this.getParent() != null ? ("Task : " + this.getParent().getId()) + " (" + this.getParent().getStatus().name() + ") > " : "")
-                + "subTask : id = " + this.id + " - " + this.getStatus().name();
+        return (this.getParent() != null ? ("Task : id = " + this.getParent().getId())
+                + " (" + this.getParent().getStatus().name() + ") > subTask : " : " > Task : ")
+                + "id = " + this.id + " - " + this.getStatus().name();
     }
 }

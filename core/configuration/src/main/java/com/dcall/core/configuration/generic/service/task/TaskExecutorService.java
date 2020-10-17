@@ -10,7 +10,7 @@ import java.util.List;
 public interface TaskExecutorService extends WithRuntimeContext {
     // main
     TaskExecutorService init(final RuntimeContext context, final AbstractTaskContext taskContext);
-    TaskExecutorService run();
+    TaskExecutorService run() throws Exception;
 
     // getters
     Task getTask();

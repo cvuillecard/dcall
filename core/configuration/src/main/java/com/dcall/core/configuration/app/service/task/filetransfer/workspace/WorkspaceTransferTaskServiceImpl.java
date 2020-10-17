@@ -3,14 +3,12 @@ package com.dcall.core.configuration.app.service.task.filetransfer.workspace;
 import com.dcall.core.configuration.app.constant.GitConstant;
 import com.dcall.core.configuration.app.constant.TaskStatus;
 import com.dcall.core.configuration.app.context.RuntimeContext;
-import com.dcall.core.configuration.app.context.task.AbstractTaskContext;
 import com.dcall.core.configuration.app.context.task.filetransfer.workspace.WorkspaceTransferTaskContext;
 import com.dcall.core.configuration.app.context.task.filetransfer.workspace.WorkspaceTransferTaskContextImpl;
 import com.dcall.core.configuration.app.entity.task.Task;
 import com.dcall.core.configuration.app.entity.task.TaskBean;
 import com.dcall.core.configuration.app.service.task.filetransfer.FileTransferTaskService;
 import com.dcall.core.configuration.generic.service.task.AbstractTaskExecutor;
-import com.dcall.core.configuration.generic.service.task.TaskExecutorService;
 import com.dcall.core.configuration.utils.FileUtils;
 import com.dcall.core.configuration.utils.SerializationUtils;
 import com.dcall.core.configuration.utils.constant.FileType;
@@ -30,25 +28,13 @@ public final class WorkspaceTransferTaskServiceImpl extends AbstractTaskExecutor
     }
 
     @Override
-    public TaskExecutorService init(final RuntimeContext runtimeContext, final AbstractTaskContext taskContext) {
-       return super.init(runtimeContext, new WorkspaceTransferTaskContextImpl(runtimeContext));
-    }
+    public AbstractTaskExecutor execute() throws Exception {
+        final WorkspaceTransferTaskContext taskContext = (WorkspaceTransferTaskContext) this.taskContext;
 
-    @Override
-    public AbstractTaskExecutor execute() {
-        try {
-            final WorkspaceTransferTaskContext taskContext = (WorkspaceTransferTaskContext) this.taskContext;
+        sendFileRecursively(taskContext, taskContext.getGitService().getSystemRepository(), GitConstant.GIT_FILENAME);
 
-            sendFileRecursively(taskContext, taskContext.getGitService().getSystemRepository(), GitConstant.GIT_FILENAME);
+        runtimeContext.clusterContext().taskContext().enqueue(this);
 
-            runtimeContext.clusterContext().taskContext().enqueue(this);
-        }
-        catch (Exception e) {
-            final String msgError = "Failed task id = " + this.task.getId() + " - ERROR : " + e.getMessage();
-            this.task.setStatus(TaskStatus.FAILED).setId(msgError);
-
-            LOG.error(e.getMessage());
-        }
         return this;
     }
 
@@ -61,8 +47,12 @@ public final class WorkspaceTransferTaskServiceImpl extends AbstractTaskExecutor
         taskContext.getFileTransfer().setParentPath(parentPath).setFileName(fileName);
 
         if (file.isDirectory())
-            for (final File f : file.listFiles())
-                sendFileRecursively(taskContext, filePath, f.getName());
+            for (final File f : file.listFiles()) {
+                if (!this.task.getStatus().equals(TaskStatus.FAILED))
+                    sendFileRecursively(taskContext, filePath, f.getName());
+                else
+                    break;
+            }
         else {
             final Task subTask = new TaskBean(file.getPath(), TaskStatus.RUNNING, task);
             this.addTask(subTask);

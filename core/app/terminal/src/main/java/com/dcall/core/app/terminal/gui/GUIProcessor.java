@@ -105,7 +105,7 @@ public final class GUIProcessor {
     private static void handleIO() {
         Vertx.currentContext().executeBlocking(future -> future.complete(ScreenController.isUp()), handler -> {
             if (handler.succeeded()) {
-                if (handler.result().equals(true)) {
+                if ((boolean)handler.result()) {
                     try {
                         if (DisplayController.getLock())
                             KeyboardController.handleNextInput(true);

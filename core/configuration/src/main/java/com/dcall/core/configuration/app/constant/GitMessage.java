@@ -20,6 +20,6 @@ public final class GitMessage {
         final Locale locale = new Locale("en", "US");
         final Date today = new Date();
 
-        return prefix + " < " + DateUtils.getDateFormated("yyyy/MM/dd", today) + " at " + DateUtils.getTime(locale, today)  + " > " + '<' + user.getLogin() + "> - " + suffix;
+        return prefix + " [" + DateUtils.getDateFormated("yyyy/MM/dd", today) + " at " + DateUtils.getTime(locale, today)  + "] " + '<' + user.getLogin() + "> - " + suffix;
     }
 }

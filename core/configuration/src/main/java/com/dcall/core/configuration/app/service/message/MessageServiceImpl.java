@@ -241,7 +241,7 @@ public class MessageServiceImpl implements MessageService {
             });
         }
         else {
-            LOG.info(" Complete > sendBlockingEncryptedChunk [ chunkIdx:" + chunkIdx + ", nbChunk:" + nbChunk);
+            LOG.info(" Complete > sendEncryptedChunk [ chunkIdx:" + chunkIdx + ", nbChunk:" + nbChunk);
         }
 
         return this;

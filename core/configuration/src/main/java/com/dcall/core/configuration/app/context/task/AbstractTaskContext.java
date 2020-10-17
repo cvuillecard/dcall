@@ -16,7 +16,7 @@ public abstract class AbstractTaskContext implements TaskVerticleContext {
 
     protected AbstractTaskContext(final RuntimeContext runtimeContext) { this.runtimeContext = runtimeContext; }
 
-    public abstract AbstractTaskContext init();
+    public abstract AbstractTaskContext init() throws Exception;
 
     // getters
     @Override public RuntimeContext getRuntimeContext() { return runtimeContext; }

@@ -1,33 +1,20 @@
 package com.dcall.core.configuration.app.service.filetransfer;
 
 import com.dcall.core.configuration.app.constant.GitConstant;
-import com.dcall.core.configuration.app.constant.UserConstant;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.filetransfer.FileTransferContext;
 import com.dcall.core.configuration.app.entity.filetransfer.FileTransfer;
-import com.dcall.core.configuration.app.entity.filetransfer.FileTransferBean;
-import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
-import com.dcall.core.configuration.app.entity.message.MessageBean;
 import com.dcall.core.configuration.app.exception.TechnicalException;
-import com.dcall.core.configuration.app.service.environ.EnvironService;
-import com.dcall.core.configuration.app.service.git.GitService;
 import com.dcall.core.configuration.app.service.hash.HashFileService;
 import com.dcall.core.configuration.app.service.message.MessageService;
-import com.dcall.core.configuration.app.service.task.filetransfer.workspace.WorkspaceTransferTaskServiceImpl;
-import com.dcall.core.configuration.app.verticle.filetransfer.FileTransferConsumerVerticle;
-import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
-import com.dcall.core.configuration.generic.cluster.vertx.uri.VertxURIConfig;
+import com.dcall.core.configuration.generic.service.task.AbstractTaskExecutor;
+import com.dcall.core.configuration.generic.service.task.TaskExecutorService;
 import com.dcall.core.configuration.utils.FileUtils;
 import com.dcall.core.configuration.utils.PathUtils;
-import com.dcall.core.configuration.utils.SerializationUtils;
-import com.dcall.core.configuration.utils.URIUtils;
-import com.dcall.core.configuration.utils.constant.FileType;
-import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.util.Map;
 
@@ -40,9 +27,8 @@ public class FileTransferServiceImpl implements FileTransferService {
     }
 
     @Override
-    public void publishWorkspace(final RuntimeContext runtimeContext) {
+    public void publishWorkspace(final RuntimeContext runtimeContext) throws Exception {
         runtimeContext.serviceContext().serviceProvider().taskServiceProvider().workspaceTransferService().run();
-//        new WorkspaceTransferTaskServiceImpl(runtimeContext).run();
     }
 
     @Override

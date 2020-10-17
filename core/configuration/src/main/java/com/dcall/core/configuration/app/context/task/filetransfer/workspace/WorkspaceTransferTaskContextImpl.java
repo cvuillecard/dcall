@@ -30,26 +30,22 @@ public final class WorkspaceTransferTaskContextImpl extends AbstractTaskContext 
 
     // main
     @Override
-    public WorkspaceTransferTaskContextImpl init() {
-        try {
-            environService = getRuntimeContext().serviceContext().serviceProvider().environService();
-            fingerPrintService = getRuntimeContext().serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
-            messageService = getRuntimeContext().serviceContext().serviceProvider().messageServiceProvider().messageService();
+    public WorkspaceTransferTaskContextImpl init() throws Exception {
+        environService = getRuntimeContext().serviceContext().serviceProvider().environService();
+        fingerPrintService = getRuntimeContext().serviceContext().serviceProvider().messageServiceProvider().fingerPrintService();
+        messageService = getRuntimeContext().serviceContext().serviceProvider().messageServiceProvider().messageService();
 
-            if (!environService.getHostFilesMode(getRuntimeContext()))
-                throw new IllegalStateException("env.allow_host_files = false -> must be true to send files");
+        if (!environService.getHostFilesMode(getRuntimeContext()))
+            throw new IllegalStateException("env.allow_host_files = false -> must be true to send files");
 
-            fingerPrint = fingerPrintService.nextFingerPrint(getRuntimeContext().clusterContext().fingerPrintContext());
-            publicId = environService.getPublicId(getRuntimeContext());
-            fileTransfer = new FileTransferBean().setId(publicId);
-            gitService = getRuntimeContext().serviceContext().serviceProvider().versionServiceProvider().gitService();
+        fingerPrint = fingerPrintService.nextFingerPrint(getRuntimeContext().clusterContext().fingerPrintContext());
+        publicId = environService.getPublicId(getRuntimeContext());
+        fileTransfer = new FileTransferBean().setId(publicId);
+        gitService = getRuntimeContext().serviceContext().serviceProvider().versionServiceProvider().gitService();
 
-            this.setRunURI(URIUtils.getUri(FileTransferConsumerVerticle.class.getName(), fingerPrint.getId()));
-            this.setCompleteURI(URIUtils.getUri(URIUtils.getUri(FileTransferConsumerVerticle.class.getName(), fingerPrint.getId()), URIUtils.getUri(VertxURIConfig.COMPLETE_DOMAIN, UserConstant.WORKSPACE)));
-        }
-        catch (Exception e) {
-            LOG.error(e.getMessage());
-        }
+        this.setRunURI(URIUtils.getUri(FileTransferConsumerVerticle.class.getName(), fingerPrint.getId()));
+        this.setCompleteURI(URIUtils.getUri(URIUtils.getUri(FileTransferConsumerVerticle.class.getName(), fingerPrint.getId()), URIUtils.getUri(VertxURIConfig.COMPLETE_DOMAIN, UserConstant.WORKSPACE)));
+
         return this;
     }
 

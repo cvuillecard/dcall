@@ -25,21 +25,20 @@ public abstract class AbstractTaskExecutor implements TaskExecutorService {
         this.task = new TaskBean().setId(this.getClass().getSimpleName());
 
         if (taskContext != null)
-            this.taskContext = taskContext.setRuntimeContext(this.runtimeContext).init();
+            this.taskContext = taskContext.setRuntimeContext(this.runtimeContext);
 
         return this;
     }
 
     @Override
-    public TaskExecutorService run() {
-        try {
-            if (runtimeContext == null)
-                throw new IllegalStateException("Missing initialization of getContext");
-            this.execute();
-        }
-        catch (Exception e) {
-            LOG.error(e.getMessage());
-        }
+    public TaskExecutorService run() throws Exception {
+        if (runtimeContext == null)
+            throw new IllegalStateException("Missing initialization of runtimeContext");
+        else if (taskContext == null)
+            throw new IllegalStateException("Missing initialization of taskContext");
+
+        taskContext.init();
+        execute();
 
         return this;
     }

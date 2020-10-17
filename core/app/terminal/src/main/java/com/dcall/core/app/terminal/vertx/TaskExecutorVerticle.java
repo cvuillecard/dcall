@@ -12,10 +12,11 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Component
 @Scope(SCOPE_PROTOTYPE)
 public final class TaskExecutorVerticle extends AbstractTaskVerticle {
+    private int idx = 1;
 
     @Override
     protected void onUpdate(final Task subTask) {
-        GUIProcessor.bus().output().addToEntry(subTask.toString());
+        GUIProcessor.bus().output().addToEntry(idx++ + " - " + subTask.toString());
     }
 
     @Override
@@ -25,11 +26,17 @@ public final class TaskExecutorVerticle extends AbstractTaskVerticle {
 
     @Override
     protected void onComplete() {
-        GUIProcessor.bus().output().addToEntry(" > TASK COMPLETED");
+        GUIProcessor.bus().output().addToEntry(idx + " > TASK COMPLETED");
+        reset();
     }
 
     @Override
     protected void onFail() {
-        GUIProcessor.bus().output().addToEntry("TASK FAILURE > " + taskContext.getCurrent().getTask().getId() + " - " + TaskStatus.FAILED.name());
+        GUIProcessor.bus().output().addToEntry(idx + " > TASK FAILURE [ " + taskContext.getCurrent().getTask().getId() + " - " + TaskStatus.FAILED.name() + " ]");
+        reset();
+    }
+
+    private void reset() {
+        idx = 0;
     }
 }
