@@ -1,6 +1,7 @@
 package com.dcall.core.configuration.generic.cluster.vertx;
 
 import com.dcall.core.configuration.app.constant.TaskStatus;
+import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.task.TaskContext;
 import com.dcall.core.configuration.app.entity.task.Task;
 import com.dcall.core.configuration.generic.service.task.AbstractTaskExecutor;
@@ -14,6 +15,10 @@ public abstract class AbstractTaskVerticle extends AbstractContextVerticle {
     protected final long DELAY_MS = 50l;
     protected TaskContext taskContext;
     protected int taskIdx = 0;
+
+    public AbstractTaskVerticle(final RuntimeContext runtimeContext) {
+        super(runtimeContext);
+    }
 
     @Override
     public void start() throws Exception {

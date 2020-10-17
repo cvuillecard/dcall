@@ -299,27 +299,4 @@ public class ParserOldVersionTest {
         Assert.assertEquals("/", parser.getFirst().getParent().getParent().getData());
         Assert.assertEquals("5", parser.getFirst().getParent().getParent().getRight().getData());
     }
-
-//    public CharSequence evalTree(final BTree<CharSequence> tree) {
-//        BTree<CharSequence> ptr = tree;
-//        BTree<CharSequence> last = null;
-//        BTree<CharSequence> visited = null;
-//        CharSequence res = "";
-//
-//        while (ptr != null && ptr != visited) {
-//            if (ptr.getRight() != null && ptr.getRight() != last) {
-//                res = res.toString() + evalTree(ptr.getRight().firstLeft());
-//                visited = ptr.getParent();
-//            }
-//            else {
-//                last = ptr;
-//                res = last.getData().toString() + res.toString();
-//            }
-//            ptr = ptr.getParent();
-//        }
-//        LOG.debug(res.toString());
-//
-//        return res;
-//    }
-
 }

@@ -10,10 +10,8 @@ import com.dcall.core.configuration.app.security.hash.HashProvider;
 import com.dcall.core.configuration.app.service.environ.EnvironService;
 import com.dcall.core.configuration.app.service.environ.EnvironServiceImpl;
 import com.dcall.core.configuration.app.entity.user.User;
-import com.dcall.core.configuration.generic.cluster.hazelcast.HazelcastCluster;
 import com.dcall.core.configuration.utils.HostUtils;
 import com.dcall.core.configuration.utils.ResourceUtils;
-import org.apache.commons.codec.binary.Base64;
 
 import java.io.File;
 

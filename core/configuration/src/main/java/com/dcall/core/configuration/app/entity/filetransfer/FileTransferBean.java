@@ -23,14 +23,11 @@ public final class FileTransferBean implements FileTransfer<String> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
         final String nullStr = "null";
 
-        sb.append(this.getClass().getSimpleName() + " [id = " + id);
-        sb.append(", parentPath = " + (parentPath != null ? parentPath : nullStr));
-        sb.append(", fileName = " + (fileName != null ? fileName : nullStr));
-        sb.append(", fileType = " + (fileType != null ? fileType.name() : nullStr) + ']');
-
-        return sb.toString();
+        return this.getClass().getSimpleName() + " [id = " + id +
+                ", parentPath = " + (parentPath != null ? parentPath : nullStr) +
+                ", fileName = " + (fileName != null ? fileName : nullStr) +
+                ", fileType = " + (fileType != null ? fileType.name() : nullStr) + ']';
     }
 }

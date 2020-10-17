@@ -3,16 +3,12 @@ package com.dcall.core.configuration.app.service.message;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.task.Task;
-import com.dcall.core.configuration.app.exception.ExceptionHolder;
-import com.dcall.core.configuration.app.exception.TechnicalException;
-import com.dcall.core.configuration.generic.cluster.vertx.VertxCompletableFuture;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.function.Consumer;
 
 public interface MessageService extends Serializable {

@@ -1,6 +1,5 @@
 package com.dcall.core.configuration.generic.service.task;
 
-import com.dcall.core.configuration.app.constant.TaskStatus;
 import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.task.AbstractTaskContext;
 import com.dcall.core.configuration.app.entity.task.Task;

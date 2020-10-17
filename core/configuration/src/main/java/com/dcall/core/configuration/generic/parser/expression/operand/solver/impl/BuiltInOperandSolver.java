@@ -6,15 +6,11 @@ import com.dcall.core.configuration.generic.parser.IterStringUtils;
 import com.dcall.core.configuration.generic.parser.expression.operand.solver.OperandSolver;
 import com.dcall.core.configuration.utils.HelpUtils;
 import com.dcall.core.configuration.utils.StringParserUtils;
-import com.dcall.core.configuration.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class BuiltInOperandSolver implements OperandSolver {
     private static final Logger LOG = LoggerFactory.getLogger(BuiltInOperandSolver.class);

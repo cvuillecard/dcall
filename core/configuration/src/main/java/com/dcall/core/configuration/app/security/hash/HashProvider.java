@@ -4,7 +4,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
 import java.security.SecureRandom;
 import java.util.Arrays;
 

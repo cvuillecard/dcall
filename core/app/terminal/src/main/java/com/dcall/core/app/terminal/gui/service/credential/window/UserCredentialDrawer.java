@@ -15,7 +15,7 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.Screen;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.Collections;
 
 public final class UserCredentialDrawer {
     private String _PANEL_TITLE = "User configuration";
@@ -176,7 +176,7 @@ public final class UserCredentialDrawer {
     // build
     private void buildLayout() {
         window.setComponent(panel);
-        window.setHints(Arrays.asList(Window.Hint.CENTERED));
+        window.setHints(Collections.singletonList(Window.Hint.CENTERED));
 
         gui = new MultiWindowTextGUI(screen, new DefaultWindowManager(), new EmptySpace(TextColor.ANSI.BLACK));
         gui.addWindowAndWait(window);

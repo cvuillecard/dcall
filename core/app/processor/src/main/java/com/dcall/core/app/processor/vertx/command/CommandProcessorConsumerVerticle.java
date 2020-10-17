@@ -1,5 +1,6 @@
 package com.dcall.core.app.processor.vertx.command;
 
+import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.service.builtin.BuiltInService;
 import com.dcall.core.configuration.app.service.builtin.BuiltInServiceImpl;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
@@ -17,6 +18,7 @@ import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +30,11 @@ public final class CommandProcessorConsumerVerticle extends AbstractContextVerti
     private static final Logger LOG = LoggerFactory.getLogger(CommandProcessorConsumerVerticle.class);
 
     private final BuiltInService builtInService = new BuiltInServiceImpl();
+
+    @Autowired
+    public CommandProcessorConsumerVerticle(final RuntimeContext runtimeContext) {
+        super(runtimeContext);
+    }
 
     private void execute(final Message<Object> handler, final com.dcall.core.configuration.app.entity.message.Message<String> msg) {
         if (handler != null) {

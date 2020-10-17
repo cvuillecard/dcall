@@ -3,6 +3,7 @@ package com.dcall.core.configuration.app.verticle.filetransfer;
 import com.dcall.core.configuration.app.constant.GitConstant;
 import com.dcall.core.configuration.app.constant.GitMessage;
 import com.dcall.core.configuration.app.constant.UserConstant;
+import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.filetransfer.FileTransferContext;
 import com.dcall.core.configuration.app.context.fingerprint.FingerPrintContext;
 import com.dcall.core.configuration.app.context.transfer.TransferContext;
@@ -23,6 +24,7 @@ import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +36,11 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Scope(SCOPE_PROTOTYPE)
 public final class  FileTransferConsumerVerticle extends AbstractContextVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(FileTransferConsumerVerticle.class);
+
+    @Autowired
+    public FileTransferConsumerVerticle(final RuntimeContext runtimeContext) {
+        super(runtimeContext);
+    }
 
     private void handleCompleteMessage(final FingerPrintContext fingerPrintContext, final Message<Object> handler) {
         vertx.executeBlocking(future -> {

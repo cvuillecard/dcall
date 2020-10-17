@@ -21,10 +21,15 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Scope(SCOPE_PROTOTYPE)
 public class TestCommandProcessorConsumerVerticle extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(TestCommandProcessorConsumerVerticle.class);
-    @Autowired private RuntimeContext runtimeContext;
+    private final RuntimeContext runtimeContext;
     private VertxURIContext uriContext;
     private final int BUF_SIZE = 2048;
     private InputStreamReader inputStreamReader;
+
+    @Autowired
+    public TestCommandProcessorConsumerVerticle(RuntimeContext runtimeContext) {
+        this.runtimeContext = runtimeContext;
+    }
 
     private void execute(final Message<Object> handler) {
         if (handler != null) {

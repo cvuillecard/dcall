@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 public class GitServiceImpl implements GitService {
@@ -139,7 +140,7 @@ public class GitServiceImpl implements GitService {
         try {
             return Git.cloneRepository().setURI(getGitPath(src)).setDirectory(new File(dest))
                     .setCloneAllBranches(true)
-                    .setBranchesToClone(Arrays.asList(branchRefName(GitConstant.MASTER)))
+                    .setBranchesToClone(Collections.singletonList(branchRefName(GitConstant.MASTER)))
                     .setBranch(branchRefName(null))
                     .call();
         }
@@ -337,11 +338,8 @@ public class GitServiceImpl implements GitService {
 
     @Override
     public boolean isGitRepository(final String dirPath) {
-        if (dirPath != null && !dirPath.isEmpty()) {
-            return new File(getGitPath(dirPath)).exists();
-        }
+        return dirPath != null && !dirPath.isEmpty() && new File(getGitPath(dirPath)).exists();
 
-        return false;
     }
 
     @Override

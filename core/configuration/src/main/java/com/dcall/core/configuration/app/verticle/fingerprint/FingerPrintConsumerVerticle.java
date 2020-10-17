@@ -1,5 +1,6 @@
 package com.dcall.core.configuration.app.verticle.fingerprint;
 
+import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.app.context.fingerprint.FingerPrintContext;
 import com.dcall.core.configuration.app.entity.fingerprint.FingerPrint;
 import com.dcall.core.configuration.app.entity.message.MessageBean;
@@ -16,6 +17,7 @@ import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,11 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Scope(SCOPE_PROTOTYPE)
 public final class FingerPrintConsumerVerticle extends AbstractContextVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(FingerPrintConsumerVerticle.class);
+
+    @Autowired
+    public FingerPrintConsumerVerticle(final RuntimeContext runtimeContext) {
+        super(runtimeContext);
+    }
 
     private void handleIdMessage(final FingerPrintContext fingerPrintContext, final Message<Object> handler) {
         vertx.executeBlocking(future -> {

@@ -2,7 +2,9 @@ package com.dcall.core.app.terminal.vertx;
 
 import com.dcall.core.app.terminal.gui.GUIProcessor;
 import com.dcall.core.app.terminal.gui.configuration.ScreenAttributes;
+import com.dcall.core.configuration.app.context.RuntimeContext;
 import com.dcall.core.configuration.generic.cluster.vertx.AbstractContextVerticle;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,11 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Component
 @Scope(SCOPE_PROTOTYPE)
 public final class TerminalApplicationVerticle extends AbstractContextVerticle {
+
+    @Autowired
+    public TerminalApplicationVerticle(RuntimeContext runtimeContext) {
+        super(runtimeContext);
+    }
 
     @Override
     protected void setUriContext() {

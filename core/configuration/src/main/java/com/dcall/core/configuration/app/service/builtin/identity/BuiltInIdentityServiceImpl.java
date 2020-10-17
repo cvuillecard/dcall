@@ -83,7 +83,7 @@ public class BuiltInIdentityServiceImpl extends AbstractCommand implements Built
 
         Arrays.stream(args)
                 .filter(k -> getUserIdentity().getProperties().getProperty(k) != null)
-                .peek(k -> { sb.append("'" + k + "' has been removed.\n"); removed.add(k); })
+                .peek(k -> { sb.append("'").append(k).append("' has been removed.\n"); removed.add(k); })
                 .forEach(k -> getUserIdentity().getProperties().remove(k));
 
         String ret = sb.toString();

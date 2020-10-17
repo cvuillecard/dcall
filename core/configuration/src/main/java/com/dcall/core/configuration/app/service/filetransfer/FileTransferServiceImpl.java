@@ -7,8 +7,6 @@ import com.dcall.core.configuration.app.entity.filetransfer.FileTransfer;
 import com.dcall.core.configuration.app.exception.TechnicalException;
 import com.dcall.core.configuration.app.service.hash.HashFileService;
 import com.dcall.core.configuration.app.service.message.MessageService;
-import com.dcall.core.configuration.generic.service.task.AbstractTaskExecutor;
-import com.dcall.core.configuration.generic.service.task.TaskExecutorService;
 import com.dcall.core.configuration.utils.FileUtils;
 import com.dcall.core.configuration.utils.PathUtils;
 import org.slf4j.Logger;

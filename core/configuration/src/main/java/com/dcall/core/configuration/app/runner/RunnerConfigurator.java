@@ -4,6 +4,7 @@ import com.dcall.core.configuration.app.constant.ClusterConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -93,8 +94,7 @@ public final class RunnerConfigurator {
         if (args[idx].equalsIgnoreCase(DEFAULT_OPTIONS[PEERS])) {
             checkNextArgument(idx, args, PEERS, "options requires at least one peer argument (ex : -peers <host:port>)");
 
-            for (int i = idx + 1; i < args.length; i++)
-                peers.add(args[i]);
+            peers.addAll(Arrays.asList(args).subList(idx + 1, args.length));
 
             return false;
         }

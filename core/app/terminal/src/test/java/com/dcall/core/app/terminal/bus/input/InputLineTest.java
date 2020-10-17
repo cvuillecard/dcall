@@ -5,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class InputLineTest {
-    private static InputLine line;
+    private static InputLine<String> line;
     private final String word = "Line";
 
     @BeforeClass

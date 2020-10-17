@@ -6,13 +6,13 @@ import io.vertx.core.AbstractVerticle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
 public abstract class AbstractContextVerticle extends AbstractVerticle {
-    @Autowired protected RuntimeContext runtimeContext;
+    protected final RuntimeContext runtimeContext;
     protected VertxURIContext uriContext = new VertxURIContext();
 
-    protected AbstractContextVerticle() {
+    protected AbstractContextVerticle(final RuntimeContext runtimeContext) {
         setUriContext();
+        this.runtimeContext = runtimeContext;
     }
 
     protected void setUriContext() {

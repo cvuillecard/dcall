@@ -87,7 +87,7 @@ public class BuiltInEnvServiceImpl extends AbstractCommand implements BuiltInEnv
 
         Arrays.stream(args)
                 .filter(k -> environ.getProperties().getProperty(k) != null && !lockProperties.contains(k))
-                .peek(k -> { sb.append("'" + k + "' has been removed.\n"); removed.add(k); } )
+                .peek(k -> { sb.append("'").append(k).append("' has been removed.\n"); removed.add(k); } )
                 .forEach(k -> environ.getProperties().remove(k));
 
         String ret = sb.toString();
