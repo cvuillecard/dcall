@@ -1,15 +1,49 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dcall</groupId>
     <artifactId>build</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>Application build descriptor</description>
 
     <name>Dcall</name>
+
+    <properties>
+        <nexus.url>http://worker.web:8081</nexus.url>
+        <!--Needed on multiple repositories management // not used for instance-->
+        <git.fetch>git@gitlab.com:cvuillec/dcall.git</git.fetch>
+        <git.push>git@gitlab.com:cvuillec/dcall.git</git.push>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+    </properties>
+
+    <scm>
+        <url>https://gitlab.com/cvuillec/dcall.git</url>
+        <connection>git@gitlab.com:cvuillec/dcall.git</connection>
+        <!--<developerConnection>scm:git:file://${dcall.project.dir}/.git</developerConnection>-->
+        <developerConnection>scm:git:[fetch=]${git.fetch}[push=]${git.push}</developerConnection>
+    </scm>
+
+    <!--Download dependencies-->
+    <repositories>
+        <repository>
+            <id>dcall-maven-group</id>
+            <url>${nexus.url}/repository/dcall-maven-group/</url>
+        </repository>
+    </repositories>
+
+    <!--Publish-->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>dcall-snapshots</id>
+            <url>${nexus.url}/repository/dcall-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>dcall-releases</id>
+            <url>${nexus.url}/repository/dcall-releases/</url>
+        </repository>
+    </distributionManagement>
 
     <modules>
         <module>parent</module>
