@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dcall</groupId>
     <artifactId>build</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>Application build descriptor</description>
@@ -23,7 +23,8 @@
         <connection>git@gitlab.com:cvuillec/dcall.git</connection>
         <!--<developerConnection>scm:git:file://${dcall.project.dir}/.git</developerConnection>-->
         <developerConnection>scm:git:[fetch=]${git.fetch}[push=]${git.push}</developerConnection>
-    </scm>
+      <tag>HEAD</tag>
+  </scm>
 
     <!--Download dependencies-->
     <repositories>

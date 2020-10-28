@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.dcall</groupId>
         <artifactId>build</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -57,8 +57,8 @@
 
         <!--defaut configuration-->
         <project.extern.resources.directory>/var/lib/dcall</project.extern.resources.directory>
-        <extern.base.directory></extern.base.directory>
-        <extern.unzip.destination></extern.unzip.destination>
+        <extern.base.directory />
+        <extern.unzip.destination />
         <extern.runtime.conf.name>conf</extern.runtime.conf.name>
 
     </properties>
