@@ -60,7 +60,7 @@ This step probably represents the biggest part of the implementation work becaus
 After this big rock, the last difficult part to give a sense to all this work, is to make the terminal reflective in a CLI object runtime context. With a reflective system to use classes on runtime as commands, we can create a simple little script language to compose what is a contract. (So Quizz of what is a Dcall-contract ? only an api implementation or a little script that we deploy as an app or a block app ?)
 
 
-​NOTE (4 years after) : this draft could be a fundation for a recode in Rust using wireguard (that was released at the same time when i pushed this code) / pulsar and wasm for portability of commands, and why not git to snapshot the shell state as i did it in the project with java...hopping to re-find the time to continue these crazy things..but the project work you can run it (many problems and interesting things). not optimized, probably many code smells, only few important tests (crypto / parser / input entries..) it's a draft for fun not a production ready code !
+​NOTE (4 years after) : this draft could be a fundation for a recode in Rust using wireguard (that was released at the same time when i pushed this code) / pulsar and wasm for portability of commands, and why not git to snapshot the shell state as i did it in the project with java...hopping to re-find the time to continue these crazy thingsin a more serious approach..but the project work you can run it (many problems and interesting things). not optimized, probably many code smells, only few important tests (crypto / parser / input entries..) it's a draft for fun not a production ready code !
 
 
 ____________________________________________________
