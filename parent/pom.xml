@@ -34,7 +34,7 @@
         <lanterna.version>3.0.2</lanterna.version>
         <vertx.version>3.9.0</vertx.version>
         <vertx.unit.version>3.9.0</vertx.unit.version>
-        <spring.version>5.2.3.RELEASE</spring.version>
+        <spring.version>5.2.21.RELEASE</spring.version>
         <jgit.version>5.7.0.202003110725-r</jgit.version>
         <logback.version>1.2.3</logback.version>
         <junit.version>4.13.1</junit.version>
